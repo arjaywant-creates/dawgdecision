@@ -12,11 +12,19 @@ export const siteConfig = {
       label: "About",
       href: "/about",
     },
+    {
+      label: "Test Backend",
+      href: "/test-backend",
+    },
   ],
   navMenuItems: [
     {
       label: "About",
       href: "/about",
+    },
+    {
+      label: "Test Backend",
+      href: "/test-backend",
     },
   ],
 };

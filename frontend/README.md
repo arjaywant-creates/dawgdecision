@@ -25,13 +25,15 @@ This is a temporary README file. Subject to change.
 
 # How to run from scratch
 1. Install Git and Node.js
-2. Clone the repo and go to the frontend directory (`cd dawgdecision/frontend`).
-3. Copy `.env.example` to `.env`.
-4. Run `npm install` to install dependencies.
-5. Run `npx prisma dev` to automatically start a local PostgreSQL database (keep this running in its own terminal tab).
-6. In a new terminal tab (inside `frontend`), run `npx prisma db push` to initialize the database schema.
-7. Run `npm run dev` to start the Next.js development server.
-8. Open http://localhost:3000 in your browser to view the app.
+2. Clone the repo
+3. See `backend/README.md` for more details on running the Python backend (will be needed to access decision engine API)
+4. Go to the frontend directory (`cd dawgdecision/frontend`).
+5. Copy `.env.example` to `.env`.
+6. Run `npm install` to install dependencies.
+7. Run `npx prisma dev` to automatically start a local PostgreSQL database (keep this running in its own terminal tab).
+8. In a new terminal tab (inside `frontend`), run `npx prisma db push` to initialize the database schema.
+9. Run `npm run dev` to start the Next.js development server.
+10. Open http://localhost:3000 in your browser to view the app.
 
 # Project Structure Guide
 
