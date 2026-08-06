@@ -16,5 +16,19 @@ services:
       - postgres_data:/var/lib/postgresql
     restart: unless-stopped
 
+  # Python Backend API (FastAPI)
+  backend:
+    build:
+      context: ./backend
+    container_name: dawgdecision-backend
+    ports:
+      # Binds only to localhost
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    restart: unless-stopped
+
 volumes:
   postgres_data:
