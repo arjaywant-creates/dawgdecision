@@ -1,0 +1,34 @@
+# Docker Compose Configuration for dawgdecision
+# Update the environment variables in the .env file as needed.
+
+services:
+  # Main PostgreSQL Database
+  db:
+    image: postgres:18
+    container_name: dawgdecision-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-dawgdecision}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    restart: unless-stopped
+
+  # Python Backend API (FastAPI)
+  backend:
+    build:
+      context: ./backend
+    container_name: dawgdecision-backend
+    ports:
+      # Binds only to localhost
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

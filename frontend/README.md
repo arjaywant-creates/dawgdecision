@@ -8,21 +8,32 @@ This is a temporary README file. Subject to change.
 - TailwindCSS
 - HeroUI (Next.js UI Kit)
 - Lucide Icons
+- BetterAuth (Authentication)
+- Prisma (ORM)
+- PostgreSQL (Database)
+- Docker Compose (for running database and backend services)
 
 # Layout
 - `app/` - contains the main application code
 - `components/` - contains reusable React components
 - `config/` - contains configuration files like siteConfig
+- `lib/` - contains utility functions and libraries (including auth.ts for BetterAuth)
+- `prisma/` - contains Prisma schema and migrations (for database)
 - `public/` - contains static assets like images and fonts
 - `styles/` - contains global styles and TailwindCSS configuration
 - `types/` - contains TypeScript type definitions
 
-# How to run
-- Install Git and Node.js
-- Clone the repo
-- Run `npm install` to install dependencies
-- Run `npm run dev` to start the development server
-- Open http://localhost:3000 in your browser to view the app
+# How to run from scratch
+1. Install Git and Node.js
+2. Clone the repo
+3. See `backend/README.md` for more details on running the Python backend (will be needed to access decision engine API)
+4. Go to the frontend directory (`cd dawgdecision/frontend`).
+5. Copy `.env.example` to `.env`.
+6. Run `npm install` to install dependencies.
+7. Run `npx prisma dev` to automatically start a local PostgreSQL database (keep this running in its own terminal tab).
+8. In a new terminal tab (inside `frontend`), run `npx prisma db push` to initialize the database schema.
+9. Run `npm run dev` to start the Next.js development server.
+10. Open http://localhost:3000 in your browser to view the app.
 
 # Project Structure Guide
 
