@@ -9,8 +9,16 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "About",
-      href: "/about",
+      label: "Dashboard",
+      href: "/dashboard",
+    },
+    {
+      label: "Compare",
+      href: "/compare",
+    },
+    {
+      label: "Financial Plan",
+      href: "/plan",
     },
     {
       label: "Test Backend",
@@ -18,6 +26,18 @@ export const siteConfig = {
     },
   ],
   navMenuItems: [
+    {
+      label: "Dashboard",
+      href: "/dashboard",
+    },
+    {
+      label: "Compare",
+      href: "/compare",
+    },
+    {
+      label: "Financial Plan",
+      href: "/plan",
+    },
     {
       label: "About",
       href: "/about",
