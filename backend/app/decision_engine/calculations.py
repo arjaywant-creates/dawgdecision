@@ -6,17 +6,18 @@ def analyze_scenario(scenario: Scenario) -> DecisionResult:
             scenario.rent
             + scenario.utilities
             + scenario.transportation
+            + scenario.mandatory_fees
             + scenario.other_expenses
     )
 
-    annual_expenses = monthly_expenses * 12
+    lease_expenses = monthly_expenses * scenario.lease_months
     monthly_surplus = scenario.monthly_income - monthly_expenses
-    annual_surplus = monthly_surplus * 12
+    lease_surplus = monthly_surplus * scenario.lease_months
 
     return DecisionResult(
         scenario_name=scenario.name,
         monthly_expenses=monthly_expenses,
-        annual_expenses=annual_expenses,
+        lease_expenses=lease_expenses,
         monthly_surplus=monthly_surplus,
-        annual_surplus=annual_surplus,
+        lease_surplus=lease_surplus,
     )
