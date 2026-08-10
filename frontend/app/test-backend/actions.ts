@@ -11,6 +11,8 @@ export async function testAnalyzeAction(prevState: any, formData: FormData) {
       utilities: Number(formData.get("utilities")),
       transportation: Number(formData.get("transportation")),
       other_expenses: Number(formData.get("other_expenses") || 0),
+      mandatory_fees: Number(formData.get("mandatory_fees") || 0),
+      lease_months: Number(formData.get("lease_months") || 12),
     };
 
     const result = await analyzeScenario(data);
@@ -29,6 +31,8 @@ export async function testCompareAction(prevState: any, formData: FormData) {
       utilities: Number(formData.get("a_utilities")),
       transportation: Number(formData.get("a_transportation")),
       other_expenses: Number(formData.get("a_other_expenses") || 0),
+      mandatory_fees: Number(formData.get("a_mandatory_fees") || 0),
+      lease_months: Number(formData.get("a_lease_months") || 12),
     };
 
     const scenarioB = {
@@ -38,6 +42,8 @@ export async function testCompareAction(prevState: any, formData: FormData) {
       utilities: Number(formData.get("b_utilities")),
       transportation: Number(formData.get("b_transportation")),
       other_expenses: Number(formData.get("b_other_expenses") || 0),
+      mandatory_fees: Number(formData.get("b_mandatory_fees") || 0),
+      lease_months: Number(formData.get("b_lease_months") || 12),
     };
 
     const result = await compareScenarios(scenarioA, scenarioB);

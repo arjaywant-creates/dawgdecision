@@ -66,6 +66,21 @@ export default function TestBackendPage() {
                         <Label>Transportation ($)</Label>
                         <Input id="transportation" placeholder="100" />
                       </TextField>
+
+                      <TextField className="w-full" name="mandatory_fees" type="number" defaultValue="50">
+                        <Label>Mandatory Fees ($)</Label>
+                        <Input id="mandatory_fees" placeholder="50" />
+                      </TextField>
+
+                      <TextField className="w-full" name="other_expenses" type="number" defaultValue="0">
+                        <Label>Other Expenses ($)</Label>
+                        <Input id="other_expenses" placeholder="0" />
+                      </TextField>
+
+                      <TextField className="w-full" name="lease_months" type="number" defaultValue="12" isRequired>
+                        <Label>Lease Months</Label>
+                        <Input id="lease_months" placeholder="12" />
+                      </TextField>
                     </div>
 
                     <Button type="submit" isPending={isAnalyzePending} className="w-full font-medium" size="lg">
@@ -139,6 +154,21 @@ export default function TestBackendPage() {
                           <Label>Transportation ($)</Label>
                           <Input placeholder="100" />
                         </TextField>
+
+                        <TextField className="w-full" name="a_mandatory_fees" type="number" defaultValue="50">
+                          <Label>Mandatory Fees ($)</Label>
+                          <Input placeholder="50" />
+                        </TextField>
+
+                        <TextField className="w-full" name="a_other_expenses" type="number" defaultValue="0">
+                          <Label>Other Expenses ($)</Label>
+                          <Input placeholder="0" />
+                        </TextField>
+
+                        <TextField className="w-full" name="a_lease_months" type="number" defaultValue="12" isRequired>
+                          <Label>Lease Months</Label>
+                          <Input placeholder="12" />
+                        </TextField>
                       </div>
 
                       {/* Scenario B */}
@@ -168,6 +198,21 @@ export default function TestBackendPage() {
                         <TextField className="w-full" name="b_transportation" type="number" defaultValue="80" isRequired>
                           <Label>Transportation ($)</Label>
                           <Input placeholder="80" />
+                        </TextField>
+
+                        <TextField className="w-full" name="b_mandatory_fees" type="number" defaultValue="40">
+                          <Label>Mandatory Fees ($)</Label>
+                          <Input placeholder="40" />
+                        </TextField>
+
+                        <TextField className="w-full" name="b_other_expenses" type="number" defaultValue="0">
+                          <Label>Other Expenses ($)</Label>
+                          <Input placeholder="0" />
+                        </TextField>
+
+                        <TextField className="w-full" name="b_lease_months" type="number" defaultValue="12" isRequired>
+                          <Label>Lease Months</Label>
+                          <Input placeholder="12" />
                         </TextField>
                       </div>
                     </div>
