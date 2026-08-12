@@ -1,15 +1,32 @@
-import { siteConfig } from "@/config/site";
-import { title, subtitle } from "@/components/primitives";
+import StatCard from "@/components/StatCard";
 
 export default function Home() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
-        <span className={title()}>Welcome to DawgDecision</span>
-        <div className={subtitle({ class: "mt-4" })}>
-          This is a subtitle.
-        </div>
+    <div>
+      <h1 className="mb-2 text-4xl font-bold">
+        Dashboard
+      </h1>
+
+      <p className="mb-8 text-gray-500">
+        Welcome to DawgDecision.
+      </p>
+
+      <div className="grid gap-6 md:grid-cols-3">
+        <StatCard
+          title="Financial Plans"
+          value="0"
+        />
+
+        <StatCard
+          title="Comparisons"
+          value="0"
+        />
+
+        <StatCard
+          title="Goals"
+          value="0"
+        />
       </div>
-    </section>
+    </div>
   );
 }

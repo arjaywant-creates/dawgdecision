@@ -4,13 +4,10 @@ export const siteConfig = {
   name: "DawgDecision",
   description: "Helping UGA students make smarter financial decisions through scenario planning.",
   navItems: [
-    {
-      label: "Home",
-      href: "/",
-    },
+
     {
       label: "Dashboard",
-      href: "/dashboard",
+      href: "/",
     },
     {
       label: "Compare",
@@ -28,7 +25,7 @@ export const siteConfig = {
   navMenuItems: [
     {
       label: "Dashboard",
-      href: "/dashboard",
+      href: "/",
     },
     {
       label: "Compare",
