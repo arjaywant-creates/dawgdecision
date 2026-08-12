@@ -4,31 +4,11 @@
 
 const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
 
-export interface Scenario {
-  name: string;
-  monthly_income: number;
-  rent: number;
-  utilities: number;
-  transportation: number;
-  mandatory_fees?: number;
-  other_expenses?: number;
-  lease_months?: number;
-}
-
-export interface DecisionResult {
-  scenario_name: string;
-  monthly_expenses: number;
-  lease_expenses: number;
-  monthly_surplus: number;
-  lease_surplus: number;
-}
-
-export interface ComparisonResult {
-  first_result: DecisionResult;
-  second_result: DecisionResult;
-  lower_monthly_cost_scenario: string;
-  monthly_difference: number;
-}
+import {
+  Scenario,
+  DecisionResult,
+  ComparisonResult,
+} from "@/types/comparison";
 
 /**
  * Call the Python backend to analyze a single scenario

@@ -6,13 +6,13 @@ import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
 
 import {
-  HousingScenario,
+  Scenario,
   ComparisonResult,
 } from "@/types/comparison";
 
-import { compareScenarios } from "@/lib/decision-engine";
+import { compareScenariosAction } from "./actions";
 
-const initialScenario: HousingScenario = {
+const initialScenario: Scenario = {
   name: "",
   monthly_income: 0,
   rent: 0,
@@ -25,12 +25,12 @@ const initialScenario: HousingScenario = {
 
 export default function ComparePage() {
   const [scenarioA, setScenarioA] =
-    useState<HousingScenario>({
+    useState<Scenario>({
       ...initialScenario,
     });
 
   const [scenarioB, setScenarioB] =
-    useState<HousingScenario>({
+    useState<Scenario>({
       ...initialScenario,
     });
 
@@ -44,7 +44,7 @@ export default function ComparePage() {
     useState<string | null>(null);
 
   const updateScenarioA = (
-    field: keyof HousingScenario,
+    field: keyof Scenario,
     value: string | number
   ) => {
     setScenarioA((prev) => {
@@ -73,7 +73,7 @@ export default function ComparePage() {
   };
 
   const updateScenarioB = (
-    field: keyof HousingScenario,
+    field: keyof Scenario,
     value: string | number
   ) => {
     setScenarioB((prev) => {
@@ -102,7 +102,7 @@ export default function ComparePage() {
   };
 
   const validateScenario = (
-    scenario: HousingScenario,
+    scenario: Scenario,
     label: string
   ): string | null => {
     if (!scenario.name.trim()) {
@@ -156,38 +156,16 @@ export default function ComparePage() {
     try {
       setLoading(true);
 
-      const backendScenarioA = {
-        name: scenarioA.name,
-        monthly_income:
-          scenarioA.monthly_income,
-        rent: scenarioA.rent,
-        utilities: scenarioA.utilities,
-        transportation:
-          scenarioA.transportation,
-        other_expenses:
-          scenarioA.other_expenses +
-          scenarioA.mandatory_fees,
-      };
-
-      const backendScenarioB = {
-        name: scenarioB.name,
-        monthly_income:
-          scenarioB.monthly_income,
-        rent: scenarioB.rent,
-        utilities: scenarioB.utilities,
-        transportation:
-          scenarioB.transportation,
-        other_expenses:
-          scenarioB.other_expenses +
-          scenarioB.mandatory_fees,
-      };
-
-      const response = await compareScenarios(
-        backendScenarioA,
-        backendScenarioB
+      const response = await compareScenariosAction(
+        scenarioA,
+        scenarioB
       );
 
-      setResults(response as ComparisonResult);
+      if (response.success) {
+        setResults(response.data as ComparisonResult);
+      } else {
+        throw new Error(response.error);
+      }
     } catch (err) {
       setError(
         err instanceof Error

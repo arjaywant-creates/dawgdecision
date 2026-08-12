@@ -1,10 +1,10 @@
-import { HousingScenario } from "@/types/comparison";
+import { Scenario } from "@/types/comparison";
 
 interface Props {
   title: string;
-  data: HousingScenario;
+  data: Scenario;
   onChange: (
-    field: keyof HousingScenario,
+    field: keyof Scenario,
     value: string | number
   ) => void;
 }

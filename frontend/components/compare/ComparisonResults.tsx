@@ -35,8 +35,8 @@ export default function ComparisonResults({
 
         <ResultsRow
           label="Lease Cost"
-          firstValue={`$${results.first_result.annual_expenses.toLocaleString()}`}
-          secondValue={`$${results.second_result.annual_expenses.toLocaleString()}`}
+          firstValue={`$${results.first_result.lease_expenses.toLocaleString()}`}
+          secondValue={`$${results.second_result.lease_expenses.toLocaleString()}`}
         />
 
         <ResultsRow
@@ -47,8 +47,8 @@ export default function ComparisonResults({
 
         <ResultsRow
           label="Lease Surplus"
-          firstValue={`$${results.first_result.annual_surplus.toLocaleString()}`}
-          secondValue={`$${results.second_result.annual_surplus.toLocaleString()}`}
+          firstValue={`$${results.first_result.lease_surplus.toLocaleString()}`}
+          secondValue={`$${results.second_result.lease_surplus.toLocaleString()}`}
         />
       </div>
 
@@ -62,7 +62,7 @@ export default function ComparisonResults({
             <strong>
               Lower-Cost Option:
             </strong>{" "}
-            {results.cheaper_scenario}
+            {results.lower_monthly_cost_scenario}
           </p>
 
           <p>
@@ -71,14 +71,6 @@ export default function ComparisonResults({
             </strong>{" "}
             $
             {results.monthly_difference.toLocaleString()}
-          </p>
-
-          <p>
-            <strong>
-              Lease-Period Difference:
-            </strong>{" "}
-            $
-            {results.annual_difference.toLocaleString()}
           </p>
         </div>
 
@@ -90,13 +82,10 @@ export default function ComparisonResults({
           </p>
 
           <p className="mt-2">
-            {results.cheaper_scenario} costs
+            {results.lower_monthly_cost_scenario} costs
             $
             {results.monthly_difference.toLocaleString()}
-            {" "}less per month and
-            $
-            {results.annual_difference.toLocaleString()}
-            {" "}less over the lease period.
+            {" "}less per month.
           </p>
 
           <p className="mt-2 text-sm text-gray-600">
