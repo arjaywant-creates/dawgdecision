@@ -1,30 +1,40 @@
-export interface Scenario {
-  name: string;
-  monthly_income: number;
-  rent: number;
-  utilities: number;
-  transportation: number;
-  mandatory_fees: number;
-  other_expenses: number;
-  lease_months: number;
-}
+import { z } from 'zod';
 
-export interface ComparisonRequest {
-  scenario_a: Scenario;
-  scenario_b: Scenario;
-}
+export const ScenarioSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  monthly_income: z.number().min(0, "Cannot be negative"),
+  rent: z.number().min(0, "Cannot be negative"),
+  utilities: z.number().min(0, "Cannot be negative"),
+  transportation: z.number().min(0, "Cannot be negative"),
+  mandatory_fees: z.number().min(0, "Cannot be negative"),
+  other_expenses: z.number().min(0, "Cannot be negative"),
+  lease_months: z.number().int().positive("Must be greater than 0"),
+});
 
-export interface DecisionResult {
-  scenario_name: string;
-  monthly_expenses: number;
-  lease_expenses: number;
-  monthly_surplus: number;
-  lease_surplus: number;
-}
+export type Scenario = z.infer<typeof ScenarioSchema>;
 
-export interface ComparisonResult {
-  first_result: DecisionResult;
-  second_result: DecisionResult;
-  lower_monthly_cost_scenario: string;
-  monthly_difference: number;
-}
+export const CompareRequestSchema = z.object({
+  scenario_a: ScenarioSchema,
+  scenario_b: ScenarioSchema,
+});
+
+export type CompareRequest = z.infer<typeof CompareRequestSchema>;
+
+export const DecisionResultSchema = z.object({
+  scenario_name: z.string(),
+  monthly_expenses: z.number(),
+  lease_expenses: z.number(),
+  monthly_surplus: z.number(),
+  lease_surplus: z.number(),
+});
+
+export type DecisionResult = z.infer<typeof DecisionResultSchema>;
+
+export const ComparisonResultSchema = z.object({
+  first_result: DecisionResultSchema,
+  second_result: DecisionResultSchema,
+  lower_monthly_cost_scenario: z.string(),
+  monthly_difference: z.number(),
+});
+
+export type ComparisonResult = z.infer<typeof ComparisonResultSchema>;

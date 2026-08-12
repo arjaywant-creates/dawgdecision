@@ -11,6 +11,7 @@ This file provides instructions and context for AI coding agents working on the 
 - **UI Library:** HeroUI (Next.js UI Kit)
 - **Icons:** Lucide Icons (`lucide-react`)
 - **Language:** TypeScript
+- **Validation:** Zod
 - **Authentication:** BetterAuth
 - **Database:** PostgreSQL
 - **ORM:** Prisma
@@ -31,7 +32,7 @@ This file provides instructions and context for AI coding agents working on the 
 2. **Styling:** Use TailwindCSS utility classes for styling. Avoid writing custom CSS unless absolutely necessary.
 3. **UI Components:** Leverage HeroUI components whenever possible to maintain a consistent design language.
 4. **Icons:** Use `lucide-react` for all icons.
-5. **Type Safety:** Always use TypeScript. Define interfaces or types in the `types/` directory or alongside the component if they are highly specific to it.
+5. **Type Safety & Validation:** Always use TypeScript. Define Zod schemas in the `types/` directory and infer TypeScript types from them (`z.infer`). Use these Zod schemas for API request/response validation.
 6. **Aesthetics:** Ensure a premium, modern design with appropriate use of layout, colors, and micro-interactions.
 7. **Development & Running from Scratch:**
    - **Setup Environment**: Navigate to `frontend/`, and copy `.env.example` to `.env` (if not already done).

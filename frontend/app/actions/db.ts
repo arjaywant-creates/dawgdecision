@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { Scenario as APIScenario, DecisionResult, ComparisonResult } from "@/lib/decision-engine";
+import { Scenario as APIScenario, DecisionResult, ComparisonResult } from "@/types/comparison";
 
 export async function saveScenarioAction(scenario: APIScenario, result: DecisionResult, userId?: string, planId?: string) {
   try {

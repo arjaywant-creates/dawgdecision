@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { AlertCircle } from "lucide-react";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
@@ -223,14 +223,19 @@ export default function ComparePage() {
       <div className="mt-8 flex flex-col gap-4">
         <Button
           onPress={handleSubmit}
-          isLoading={loading}
-          color="primary"
+          isPending={loading}
+          variant="primary"
           size="lg"
           className="font-semibold w-fit"
         >
-          {loading
-            ? "Comparing..."
-            : "Compare Housing Options"}
+          {({ isPending }) => (
+            <>
+              {isPending && <Spinner color="current" size="sm" />}
+              {isPending
+                ? "Comparing..."
+                : "Compare Housing Options"}
+            </>
+          )}
         </Button>
 
         <ErrorDisplay />

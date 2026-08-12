@@ -42,6 +42,7 @@ The application's core calculations and recommendations do not depend on AI.
 ### Frontend
 - **React** — Builds the interactive user interface
 - **TypeScript** — Adds static typing to improve reliability and catch errors during development
+- **Zod** — Enforces runtime schema validation for API payloads and forms
 
 ### Backend
 - **FastAPI (Python)** — Provides REST APIs and connects the application to the decision engine
