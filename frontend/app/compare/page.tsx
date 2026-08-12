@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Alert } from "@heroui/react";
+import { Button } from "@heroui/react";
+import { AlertCircle } from "lucide-react";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
@@ -178,6 +179,16 @@ export default function ComparePage() {
     }
   };
 
+  const ErrorDisplay = () => {
+    if (!error) return null;
+    return (
+      <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-red-900 border border-red-200 shadow-sm">
+        <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
+        <p className="font-medium text-sm">{error}</p>
+      </div>
+    );
+  };
+
   return (
     <div className="mx-auto max-w-7xl p-6">
       <div className="mb-8">
@@ -191,13 +202,9 @@ export default function ComparePage() {
         </p>
       </div>
 
-      {error && (
-        <Alert
-          className="mb-6"
-          color="danger"
-          title={error}
-        />
-      )}
+      <div className="mb-6">
+        <ErrorDisplay />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ScenarioForm
@@ -213,18 +220,20 @@ export default function ComparePage() {
         />
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8 flex flex-col gap-4">
         <Button
           onPress={handleSubmit}
           isLoading={loading}
           color="primary"
           size="lg"
-          className="font-semibold"
+          className="font-semibold w-fit"
         >
           {loading
             ? "Comparing..."
             : "Compare Housing Options"}
         </Button>
+
+        <ErrorDisplay />
       </div>
 
       {results && (
