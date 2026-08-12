@@ -170,10 +170,8 @@ export default function ComparePage() {
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to compare scenarios."
-      );
+  "Unable to connect to the server. Please try again."
+);
     } finally {
       setLoading(false);
     }
@@ -237,8 +235,6 @@ export default function ComparePage() {
             </>
           )}
         </Button>
-
-        <ErrorDisplay />
       </div>
 
       {results && (

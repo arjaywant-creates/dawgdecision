@@ -9,17 +9,25 @@ interface Props {
 export default function ComparisonResults({
   results,
 }: Props) {
+  const isTie = results.monthly_difference === 0;
+
   return (
     <div className="mt-10 space-y-6">
       <h2 className="text-3xl font-bold">
         Comparison Results
       </h2>
 
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-content1">
         <div className="grid grid-cols-3 border-b border-default-200 bg-default-100 p-4 font-bold">
           <div>Metric</div>
-          <div className="text-center">{results.first_result.scenario_name}</div>
-          <div className="text-center">{results.second_result.scenario_name}</div>
+
+          <div className="text-center">
+            {results.first_result.scenario_name}
+          </div>
+
+          <div className="text-center">
+            {results.second_result.scenario_name}
+          </div>
         </div>
 
         <ResultsRow
@@ -47,47 +55,50 @@ export default function ComparisonResults({
         />
       </Card>
 
-      <Card className="p-6">
+      <Card className="p-6 bg-content1">
         <h3 className="mb-4 text-xl font-semibold">
           Financial Tradeoffs
         </h3>
 
         <div className="space-y-3">
-          <p>
-            <strong>
-              Lower-Cost Option:
-            </strong>{" "}
-            {results.lower_monthly_cost_scenario}
-          </p>
+          {isTie ? (
+            <p>
+              <strong>Monthly Cost:</strong> Equal
+            </p>
+          ) : (
+            <p>
+              <strong>Lower-Cost Option:</strong>{" "}
+              {results.lower_monthly_cost_scenario}
+            </p>
+          )}
 
           <p>
-            <strong>
-              Monthly Difference:
-            </strong>{" "}
-            $
-            {results.monthly_difference.toLocaleString()}
+            <strong>Monthly Difference:</strong>{" "}
+            ${results.monthly_difference.toLocaleString()}
           </p>
         </div>
 
-        <div className="mt-6 rounded-lg bg-gray-50 p-4">
-          <p>
-            <strong>
-              Financial Interpretation:
-            </strong>
+        <div className="mt-6 rounded-lg bg-default-100 p-4">
+          <p className="font-semibold">
+            Financial Interpretation
           </p>
 
-          <p className="mt-2">
-            {results.lower_monthly_cost_scenario} costs
-            $
-            {results.monthly_difference.toLocaleString()}
-            {" "}less per month.
-          </p>
+          {isTie ? (
+            <p className="mt-2">
+              Both options have the same monthly cost.
+            </p>
+          ) : (
+            <p className="mt-2">
+              {results.lower_monthly_cost_scenario} costs $
+              {results.monthly_difference.toLocaleString()} less
+              per month.
+            </p>
+          )}
 
-          <p className="mt-2 text-sm text-gray-600">
-            This information is intended to
-            present financial tradeoffs only
-            and should not be interpreted as
-            a recommendation.
+          <p className="mt-3 text-sm text-default-600">
+            This information is intended to present
+            financial tradeoffs only and should not be
+            interpreted as a recommendation.
           </p>
         </div>
       </Card>
