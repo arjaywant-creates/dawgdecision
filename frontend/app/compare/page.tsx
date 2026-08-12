@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button, Alert } from "@heroui/react";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
@@ -191,9 +192,11 @@ export default function ComparePage() {
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-red-500 p-4 text-red-600">
-          {error}
-        </div>
+        <Alert
+          className="mb-6"
+          color="danger"
+          title={error}
+        />
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -211,15 +214,17 @@ export default function ComparePage() {
       </div>
 
       <div className="mt-8">
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="rounded-lg bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+        <Button
+          onPress={handleSubmit}
+          isLoading={loading}
+          color="primary"
+          size="lg"
+          className="font-semibold"
         >
           {loading
             ? "Comparing..."
             : "Compare Housing Options"}
-        </button>
+        </Button>
       </div>
 
       {results && (

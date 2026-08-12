@@ -7,7 +7,7 @@ export default function Home() {
         Dashboard
       </h1>
 
-      <p className="mb-8 text-gray-500">
+      <p className="mb-8 text-default-500">
         Welcome to DawgDecision.
       </p>
 

@@ -1,3 +1,4 @@
+import { Card } from "@heroui/react";
 import { ComparisonResult } from "@/types/comparison";
 import ResultsRow from "./ResultsRow";
 
@@ -14,17 +15,11 @@ export default function ComparisonResults({
         Comparison Results
       </h2>
 
-      <div className="overflow-hidden rounded-lg border bg-white text-black">
-        <div className="grid grid-cols-3 border-b bg-gray-100 p-4 font-bold">
+      <Card className="overflow-hidden">
+        <div className="grid grid-cols-3 border-b border-default-200 bg-default-100 p-4 font-bold">
           <div>Metric</div>
-
-          <div className="text-center">
-            {results.first_result.scenario_name}
-          </div>
-
-          <div className="text-center">
-            {results.second_result.scenario_name}
-          </div>
+          <div className="text-center">{results.first_result.scenario_name}</div>
+          <div className="text-center">{results.second_result.scenario_name}</div>
         </div>
 
         <ResultsRow
@@ -50,9 +45,9 @@ export default function ComparisonResults({
           firstValue={`$${results.first_result.lease_surplus.toLocaleString()}`}
           secondValue={`$${results.second_result.lease_surplus.toLocaleString()}`}
         />
-      </div>
+      </Card>
 
-      <div className="rounded-lg border bg-white p-6 text-black">
+      <Card className="p-6">
         <h3 className="mb-4 text-xl font-semibold">
           Financial Tradeoffs
         </h3>
@@ -95,7 +90,7 @@ export default function ComparisonResults({
             a recommendation.
           </p>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

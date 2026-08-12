@@ -1,4 +1,5 @@
 import { Scenario } from "@/types/comparison";
+import { Card, Input, Label, TextField } from "@heroui/react";
 
 interface Props {
   title: string;
@@ -19,25 +20,18 @@ function NumericField({
   onChange: (value: number) => void;
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="font-medium">
-        {label}
-      </span>
-
-      <input
-        type="number"
-        min="0"
-        value={value === 0 ? "" : value}
-        onChange={(e) =>
-          onChange(
-            e.target.value === ""
-              ? 0
-              : Number(e.target.value)
-          )
-        }
-        className="rounded-md border p-2 text-black"
-      />
-    </label>
+    <TextField
+      className="w-full"
+      type="number"
+      value={value === 0 ? "" : value.toString()}
+      onChange={(val: any) => {
+        const strVal = typeof val === "string" ? val : val?.target?.value || "";
+        onChange(strVal === "" ? 0 : Number(strVal));
+      }}
+    >
+      <Label>{label}</Label>
+      <Input min="0" />
+    </TextField>
   );
 }
 
@@ -47,27 +41,24 @@ export default function ScenarioForm({
   onChange,
 }: Props) {
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm text-black">
+    <Card className="p-6">
       <h2 className="mb-6 text-2xl font-bold">
         {title}
       </h2>
 
       <div className="grid gap-4">
-        <label className="flex flex-col gap-1">
-          <span className="font-medium">
-            Scenario Name
-          </span>
-
-          <input
-            type="text"
-            value={data.name}
-            placeholder="Apartment A"
-            onChange={(e) =>
-              onChange("name", e.target.value)
-            }
-            className="rounded-md border p-2 text-black"
-          />
-        </label>
+        <TextField
+          className="w-full"
+          type="text"
+          value={data.name}
+          onChange={(val: any) => {
+            const strVal = typeof val === "string" ? val : val?.target?.value || "";
+            onChange("name", strVal);
+          }}
+        >
+          <Label>Scenario Name</Label>
+          <Input placeholder="Apartment A" />
+        </TextField>
 
         <NumericField
           label="Monthly Income"
@@ -117,25 +108,19 @@ export default function ScenarioForm({
           }
         />
 
-        <label className="flex flex-col gap-1">
-          <span className="font-medium">
-            Lease Duration (Months)
-          </span>
-
-          <input
-            type="number"
-            min="1"
-            value={data.lease_months}
-            onChange={(e) =>
-              onChange(
-                "lease_months",
-                Number(e.target.value)
-              )
-            }
-            className="rounded-md border p-2 text-black"
-          />
-        </label>
+        <TextField
+          className="w-full"
+          type="number"
+          value={data.lease_months === 0 ? "" : data.lease_months.toString()}
+          onChange={(val: any) => {
+            const strVal = typeof val === "string" ? val : val?.target?.value || "";
+            onChange("lease_months", strVal === "" ? 0 : Number(strVal));
+          }}
+        >
+          <Label>Lease Duration (Months)</Label>
+          <Input min="1" />
+        </TextField>
       </div>
-    </div>
+    </Card>
   );
 }
