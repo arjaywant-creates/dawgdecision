@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: ./frontend/package-lock.json
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run backend tests
+      working-directory: ./backend
+      run: |
+        python -m pytest tests/ -v
+
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    - name: Run frontend tests (with running backend)
+      run: |
+        # Start the backend server in the background
+        cd backend
+        python -m uvicorn main:app --port 8000 &
+        BACKEND_PID=$!
+        
+        # Wait for the backend to be ready
+        echo "Waiting for backend to start..."
+        timeout 10 bash -c 'until curl -s http://127.0.0.1:8000/ > /dev/null; do sleep 0.5; done'
+        
+        # Run the frontend tests
+        cd ../frontend
+        npm test
+        
+        # Kill the backend server
+        kill $BACKEND_PID

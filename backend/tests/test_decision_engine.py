@@ -1,6 +1,6 @@
-from backend.app.decision_engine.models import Scenario
-from backend.app.decision_engine.calculations import analyze_scenario
-from backend.app.decision_engine.comparison import compare_scenarios
+from app.decision_engine.models import Scenario
+from app.decision_engine.calculations import analyze_scenario
+from app.decision_engine.comparison import compare_scenarios
 
 
 def test_analyze_scenario():
