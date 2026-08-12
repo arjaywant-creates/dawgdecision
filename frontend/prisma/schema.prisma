@@ -22,6 +22,9 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  scenarios     Scenario[]
+  comparisons   Comparison[]
+  plans         Plan[]
 
   @@unique([email])
   @@map("user")
@@ -73,4 +76,77 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Plan {
+  id          String     @id @default(uuid())
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String
+  description String?
+  
+  scenarios   Scenario[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId])
+  @@map("plan")
+}
+
+model Scenario {
+  id              String   @id @default(uuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name            String
+  monthlyIncome   Float
+  rent            Float
+  utilities       Float
+  transportation  Float
+  mandatoryFees   Float    @default(0)
+  otherExpenses   Float    @default(0)
+  leaseMonths     Int      @default(12)
+  
+  monthlyExpenses Float?
+  leaseExpenses   Float?
+  monthlySurplus  Float?
+  leaseSurplus    Float?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  planId          String?
+  plan            Plan?    @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  comparisonsAsFirst  Comparison[] @relation("FirstScenario")
+  comparisonsAsSecond Comparison[] @relation("SecondScenario")
+
+  @@index([userId])
+  @@index([planId])
+  @@map("scenario")
+}
+
+model Comparison {
+  id                          String    @id @default(uuid())
+  userId                      String?
+  user                        User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  firstScenarioId             String
+  firstScenario               Scenario  @relation("FirstScenario", fields: [firstScenarioId], references: [id], onDelete: Cascade)
+  
+  secondScenarioId            String
+  secondScenario              Scenario  @relation("SecondScenario", fields: [secondScenarioId], references: [id], onDelete: Cascade)
+
+  lowerMonthlyCostScenario    String?
+  monthlyDifference           Float?
+
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([firstScenarioId])
+  @@index([secondScenarioId])
+  @@map("comparison")
 }

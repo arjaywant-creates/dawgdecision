@@ -10,16 +10,16 @@ export default function ResultsRow({
   secondValue,
 }: ResultsRowProps) {
   return (
-    <div className="grid grid-cols-3 items-center border-b border-gray-200 px-4 py-3">
+    <div className="grid grid-cols-3 items-center border-b border-default-200 px-4 py-3">
       <div className="font-medium text-black">
         {label}
       </div>
 
-      <div className="text-center text-black">
+      <div className="text-center">
         {firstValue}
       </div>
 
-      <div className="text-center text-black">
+      <div className="text-center">
         {secondValue}
       </div>
     </div>

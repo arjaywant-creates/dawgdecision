@@ -1,3 +1,4 @@
+import { Card } from "@heroui/react";
 import { ComparisonResult } from "@/types/comparison";
 import ResultsRow from "./ResultsRow";
 
@@ -14,17 +15,11 @@ export default function ComparisonResults({
         Comparison Results
       </h2>
 
-      <div className="overflow-hidden rounded-lg border bg-white text-black">
-        <div className="grid grid-cols-3 border-b bg-gray-100 p-4 font-bold">
+      <Card className="overflow-hidden">
+        <div className="grid grid-cols-3 border-b border-default-200 bg-default-100 p-4 font-bold">
           <div>Metric</div>
-
-          <div className="text-center">
-            {results.first_result.scenario_name}
-          </div>
-
-          <div className="text-center">
-            {results.second_result.scenario_name}
-          </div>
+          <div className="text-center">{results.first_result.scenario_name}</div>
+          <div className="text-center">{results.second_result.scenario_name}</div>
         </div>
 
         <ResultsRow
@@ -35,8 +30,8 @@ export default function ComparisonResults({
 
         <ResultsRow
           label="Lease Cost"
-          firstValue={`$${results.first_result.annual_expenses.toLocaleString()}`}
-          secondValue={`$${results.second_result.annual_expenses.toLocaleString()}`}
+          firstValue={`$${results.first_result.lease_expenses.toLocaleString()}`}
+          secondValue={`$${results.second_result.lease_expenses.toLocaleString()}`}
         />
 
         <ResultsRow
@@ -47,12 +42,12 @@ export default function ComparisonResults({
 
         <ResultsRow
           label="Lease Surplus"
-          firstValue={`$${results.first_result.annual_surplus.toLocaleString()}`}
-          secondValue={`$${results.second_result.annual_surplus.toLocaleString()}`}
+          firstValue={`$${results.first_result.lease_surplus.toLocaleString()}`}
+          secondValue={`$${results.second_result.lease_surplus.toLocaleString()}`}
         />
-      </div>
+      </Card>
 
-      <div className="rounded-lg border bg-white p-6 text-black">
+      <Card className="p-6">
         <h3 className="mb-4 text-xl font-semibold">
           Financial Tradeoffs
         </h3>
@@ -62,7 +57,7 @@ export default function ComparisonResults({
             <strong>
               Lower-Cost Option:
             </strong>{" "}
-            {results.cheaper_scenario}
+            {results.lower_monthly_cost_scenario}
           </p>
 
           <p>
@@ -71,14 +66,6 @@ export default function ComparisonResults({
             </strong>{" "}
             $
             {results.monthly_difference.toLocaleString()}
-          </p>
-
-          <p>
-            <strong>
-              Lease-Period Difference:
-            </strong>{" "}
-            $
-            {results.annual_difference.toLocaleString()}
           </p>
         </div>
 
@@ -90,13 +77,10 @@ export default function ComparisonResults({
           </p>
 
           <p className="mt-2">
-            {results.cheaper_scenario} costs
+            {results.lower_monthly_cost_scenario} costs
             $
             {results.monthly_difference.toLocaleString()}
-            {" "}less per month and
-            $
-            {results.annual_difference.toLocaleString()}
-            {" "}less over the lease period.
+            {" "}less per month.
           </p>
 
           <p className="mt-2 text-sm text-gray-600">
@@ -106,7 +90,7 @@ export default function ComparisonResults({
             a recommendation.
           </p>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

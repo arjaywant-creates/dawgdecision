@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@heroui/react";
+import { AlertCircle } from "lucide-react";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
 
 import {
-  HousingScenario,
+  Scenario,
   ComparisonResult,
 } from "@/types/comparison";
 
-import { compareScenarios } from "@/lib/decision-engine";
+import { compareScenariosAction } from "./actions";
 
-const initialScenario: HousingScenario = {
+const initialScenario: Scenario = {
   name: "",
   monthly_income: 0,
   rent: 0,
@@ -25,12 +27,12 @@ const initialScenario: HousingScenario = {
 
 export default function ComparePage() {
   const [scenarioA, setScenarioA] =
-    useState<HousingScenario>({
+    useState<Scenario>({
       ...initialScenario,
     });
 
   const [scenarioB, setScenarioB] =
-    useState<HousingScenario>({
+    useState<Scenario>({
       ...initialScenario,
     });
 
@@ -44,7 +46,7 @@ export default function ComparePage() {
     useState<string | null>(null);
 
   const updateScenarioA = (
-    field: keyof HousingScenario,
+    field: keyof Scenario,
     value: string | number
   ) => {
     setScenarioA((prev) => {
@@ -73,7 +75,7 @@ export default function ComparePage() {
   };
 
   const updateScenarioB = (
-    field: keyof HousingScenario,
+    field: keyof Scenario,
     value: string | number
   ) => {
     setScenarioB((prev) => {
@@ -102,7 +104,7 @@ export default function ComparePage() {
   };
 
   const validateScenario = (
-    scenario: HousingScenario,
+    scenario: Scenario,
     label: string
   ): string | null => {
     if (!scenario.name.trim()) {
@@ -156,38 +158,16 @@ export default function ComparePage() {
     try {
       setLoading(true);
 
-      const backendScenarioA = {
-        name: scenarioA.name,
-        monthly_income:
-          scenarioA.monthly_income,
-        rent: scenarioA.rent,
-        utilities: scenarioA.utilities,
-        transportation:
-          scenarioA.transportation,
-        other_expenses:
-          scenarioA.other_expenses +
-          scenarioA.mandatory_fees,
-      };
-
-      const backendScenarioB = {
-        name: scenarioB.name,
-        monthly_income:
-          scenarioB.monthly_income,
-        rent: scenarioB.rent,
-        utilities: scenarioB.utilities,
-        transportation:
-          scenarioB.transportation,
-        other_expenses:
-          scenarioB.other_expenses +
-          scenarioB.mandatory_fees,
-      };
-
-      const response = await compareScenarios(
-        backendScenarioA,
-        backendScenarioB
+      const response = await compareScenariosAction(
+        scenarioA,
+        scenarioB
       );
 
-      setResults(response as ComparisonResult);
+      if (response.success) {
+        setResults(response.data as ComparisonResult);
+      } else {
+        throw new Error(response.error);
+      }
     } catch (err) {
       setError(
         err instanceof Error
@@ -197,6 +177,16 @@ export default function ComparePage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const ErrorDisplay = () => {
+    if (!error) return null;
+    return (
+      <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-red-900 border border-red-200 shadow-sm">
+        <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
+        <p className="font-medium text-sm">{error}</p>
+      </div>
+    );
   };
 
   return (
@@ -212,11 +202,9 @@ export default function ComparePage() {
         </p>
       </div>
 
-      {error && (
-        <div className="mb-6 rounded-lg border border-red-500 p-4 text-red-600">
-          {error}
-        </div>
-      )}
+      <div className="mb-6">
+        <ErrorDisplay />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ScenarioForm
@@ -232,16 +220,20 @@ export default function ComparePage() {
         />
       </div>
 
-      <div className="mt-8">
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="rounded-lg bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50"
+      <div className="mt-8 flex flex-col gap-4">
+        <Button
+          onPress={handleSubmit}
+          isLoading={loading}
+          color="primary"
+          size="lg"
+          className="font-semibold w-fit"
         >
           {loading
             ? "Comparing..."
             : "Compare Housing Options"}
-        </button>
+        </Button>
+
+        <ErrorDisplay />
       </div>
 
       {results && (
