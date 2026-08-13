@@ -7,6 +7,7 @@ This is a temporary README file. Subject to change.
 - Next.js
 - TailwindCSS
 - HeroUI (Next.js UI Kit)
+- Zustand (Global State Management)
 - Lucide Icons
 - BetterAuth (Authentication)
 - Prisma (ORM)
@@ -18,6 +19,7 @@ This is a temporary README file. Subject to change.
 - `components/` - contains reusable React components
 - `config/` - contains configuration files like siteConfig
 - `lib/` - contains utility functions and libraries (including auth.ts for BetterAuth)
+- `lib/store/` - contains Zustand stores for global state management
 - `prisma/` - contains Prisma schema and migrations (for database)
 - `public/` - contains static assets like images and fonts
 - `styles/` - contains global styles and TailwindCSS configuration
@@ -45,6 +47,11 @@ All new pages should be added as `page.tsx` files inside directories within the 
 Reusable components should be placed in the `components/` directory.
 - Example: A custom navigation bar should go in `components/Navbar.tsx`.
 - Highly specific, non-reusable components can be co-located with their respective pages, but placing them in `components/` is generally preferred to keep `app/` clean.
+
+## State Management
+We use **Zustand** for global state management.
+- Stores are located in `lib/store/`.
+- **Persistence:** We use Zustand's `persist` middleware with `sessionStorage` for data that needs to survive page refreshes (like form drafts) but should automatically clear when the user closes their browser tab. If data needs to persist forever, use `localStorage` instead.
 
 # Development Examples
 

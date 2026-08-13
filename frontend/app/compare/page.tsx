@@ -1,20 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Spinner } from "@heroui/react";
-import { AlertCircle } from "lucide-react";
+import { Button, Spinner, Form, Alert, CloseButton } from "@heroui/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calculator, Eraser } from "lucide-react";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
 
 import {
-  Scenario,
+  CompareRequest,
+  CompareRequestSchema,
   ComparisonResult,
 } from "@/types/comparison";
 
 import { compareScenariosAction } from "./actions";
+import { useCompareStore } from "@/lib/store/useCompareStore";
 
-const initialScenario: Scenario = {
+const initialScenario = {
   name: "",
   monthly_income: 0,
   rent: 0,
@@ -26,173 +30,45 @@ const initialScenario: Scenario = {
 };
 
 export default function ComparePage() {
-  const [scenarioA, setScenarioA] =
-  useState<Scenario>(() => {
-    if (typeof window === "undefined") {
-      return { ...initialScenario };
-    }
+  const [results, setResults] = useState<ComparisonResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const setFormData = useCompareStore((state) => state.setFormData);
 
-    const saved =
-      localStorage.getItem("scenarioA");
-
-    return saved
-      ? JSON.parse(saved)
-      : { ...initialScenario };
+  const { control, handleSubmit, watch, reset } = useForm<CompareRequest>({
+    resolver: zodResolver(CompareRequestSchema) as any,
+    defaultValues: {
+      scenario_a: { ...initialScenario },
+      scenario_b: { ...initialScenario },
+    },
   });
 
-const [scenarioB, setScenarioB] =
-  useState<Scenario>(() => {
-    if (typeof window === "undefined") {
-      return { ...initialScenario };
-    }
-
-    const saved =
-      localStorage.getItem("scenarioB");
-
-    return saved
-      ? JSON.parse(saved)
-      : { ...initialScenario };
-  });
-
-  const [results, setResults] =
-    useState<ComparisonResult | null>(null);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
+  // Load saved data from Zustand
   useEffect(() => {
-  localStorage.setItem(
-    "scenarioA",
-    JSON.stringify(scenarioA)
-  );
-}, [scenarioA]);
+    const state = useCompareStore.getState();
+    if (state.formData) {
+      reset(state.formData);
+    }
+  }, [reset]);
 
-useEffect(() => {
-  localStorage.setItem(
-    "scenarioB",
-    JSON.stringify(scenarioB)
-  );
-}, [scenarioB]);
-
-  const updateScenarioA = (
-    field: keyof Scenario,
-    value: string | number
-  ) => {
-    setScenarioA((prev) => {
-      const next = { ...prev };
-
-      if (field === "name") {
-        next.name = String(value);
-      } else if (field === "monthly_income") {
-        next.monthly_income = Number(value);
-      } else if (field === "rent") {
-        next.rent = Number(value);
-      } else if (field === "utilities") {
-        next.utilities = Number(value);
-      } else if (field === "transportation") {
-        next.transportation = Number(value);
-      } else if (field === "mandatory_fees") {
-        next.mandatory_fees = Number(value);
-      } else if (field === "other_expenses") {
-        next.other_expenses = Number(value);
-      } else if (field === "lease_months") {
-        next.lease_months = Number(value);
-      }
-
-      return next;
+  // Save changes to Zustand on form change
+  useEffect(() => {
+    const subscription = watch((value) => {
+      setFormData(value as CompareRequest);
     });
-  };
+    return () => subscription.unsubscribe();
+  }, [watch, setFormData]);
 
-  const updateScenarioB = (
-    field: keyof Scenario,
-    value: string | number
-  ) => {
-    setScenarioB((prev) => {
-      const next = { ...prev };
-
-      if (field === "name") {
-        next.name = String(value);
-      } else if (field === "monthly_income") {
-        next.monthly_income = Number(value);
-      } else if (field === "rent") {
-        next.rent = Number(value);
-      } else if (field === "utilities") {
-        next.utilities = Number(value);
-      } else if (field === "transportation") {
-        next.transportation = Number(value);
-      } else if (field === "mandatory_fees") {
-        next.mandatory_fees = Number(value);
-      } else if (field === "other_expenses") {
-        next.other_expenses = Number(value);
-      } else if (field === "lease_months") {
-        next.lease_months = Number(value);
-      }
-
-      return next;
-    });
-  };
-
-  const validateScenario = (
-    scenario: Scenario,
-    label: string
-  ): string | null => {
-    if (!scenario.name.trim()) {
-      return `${label} requires a scenario name.`;
-    }
-
-    if (scenario.lease_months <= 0) {
-      return `${label} lease duration must be greater than 0.`;
-    }
-
-    const values = [
-      scenario.monthly_income,
-      scenario.rent,
-      scenario.utilities,
-      scenario.transportation,
-      scenario.mandatory_fees,
-      scenario.other_expenses,
-    ];
-
-    if (values.some((value) => value < 0)) {
-      return `${label} contains invalid values.`;
-    }
-
-    return null;
-  };
-
-  const handleSubmit = async () => {
-    setError(null);
+  const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
+    setServerError(null);
     setResults(null);
-
-    const errorA = validateScenario(
-      scenarioA,
-      "Scenario A"
-    );
-
-    if (errorA) {
-      setError(errorA);
-      return;
-    }
-
-    const errorB = validateScenario(
-      scenarioB,
-      "Scenario B"
-    );
-
-    if (errorB) {
-      setError(errorB);
-      return;
-    }
-
+    
     try {
       setLoading(true);
 
       const response = await compareScenariosAction(
-        scenarioA,
-        scenarioB
+        data.scenario_a,
+        data.scenario_b
       );
 
       if (response.success) {
@@ -200,24 +76,30 @@ useEffect(() => {
       } else {
         throw new Error(response.error);
       }
-    } catch {
-      setError(
-  "Unable to connect to the server. Please try again."
-);
+    } catch (error: any) {
+      if (error?.message?.includes("fetch failed")) {
+        setServerError("Unable to connect to the server. Please try again.");
+      } else {
+        setServerError(
+          error?.message || "Unable to connect to the server. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const ErrorDisplay = () => {
-    if (!error) return null;
-    return (
-      <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-red-900 border border-red-200 shadow-sm">
-        <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
-        <p className="font-medium text-sm">{error}</p>
-      </div>
-    );
+  const handleClear = () => {
+    const emptyForm = {
+      scenario_a: { ...initialScenario },
+      scenario_b: { ...initialScenario },
+    };
+    reset(emptyForm);
+    setFormData(emptyForm);
+    setResults(null);
+    setServerError(null);
   };
+
 
   return (
     <div className="mx-auto max-w-7xl p-6">
@@ -233,41 +115,64 @@ useEffect(() => {
       </div>
 
       <div className="mb-6">
-        <ErrorDisplay />
+        {serverError && (
+          <Alert status="danger">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>{serverError}</Alert.Title>
+            </Alert.Content>
+            <CloseButton onPress={() => setServerError(null)} />
+          </Alert>
+        )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ScenarioForm
-          title="Scenario A"
-          data={scenarioA}
-          onChange={updateScenarioA}
-        />
+      <Form onSubmit={handleSubmit(onSubmit)} className="w-full flex flex-col">
+        <div className="grid gap-6 lg:grid-cols-2 w-full">
+          <ScenarioForm
+            title="Scenario A"
+            prefix="scenario_a"
+            control={control}
+          />
 
-        <ScenarioForm
-          title="Scenario B"
-          data={scenarioB}
-          onChange={updateScenarioB}
-        />
-      </div>
+          <ScenarioForm
+            title="Scenario B"
+            prefix="scenario_b"
+            control={control}
+          />
+        </div>
 
-      <div className="mt-8 flex flex-col gap-4">
-        <Button
-          onPress={handleSubmit}
-          isPending={loading}
-          variant="primary"
-          size="lg"
-          className="font-semibold w-fit"
-        >
-          {({ isPending }) => (
-            <>
-              {isPending && <Spinner color="current" size="sm" />}
-              {isPending
-                ? "Comparing..."
-                : "Compare Housing Options"}
-            </>
-          )}
-        </Button>
-      </div>
+        <div className="mt-8 flex gap-4">
+          <Button
+            type="submit"
+            isPending={loading}
+            variant="primary"
+            size="lg"
+            className="font-semibold w-fit"
+          >
+            {({ isPending }) => (
+              <>
+                {isPending ? (
+                  <Spinner color="current" size="sm" />
+                ) : (
+                  <Calculator className="w-5 h-5" />
+                )}
+                {isPending ? "Comparing..." : "Compare Housing Options"}
+              </>
+            )}
+          </Button>
+
+          <Button
+            type="button"
+            onPress={handleClear}
+            variant="secondary"
+            size="lg"
+            className="font-semibold w-fit"
+          >
+            <Eraser className="w-5 h-5" />
+            Clear All
+          </Button>
+        </div>
+      </Form>
 
       {results && (
         <ComparisonResults

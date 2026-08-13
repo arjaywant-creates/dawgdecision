@@ -2,13 +2,13 @@ import { z } from 'zod';
 
 export const ScenarioSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  monthly_income: z.number().min(0, "Cannot be negative"),
-  rent: z.number().min(0, "Cannot be negative"),
-  utilities: z.number().min(0, "Cannot be negative"),
-  transportation: z.number().min(0, "Cannot be negative"),
-  mandatory_fees: z.number().min(0, "Cannot be negative"),
-  other_expenses: z.number().min(0, "Cannot be negative"),
-  lease_months: z.number().int().positive("Must be greater than 0"),
+  monthly_income: z.coerce.number().min(0, "Cannot be negative"),
+  rent: z.coerce.number().min(0, "Cannot be negative"),
+  utilities: z.coerce.number().min(0, "Cannot be negative"),
+  transportation: z.coerce.number().min(0, "Cannot be negative"),
+  mandatory_fees: z.coerce.number().min(0, "Cannot be negative"),
+  other_expenses: z.coerce.number().min(0, "Cannot be negative"),
+  lease_months: z.coerce.number().int().positive("Lease must be at least 1 month"),
 });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;

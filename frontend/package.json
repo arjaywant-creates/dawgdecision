@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@heroui/react": "3.2.2",
 		"@heroui/styles": "3.2.2",
+		"@hookform/resolvers": "^5.7.1",
 		"@prisma/adapter-pg": "^7.9.1",
 		"@prisma/client": "^7.9.1",
 		"better-auth": "^1.6.26",
@@ -25,7 +26,9 @@
 		"pg": "^8.22.0",
 		"react": "19.2.6",
 		"react-dom": "19.2.6",
-		"zod": "^4.4.3"
+		"react-hook-form": "^7.85.0",
+		"zod": "^4.4.3",
+		"zustand": "^5.0.15"
 	},
 	"devDependencies": {
 		"@eslint/compat": "1.2.8",

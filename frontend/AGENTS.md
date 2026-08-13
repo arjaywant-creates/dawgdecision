@@ -11,6 +11,7 @@ This file provides instructions and context for AI coding agents working on the 
 - **UI Library:** HeroUI (Next.js UI Kit)
 - **Icons:** Lucide Icons (`lucide-react`)
 - **Language:** TypeScript
+- **State Management:** Zustand
 - **Validation:** Zod
 - **Authentication:** BetterAuth
 - **Database:** PostgreSQL
@@ -22,6 +23,7 @@ This file provides instructions and context for AI coding agents working on the 
 - `components/` - Reusable React components.
 - `config/` - Configuration files (e.g., site config).
 - `lib/` - Utility functions and libraries (including `auth.ts` for BetterAuth).
+- `lib/store/` - Zustand stores for global state management.
 - `prisma/` - Prisma schema and migrations (for database).
 - `public/` - Static assets.
 - `styles/` - Global styles and Tailwind config.
