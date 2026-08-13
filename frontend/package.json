@@ -8,7 +8,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint --fix",
-		"test": "vitest run"
+		"test": "vitest run",
+		"db": "prisma dev"
 	},
 	"dependencies": {
 		"@heroui/react": "3.2.2",
