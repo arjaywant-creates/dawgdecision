@@ -1,126 +1,158 @@
-import { Scenario } from "@/types/comparison";
-import { Card, Input, Label, TextField } from "@heroui/react";
+import {
+  Input,
+  Label,
+  TextField,
+  FieldError,
+  Fieldset,
+  FieldGroup,
+  Description,
+  Surface,
+} from "@heroui/react";
+import { Controller, Control, Path } from "react-hook-form";
+
+import { CompareRequest } from "@/types/comparison";
 
 interface Props {
   title: string;
-  data: Scenario;
-  onChange: (
-    field: keyof Scenario,
-    value: string | number
-  ) => void;
+  prefix: "scenario_a" | "scenario_b";
+  control: Control<CompareRequest>;
 }
 
-function NumericField({
+function FieldController({
+  name,
   label,
-  value,
-  onChange,
+  control,
+  type = "number",
+  placeholder,
+  min,
 }: {
+  name: Path<CompareRequest>;
   label: string;
-  value: number;
-  onChange: (value: number) => void;
+  control: Control<CompareRequest>;
+  type?: "text" | "number";
+  placeholder?: string;
+  min?: string;
 }) {
   return (
-    <TextField
-      className="w-full"
-      type="number"
-      value={value === 0 ? "" : value.toString()}
-      onChange={(val: any) => {
-        const strVal = typeof val === "string" ? val : val?.target?.value || "";
-        onChange(strVal === "" ? 0 : Number(strVal));
-      }}
-    >
-      <Label>{label}</Label>
-      <Input min="0" />
-    </TextField>
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <TextField
+          className="w-full"
+          isInvalid={!!fieldState.error}
+          type={type}
+          value={
+            field.value === undefined || field.value === null
+              ? ""
+              : field.value.toString()
+          }
+          onChange={(val: any) => {
+            if (type === "number") {
+              let strVal = "";
+
+              if (typeof val === "string") {
+                strVal = val;
+              } else if (typeof val === "number") {
+                strVal = val.toString();
+              } else if (val?.target?.value !== undefined) {
+                strVal = val.target.value;
+              }
+              field.onChange(strVal === "" ? "" : Number(strVal));
+            } else {
+              field.onChange(val);
+            }
+          }}
+          onKeyDown={(e: any) => {
+            if (
+              type === "number" &&
+              (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")
+            ) {
+              e.preventDefault();
+            }
+          }}
+        >
+          <Label>{label}</Label>
+          <Input min={min} placeholder={placeholder} variant="secondary" />
+          {fieldState.error && (
+            <FieldError>{fieldState.error.message}</FieldError>
+          )}
+        </TextField>
+      )}
+    />
   );
 }
 
-export default function ScenarioForm({
-  title,
-  data,
-  onChange,
-}: Props) {
+export default function ScenarioForm({ title, prefix, control }: Props) {
   return (
-    <Card className="p-6">
-      <h2 className="mb-6 text-2xl font-bold">
-        {title}
-      </h2>
+    <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
+      <Fieldset className="w-full">
+        <Fieldset.Legend className="text-2xl font-bold">
+          {title}
+        </Fieldset.Legend>
+        <Description className="mb-4 block text-default-500">
+          Enter the financial details for {title.toLowerCase()}.
+        </Description>
 
-      <div className="grid gap-4">
-        <TextField
-          className="w-full"
-          type="text"
-          value={data.name}
-          onChange={(val: any) => {
-            const strVal = typeof val === "string" ? val : val?.target?.value || "";
-            onChange("name", strVal);
-          }}
-        >
-          <Label>Scenario Name</Label>
-          <Input placeholder={title} />
-        </TextField>
+        <FieldGroup>
+          <FieldController
+            control={control}
+            label="Scenario Name"
+            name={`${prefix}.name`}
+            placeholder={title}
+            type="text"
+          />
 
-        <NumericField
-          label="Monthly Income"
-          value={data.monthly_income}
-          onChange={(v) =>
-            onChange("monthly_income", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Monthly Income"
+            min="0"
+            name={`${prefix}.monthly_income`}
+          />
 
-        <NumericField
-          label="Rent"
-          value={data.rent}
-          onChange={(v) =>
-            onChange("rent", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Rent"
+            min="0"
+            name={`${prefix}.rent`}
+          />
 
-        <NumericField
-          label="Utilities"
-          value={data.utilities}
-          onChange={(v) =>
-            onChange("utilities", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Utilities"
+            min="0"
+            name={`${prefix}.utilities`}
+          />
 
-        <NumericField
-          label="Transportation"
-          value={data.transportation}
-          onChange={(v) =>
-            onChange("transportation", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Transportation"
+            min="0"
+            name={`${prefix}.transportation`}
+          />
 
-        <NumericField
-          label="Mandatory Fees"
-          value={data.mandatory_fees}
-          onChange={(v) =>
-            onChange("mandatory_fees", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Mandatory Fees"
+            min="0"
+            name={`${prefix}.mandatory_fees`}
+          />
 
-        <NumericField
-          label="Other Expenses"
-          value={data.other_expenses}
-          onChange={(v) =>
-            onChange("other_expenses", v)
-          }
-        />
+          <FieldController
+            control={control}
+            label="Other Expenses"
+            min="0"
+            name={`${prefix}.other_expenses`}
+          />
 
-        <TextField
-          className="w-full"
-          type="number"
-          value={data.lease_months === 0 ? "" : data.lease_months.toString()}
-          onChange={(val: any) => {
-            const strVal = typeof val === "string" ? val : val?.target?.value || "";
-            onChange("lease_months", strVal === "" ? 0 : Number(strVal));
-          }}
-        >
-          <Label>Lease Duration (Months)</Label>
-          <Input min="1" />
-        </TextField>
-      </div>
-    </Card>
+          <FieldController
+            control={control}
+            label="Lease Duration (Months)"
+            min="1"
+            name={`${prefix}.lease_months`}
+          />
+        </FieldGroup>
+      </Fieldset>
+    </Surface>
   );
 }

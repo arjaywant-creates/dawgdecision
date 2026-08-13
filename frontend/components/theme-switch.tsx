@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import clsx from "clsx";
-
 import { Sun, Moon } from "lucide-react";
 
 export interface ThemeSwitchProps {
@@ -19,9 +18,9 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({ className }) => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
-
 
   if (!isMounted) return <div aria-hidden className="w-6 h-6" />;
 

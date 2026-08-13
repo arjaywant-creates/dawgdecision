@@ -1,20 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Spinner } from "@heroui/react";
-import { AlertCircle } from "lucide-react";
+import {
+  Button,
+  Spinner,
+  Form,
+  Alert,
+  CloseButton,
+  Toast,
+  toast,
+} from "@heroui/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Calculator, Eraser, Save } from "lucide-react";
+
+import { compareScenariosAction, saveComparisonAction } from "./actions";
 
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
-
 import {
-  Scenario,
+  CompareRequest,
+  CompareRequestSchema,
   ComparisonResult,
 } from "@/types/comparison";
+import { useCompareStore } from "@/lib/store/useCompareStore";
+import { useSession } from "@/lib/auth-client";
 
-import { compareScenariosAction } from "./actions";
-
-const initialScenario: Scenario = {
+const initialScenario = {
   name: "",
   monthly_income: 0,
   rent: 0,
@@ -26,173 +38,54 @@ const initialScenario: Scenario = {
 };
 
 export default function ComparePage() {
-  const [scenarioA, setScenarioA] =
-  useState<Scenario>(() => {
-    if (typeof window === "undefined") {
-      return { ...initialScenario };
-    }
+  const [results, setResults] = useState<ComparisonResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const setFormData = useCompareStore((state) => state.setFormData);
 
-    const saved =
-      localStorage.getItem("scenarioA");
+  const { data: session } = useSession();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
-    return saved
-      ? JSON.parse(saved)
-      : { ...initialScenario };
-  });
+  const { control, handleSubmit, watch, getValues, reset } =
+    useForm<CompareRequest>({
+      resolver: zodResolver(CompareRequestSchema) as any,
+      defaultValues: {
+        scenario_a: { ...initialScenario },
+        scenario_b: { ...initialScenario },
+      },
+    });
 
-const [scenarioB, setScenarioB] =
-  useState<Scenario>(() => {
-    if (typeof window === "undefined") {
-      return { ...initialScenario };
-    }
-
-    const saved =
-      localStorage.getItem("scenarioB");
-
-    return saved
-      ? JSON.parse(saved)
-      : { ...initialScenario };
-  });
-
-  const [results, setResults] =
-    useState<ComparisonResult | null>(null);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
+  // Load saved data from Zustand
   useEffect(() => {
-  localStorage.setItem(
-    "scenarioA",
-    JSON.stringify(scenarioA)
-  );
-}, [scenarioA]);
+    const state = useCompareStore.getState();
 
-useEffect(() => {
-  localStorage.setItem(
-    "scenarioB",
-    JSON.stringify(scenarioB)
-  );
-}, [scenarioB]);
+    if (state.formData) {
+      reset(state.formData);
+    }
+  }, [reset]);
 
-  const updateScenarioA = (
-    field: keyof Scenario,
-    value: string | number
-  ) => {
-    setScenarioA((prev) => {
-      const next = { ...prev };
-
-      if (field === "name") {
-        next.name = String(value);
-      } else if (field === "monthly_income") {
-        next.monthly_income = Number(value);
-      } else if (field === "rent") {
-        next.rent = Number(value);
-      } else if (field === "utilities") {
-        next.utilities = Number(value);
-      } else if (field === "transportation") {
-        next.transportation = Number(value);
-      } else if (field === "mandatory_fees") {
-        next.mandatory_fees = Number(value);
-      } else if (field === "other_expenses") {
-        next.other_expenses = Number(value);
-      } else if (field === "lease_months") {
-        next.lease_months = Number(value);
-      }
-
-      return next;
+  // Save changes to Zustand on form change
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const subscription = watch((value) => {
+      setFormData(value as CompareRequest);
     });
-  };
 
-  const updateScenarioB = (
-    field: keyof Scenario,
-    value: string | number
-  ) => {
-    setScenarioB((prev) => {
-      const next = { ...prev };
+    return () => subscription.unsubscribe();
+  }, [watch, setFormData]);
 
-      if (field === "name") {
-        next.name = String(value);
-      } else if (field === "monthly_income") {
-        next.monthly_income = Number(value);
-      } else if (field === "rent") {
-        next.rent = Number(value);
-      } else if (field === "utilities") {
-        next.utilities = Number(value);
-      } else if (field === "transportation") {
-        next.transportation = Number(value);
-      } else if (field === "mandatory_fees") {
-        next.mandatory_fees = Number(value);
-      } else if (field === "other_expenses") {
-        next.other_expenses = Number(value);
-      } else if (field === "lease_months") {
-        next.lease_months = Number(value);
-      }
-
-      return next;
-    });
-  };
-
-  const validateScenario = (
-    scenario: Scenario,
-    label: string
-  ): string | null => {
-    if (!scenario.name.trim()) {
-      return `${label} requires a scenario name.`;
-    }
-
-    if (scenario.lease_months <= 0) {
-      return `${label} lease duration must be greater than 0.`;
-    }
-
-    const values = [
-      scenario.monthly_income,
-      scenario.rent,
-      scenario.utilities,
-      scenario.transportation,
-      scenario.mandatory_fees,
-      scenario.other_expenses,
-    ];
-
-    if (values.some((value) => value < 0)) {
-      return `${label} contains invalid values.`;
-    }
-
-    return null;
-  };
-
-  const handleSubmit = async () => {
-    setError(null);
+  const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
+    setServerError(null);
     setResults(null);
-
-    const errorA = validateScenario(
-      scenarioA,
-      "Scenario A"
-    );
-
-    if (errorA) {
-      setError(errorA);
-      return;
-    }
-
-    const errorB = validateScenario(
-      scenarioB,
-      "Scenario B"
-    );
-
-    if (errorB) {
-      setError(errorB);
-      return;
-    }
+    setSaveSuccess(false);
 
     try {
       setLoading(true);
 
       const response = await compareScenariosAction(
-        scenarioA,
-        scenarioB
+        data.scenario_a,
+        data.scenario_b,
       );
 
       if (response.success) {
@@ -200,79 +93,171 @@ useEffect(() => {
       } else {
         throw new Error(response.error);
       }
-    } catch {
-      setError(
-  "Unable to connect to the server. Please try again."
-);
+    } catch (error: any) {
+      let errorMessage = "Unable to connect to the server. Please try again.";
+
+      if (!error?.message?.includes("fetch failed") && error?.message) {
+        errorMessage = error.message;
+      }
+
+      setServerError(errorMessage);
+
+      toast.danger(errorMessage, {
+        actionProps: {
+          children: "Dismiss",
+          onPress: () => toast.clear(),
+          variant: "danger-soft",
+        },
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const ErrorDisplay = () => {
-    if (!error) return null;
-    return (
-      <div className="flex items-center gap-3 rounded-xl bg-red-50 p-4 text-red-900 border border-red-200 shadow-sm">
-        <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600" />
-        <p className="font-medium text-sm">{error}</p>
-      </div>
-    );
+  const handleClear = () => {
+    const emptyForm = {
+      scenario_a: { ...initialScenario },
+      scenario_b: { ...initialScenario },
+    };
+
+    reset(emptyForm);
+    setFormData(emptyForm);
+    setResults(null);
+    setServerError(null);
+    setSaveSuccess(false);
+  };
+
+  const handleSave = async () => {
+    if (!session || !results) return;
+    setIsSaving(true);
+    setServerError(null);
+    setSaveSuccess(false);
+
+    const formData = getValues();
+
+    try {
+      const response = await saveComparisonAction(
+        formData.scenario_a,
+        formData.scenario_b,
+        results,
+      );
+
+      if (response.success) {
+        setSaveSuccess(true);
+        toast.success("Comparison saved successfully!");
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error: any) {
+      toast.danger(error.message || "Failed to save comparison.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="mx-auto max-w-7xl p-6">
+      <Toast.Provider />
+
       <div className="mb-8">
-        <h1 className="text-4xl font-bold">
-          Housing Comparison
-        </h1>
+        <h1 className="text-4xl font-bold">Housing Comparison</h1>
 
         <p className="mt-2 text-default-500">
-          Compare two housing options and
-          understand their financial tradeoffs.
+          Compare two housing options and understand their financial tradeoffs.
         </p>
       </div>
 
       <div className="mb-6">
-        <ErrorDisplay />
+        {serverError && (
+          <Alert status="danger">
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>{serverError}</Alert.Title>
+            </Alert.Content>
+            <CloseButton onPress={() => setServerError(null)} />
+          </Alert>
+        )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ScenarioForm
-          title="Scenario A"
-          data={scenarioA}
-          onChange={updateScenarioA}
-        />
+      <Form className="w-full flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+        <div className="grid gap-6 lg:grid-cols-2 w-full">
+          <ScenarioForm
+            control={control}
+            prefix="scenario_a"
+            title="Scenario A"
+          />
 
-        <ScenarioForm
-          title="Scenario B"
-          data={scenarioB}
-          onChange={updateScenarioB}
-        />
-      </div>
+          <ScenarioForm
+            control={control}
+            prefix="scenario_b"
+            title="Scenario B"
+          />
+        </div>
 
-      <div className="mt-8 flex flex-col gap-4">
-        <Button
-          onPress={handleSubmit}
-          isPending={loading}
-          variant="primary"
-          size="lg"
-          className="font-semibold w-fit"
-        >
-          {({ isPending }) => (
-            <>
-              {isPending && <Spinner color="current" size="sm" />}
-              {isPending
-                ? "Comparing..."
-                : "Compare Housing Options"}
-            </>
-          )}
-        </Button>
-      </div>
+        <div className="mt-8 flex gap-4">
+          <Button
+            className="font-semibold w-fit"
+            isPending={loading}
+            size="lg"
+            type="submit"
+            variant="primary"
+          >
+            {({ isPending }) => (
+              <>
+                {isPending ? (
+                  <Spinner color="current" size="sm" />
+                ) : (
+                  <Calculator className="w-5 h-5" />
+                )}
+                {isPending ? "Comparing..." : "Compare Housing Options"}
+              </>
+            )}
+          </Button>
+
+          <Button
+            className="font-semibold w-fit"
+            size="lg"
+            type="button"
+            variant="secondary"
+            onPress={handleClear}
+          >
+            <Eraser className="w-5 h-5" />
+            Clear All
+          </Button>
+        </div>
+      </Form>
 
       {results && (
-        <ComparisonResults
-          results={results}
-        />
+        <div className="flex flex-col items-center">
+          <ComparisonResults results={results} />
+          {session && (
+            <div className="mt-8 flex w-full">
+              <Button
+                className="font-semibold w-fit"
+                isDisabled={saveSuccess}
+                isPending={isSaving}
+                size="lg"
+                variant={saveSuccess ? "primary" : "secondary"}
+                onPress={handleSave}
+              >
+                {({ isPending }) => (
+                  <>
+                    {isPending ? (
+                      <Spinner color="current" size="sm" />
+                    ) : (
+                      <Save className="w-5 h-5 mr-1" />
+                    )}
+                    {isPending
+                      ? "Saving..."
+                      : saveSuccess
+                        ? "Saved!"
+                        : "Save Comparison"}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
