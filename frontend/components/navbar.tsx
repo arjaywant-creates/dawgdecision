@@ -1,16 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@heroui/react";
-import NextLink from "next/link";
+
+import { Link, Button, Dropdown, Avatar, Separator, Label } from "@heroui/react";
+import { LogOut, Settings, LayoutDashboard } from "lucide-react";
+
 import clsx from "clsx";
+
+import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/logo";
+import { useSession, signOut } from "@/lib/auth-client";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
@@ -39,6 +53,72 @@ export const Navbar = () => {
 
         <div className="hidden sm:flex items-center gap-2">
           <ThemeSwitch />
+          
+          {!isPending && !session ? (
+            <div className="flex gap-2 items-center ml-2">
+              <Button onPress={() => router.push("/login")} variant="primary" size="sm">
+                Sign In
+              </Button>
+              <Button onPress={() => router.push("/signup")} size="sm">
+                Sign Up
+              </Button>
+            </div>
+          ) : session ? (
+            <Dropdown>
+              <Dropdown.Trigger className="rounded-full cursor-pointer ml-2">
+                <Avatar className="w-8 h-8">
+                  {session.user.image && (
+                    <Avatar.Image
+                      alt={session.user.name}
+                      src={session.user.image}
+                    />
+                  )}
+                  <Avatar.Fallback>{session.user.name?.charAt(0).toUpperCase() || 'U'}</Avatar.Fallback>
+                </Avatar>
+              </Dropdown.Trigger>
+              <Dropdown.Popover>
+                <div className="px-3 pt-3 pb-2 border-b border-separator/50 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Avatar size="sm">
+                      {session.user.image && (
+                        <Avatar.Image
+                          alt={session.user.name}
+                          src={session.user.image}
+                        />
+                      )}
+                      <Avatar.Fallback>{session.user.name?.charAt(0).toUpperCase() || 'U'}</Avatar.Fallback>
+                    </Avatar>
+                    <div className="flex flex-col gap-0 pr-4">
+                      <p className="text-sm leading-5 font-medium">{session.user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
+                    </div>
+                  </div>
+                </div>
+                <Dropdown.Menu onAction={(key) => {
+                  if (key === 'logout') handleSignOut();
+                }}>
+                  <Dropdown.Item id="dashboard" textValue="Dashboard">
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <Label>Dashboard</Label>
+                      <LayoutDashboard className="size-3.5 text-muted-foreground" />
+                    </div>
+                  </Dropdown.Item>
+                  <Dropdown.Item id="settings" textValue="Settings">
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <Label>Settings</Label>
+                      <Settings className="size-3.5 text-muted-foreground" />
+                    </div>
+                  </Dropdown.Item>
+                  <Dropdown.Item id="logout" textValue="Logout" variant="danger">
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <Label>Log Out</Label>
+                      <LogOut className="size-3.5 text-danger" />
+                    </div>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown.Popover>
+            </Dropdown>
+          ) : null}
         </div>
 
         <div className="flex sm:hidden items-center gap-2">
@@ -77,7 +157,7 @@ export const Navbar = () => {
 
       {isMenuOpen && (
         <div className="border-t border-separator sm:hidden">
-          <ul className="flex flex-col gap-2 px-4 pb-4">
+          <ul className="flex flex-col gap-2 px-4 py-4">
             {siteConfig.navMenuItems.map((item, index) => (
               <li key={`${item.label}-${index}`}>
                 <Link
@@ -95,6 +175,30 @@ export const Navbar = () => {
                 </Link>
               </li>
             ))}
+            
+            {!isPending && !session ? (
+              <>
+                <li className="mt-2 border-t border-separator/50 pt-2">
+                  <NextLink href="/login" className="block py-2 text-lg text-foreground w-full hover:opacity-80">
+                    Sign In
+                  </NextLink>
+                </li>
+                <li>
+                  <NextLink href="/signup" className="block py-2 text-lg text-primary w-full hover:opacity-80">
+                    Sign Up
+                  </NextLink>
+                </li>
+              </>
+            ) : session ? (
+              <li className="mt-2 border-t border-separator pt-2">
+                <button 
+                  onClick={handleSignOut}
+                  className="block py-2 text-lg text-danger w-full text-left"
+                >
+                  Log Out
+                </button>
+              </li>
+            ) : null}
           </ul>
         </div>
       )}

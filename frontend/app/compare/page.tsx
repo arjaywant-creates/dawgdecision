@@ -9,14 +9,11 @@ import { Calculator, Eraser } from "lucide-react";
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
 
-import {
-  CompareRequest,
-  CompareRequestSchema,
-  ComparisonResult,
-} from "@/types/comparison";
-
-import { compareScenariosAction } from "./actions";
+import { CompareRequest, CompareRequestSchema, ComparisonResult } from "@/types/comparison";
+import { compareScenariosAction, saveComparisonAction } from "./actions";
 import { useCompareStore } from "@/lib/store/useCompareStore";
+import { useSession } from "@/lib/auth-client";
+import { Save } from "lucide-react";
 
 const initialScenario = {
   name: "",
@@ -35,7 +32,11 @@ export default function ComparePage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const setFormData = useCompareStore((state) => state.setFormData);
 
-  const { control, handleSubmit, watch, reset } = useForm<CompareRequest>({
+  const { data: session } = useSession();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const { control, handleSubmit, watch, getValues, reset } = useForm<CompareRequest>({
     resolver: zodResolver(CompareRequestSchema) as any,
     defaultValues: {
       scenario_a: { ...initialScenario },
@@ -62,6 +63,7 @@ export default function ComparePage() {
   const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
     setServerError(null);
     setResults(null);
+    setSaveSuccess(false);
     
     try {
       setLoading(true);
@@ -105,6 +107,30 @@ export default function ComparePage() {
     setFormData(emptyForm);
     setResults(null);
     setServerError(null);
+    setSaveSuccess(false);
+  };
+
+  const handleSave = async () => {
+    if (!session || !results) return;
+    setIsSaving(true);
+    setServerError(null);
+    setSaveSuccess(false);
+    
+    const formData = getValues();
+    
+    try {
+      const response = await saveComparisonAction(formData.scenario_a, formData.scenario_b, results);
+      if (response.success) {
+        setSaveSuccess(true);
+        toast.success("Comparison saved successfully!");
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error: any) {
+      toast.danger(error.message || "Failed to save comparison.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
 
@@ -184,9 +210,32 @@ export default function ComparePage() {
       </Form>
 
       {results && (
-        <ComparisonResults
-          results={results}
-        />
+        <div className="flex flex-col items-center">
+          <ComparisonResults results={results} />
+          {session && (
+            <div className="mt-8 flex w-full">
+              <Button
+                onPress={handleSave}
+                isPending={isSaving}
+                isDisabled={saveSuccess}
+                variant={saveSuccess ? "primary" : "secondary"}
+                size="lg"
+                className="font-semibold w-fit"
+              >
+                {({ isPending }) => (
+                  <>
+                    {isPending ? (
+                      <Spinner color="current" size="sm" />
+                    ) : (
+                      <Save className="w-5 h-5 mr-1" />
+                    )}
+                    {isPending ? "Saving..." : saveSuccess ? "Saved!" : "Save Comparison"}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

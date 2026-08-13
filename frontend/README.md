@@ -53,6 +53,11 @@ We use **Zustand** for global state management.
 - Stores are located in `lib/store/`.
 - **Persistence:** We use Zustand's `persist` middleware with `sessionStorage` for data that needs to survive page refreshes (like form drafts) but should automatically clear when the user closes their browser tab. If data needs to persist forever, use `localStorage` instead.
 
+## Authentication Architecture
+We use **Better Auth** with strict **Database Sessions** for security.
+- **Proxy (`proxy.ts`):** We use a full Node.js check `auth.api.getSession()` before loading secure pages to prevent unauthenticated access. 
+- **Scaling Note:** If database latency ever becomes an issue under massive load, this app is designed to easily swap to the **Better Auth JWT Plugin** (which checks cryptographically signed cookies instead of querying the database).
+
 # Development Examples
 
 ## How to add HeroUI components
