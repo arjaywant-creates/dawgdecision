@@ -1,22 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { headers } from "next/headers";
+
 import { auth } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Exclude static assets, next internals, and auth API
   if (
-    pathname.startsWith('/api/auth') || 
-    pathname.startsWith('/_next') || 
-    pathname.includes('.')
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/_next") ||
+    pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
   // Full session validation with database checks
   const session = await auth.api.getSession({
-    headers: await headers()
+    headers: await headers(),
   });
 
   // Not authenticated

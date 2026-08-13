@@ -2,9 +2,9 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "DawgDecision",
-  description: "Helping UGA students make smarter financial decisions through scenario planning.",
+  description:
+    "Helping UGA students make smarter financial decisions through scenario planning.",
   navItems: [
-
     {
       label: "Dashboard",
       href: "/",

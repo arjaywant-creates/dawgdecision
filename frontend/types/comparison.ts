@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ScenarioSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -8,7 +8,10 @@ export const ScenarioSchema = z.object({
   transportation: z.coerce.number().min(0, "Cannot be negative"),
   mandatory_fees: z.coerce.number().min(0, "Cannot be negative"),
   other_expenses: z.coerce.number().min(0, "Cannot be negative"),
-  lease_months: z.coerce.number().int().positive("Lease must be at least 1 month"),
+  lease_months: z.coerce
+    .number()
+    .int()
+    .positive("Lease must be at least 1 month"),
 });
 
 export type Scenario = z.infer<typeof ScenarioSchema>;

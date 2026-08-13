@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-
-import { Link, Button, Dropdown, Avatar, Separator, Label } from "@heroui/react";
+import { Link, Button, Dropdown, Avatar, Label } from "@heroui/react";
 import { LogOut, Settings, LayoutDashboard } from "lucide-react";
-
 import clsx from "clsx";
-
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -53,13 +50,17 @@ export const Navbar = () => {
 
         <div className="hidden sm:flex items-center gap-2">
           <ThemeSwitch />
-          
+
           {!isPending && !session ? (
             <div className="flex gap-2 items-center ml-2">
-              <Button onPress={() => router.push("/login")} variant="primary" size="sm">
+              <Button
+                size="sm"
+                variant="primary"
+                onPress={() => router.push("/login")}
+              >
                 Sign In
               </Button>
-              <Button onPress={() => router.push("/signup")} size="sm">
+              <Button size="sm" onPress={() => router.push("/signup")}>
                 Sign Up
               </Button>
             </div>
@@ -73,7 +74,9 @@ export const Navbar = () => {
                       src={session.user.image}
                     />
                   )}
-                  <Avatar.Fallback>{session.user.name?.charAt(0).toUpperCase() || 'U'}</Avatar.Fallback>
+                  <Avatar.Fallback>
+                    {session.user.name?.charAt(0).toUpperCase() || "U"}
+                  </Avatar.Fallback>
                 </Avatar>
               </Dropdown.Trigger>
               <Dropdown.Popover>
@@ -86,17 +89,25 @@ export const Navbar = () => {
                           src={session.user.image}
                         />
                       )}
-                      <Avatar.Fallback>{session.user.name?.charAt(0).toUpperCase() || 'U'}</Avatar.Fallback>
+                      <Avatar.Fallback>
+                        {session.user.name?.charAt(0).toUpperCase() || "U"}
+                      </Avatar.Fallback>
                     </Avatar>
                     <div className="flex flex-col gap-0 pr-4">
-                      <p className="text-sm leading-5 font-medium">{session.user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
+                      <p className="text-sm leading-5 font-medium">
+                        {session.user.name}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {session.user.email}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <Dropdown.Menu onAction={(key) => {
-                  if (key === 'logout') handleSignOut();
-                }}>
+                <Dropdown.Menu
+                  onAction={(key) => {
+                    if (key === "logout") handleSignOut();
+                  }}
+                >
                   <Dropdown.Item id="dashboard" textValue="Dashboard">
                     <div className="flex w-full items-center justify-between gap-2">
                       <Label>Dashboard</Label>
@@ -109,7 +120,11 @@ export const Navbar = () => {
                       <Settings className="size-3.5 text-muted-foreground" />
                     </div>
                   </Dropdown.Item>
-                  <Dropdown.Item id="logout" textValue="Logout" variant="danger">
+                  <Dropdown.Item
+                    id="logout"
+                    textValue="Logout"
+                    variant="danger"
+                  >
                     <div className="flex w-full items-center justify-between gap-2">
                       <Label>Log Out</Label>
                       <LogOut className="size-3.5 text-danger" />
@@ -175,25 +190,31 @@ export const Navbar = () => {
                 </Link>
               </li>
             ))}
-            
+
             {!isPending && !session ? (
               <>
                 <li className="mt-2 border-t border-separator/50 pt-2">
-                  <NextLink href="/login" className="block py-2 text-lg text-foreground w-full hover:opacity-80">
+                  <NextLink
+                    className="block py-2 text-lg text-foreground w-full hover:opacity-80"
+                    href="/login"
+                  >
                     Sign In
                   </NextLink>
                 </li>
                 <li>
-                  <NextLink href="/signup" className="block py-2 text-lg text-primary w-full hover:opacity-80">
+                  <NextLink
+                    className="block py-2 text-lg text-primary w-full hover:opacity-80"
+                    href="/signup"
+                  >
                     Sign Up
                   </NextLink>
                 </li>
               </>
             ) : session ? (
               <li className="mt-2 border-t border-separator pt-2">
-                <button 
-                  onClick={handleSignOut}
+                <button
                   className="block py-2 text-lg text-danger w-full text-left"
+                  onClick={handleSignOut}
                 >
                   Log Out
                 </button>

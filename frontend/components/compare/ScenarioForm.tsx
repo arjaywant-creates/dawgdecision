@@ -1,6 +1,16 @@
-import { CompareRequest } from "@/types/comparison";
-import { Input, Label, TextField, FieldError, Fieldset, FieldGroup, Description, Surface } from "@heroui/react";
+import {
+  Input,
+  Label,
+  TextField,
+  FieldError,
+  Fieldset,
+  FieldGroup,
+  Description,
+  Surface,
+} from "@heroui/react";
 import { Controller, Control, Path } from "react-hook-form";
+
+import { CompareRequest } from "@/types/comparison";
 
 interface Props {
   title: string;
@@ -25,16 +35,22 @@ function FieldController({
 }) {
   return (
     <Controller
-      name={name}
       control={control}
+      name={name}
       render={({ field, fieldState }) => (
         <TextField
           className="w-full"
+          isInvalid={!!fieldState.error}
           type={type}
-          value={field.value === undefined || field.value === null ? "" : field.value.toString()}
+          value={
+            field.value === undefined || field.value === null
+              ? ""
+              : field.value.toString()
+          }
           onChange={(val: any) => {
             if (type === "number") {
               let strVal = "";
+
               if (typeof val === "string") {
                 strVal = val;
               } else if (typeof val === "number") {
@@ -48,90 +64,92 @@ function FieldController({
             }
           }}
           onKeyDown={(e: any) => {
-            if (type === "number" && (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")) {
+            if (
+              type === "number" &&
+              (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")
+            ) {
               e.preventDefault();
             }
           }}
-          isInvalid={!!fieldState.error}
         >
           <Label>{label}</Label>
-          <Input placeholder={placeholder} min={min} variant="secondary" />
-          {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
+          <Input min={min} placeholder={placeholder} variant="secondary" />
+          {fieldState.error && (
+            <FieldError>{fieldState.error.message}</FieldError>
+          )}
         </TextField>
       )}
     />
   );
 }
 
-export default function ScenarioForm({
-  title,
-  prefix,
-  control,
-}: Props) {
+export default function ScenarioForm({ title, prefix, control }: Props) {
   return (
     <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
       <Fieldset className="w-full">
-        <Fieldset.Legend className="text-2xl font-bold">{title}</Fieldset.Legend>
+        <Fieldset.Legend className="text-2xl font-bold">
+          {title}
+        </Fieldset.Legend>
         <Description className="mb-4 block text-default-500">
           Enter the financial details for {title.toLowerCase()}.
         </Description>
 
         <FieldGroup>
           <FieldController
-            name={`${prefix}.name`}
+            control={control}
             label="Scenario Name"
-            control={control}
-            type="text"
+            name={`${prefix}.name`}
             placeholder={title}
+            type="text"
           />
 
           <FieldController
-            name={`${prefix}.monthly_income`}
+            control={control}
             label="Monthly Income"
-            control={control}
             min="0"
+            name={`${prefix}.monthly_income`}
           />
 
           <FieldController
-            name={`${prefix}.rent`}
+            control={control}
             label="Rent"
-            control={control}
             min="0"
+            name={`${prefix}.rent`}
           />
 
           <FieldController
-            name={`${prefix}.utilities`}
+            control={control}
             label="Utilities"
-            control={control}
             min="0"
+            name={`${prefix}.utilities`}
           />
 
           <FieldController
-            name={`${prefix}.transportation`}
+            control={control}
             label="Transportation"
-            control={control}
             min="0"
+            name={`${prefix}.transportation`}
           />
 
           <FieldController
-            name={`${prefix}.mandatory_fees`}
+            control={control}
             label="Mandatory Fees"
-            control={control}
             min="0"
+            name={`${prefix}.mandatory_fees`}
           />
 
           <FieldController
-            name={`${prefix}.other_expenses`}
+            control={control}
             label="Other Expenses"
-            control={control}
             min="0"
+            name={`${prefix}.other_expenses`}
           />
 
           <FieldController
-            name={`${prefix}.lease_months`}
-            label="Lease Duration (Months)"
             control={control}
+            label="Lease Duration (Months)"
             min="1"
+            name={`${prefix}.lease_months`}
           />
         </FieldGroup>
       </Fieldset>

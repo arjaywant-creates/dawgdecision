@@ -1,14 +1,15 @@
 "use server";
 
-import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+
+import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 export async function deleteComparisonAction(id: string) {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session?.user) {
@@ -17,7 +18,7 @@ export async function deleteComparisonAction(id: string) {
 
     const comparison = await prisma.comparison.findUnique({
       where: { id, userId: session.user.id },
-      select: { firstScenarioId: true, secondScenarioId: true }
+      select: { firstScenarioId: true, secondScenarioId: true },
     });
 
     if (!comparison) {
@@ -25,7 +26,7 @@ export async function deleteComparisonAction(id: string) {
     }
 
     // Delete the connected scenarios explicitly.
-    // Because of onDelete: Cascade in the Prisma schema, deleting the 
+    // Because of onDelete: Cascade in the Prisma schema, deleting the
     // scenarios will automatically cascade and delete the Comparison record too.
     await prisma.$transaction([
       prisma.scenario.delete({ where: { id: comparison.firstScenarioId } }),
@@ -33,9 +34,11 @@ export async function deleteComparisonAction(id: string) {
     ]);
 
     revalidatePath("/");
+
     return { success: true };
   } catch (error) {
     console.error("Delete comparison error:", error);
+
     return { success: false, error: "Failed to delete comparison" };
   }
 }

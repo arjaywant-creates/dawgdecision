@@ -1,14 +1,19 @@
 "use server";
 
+import { headers } from "next/headers";
+
 import { compareScenarios } from "@/lib/decision-engine";
 import { Scenario, ComparisonResult } from "@/types/comparison";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
-export async function compareScenariosAction(scenarioA: Scenario, scenarioB: Scenario) {
+export async function compareScenariosAction(
+  scenarioA: Scenario,
+  scenarioB: Scenario,
+) {
   try {
     const result = await compareScenarios(scenarioA, scenarioB);
+
     return { success: true, data: result };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -18,11 +23,11 @@ export async function compareScenariosAction(scenarioA: Scenario, scenarioB: Sce
 export async function saveComparisonAction(
   scenarioA: Scenario,
   scenarioB: Scenario,
-  result: ComparisonResult
+  result: ComparisonResult,
 ) {
   try {
     const session = await auth.api.getSession({
-      headers: await headers()
+      headers: await headers(),
     });
 
     if (!session?.user) {
@@ -50,7 +55,7 @@ export async function saveComparisonAction(
             leaseExpenses: result.first_result.lease_expenses,
             monthlySurplus: result.first_result.monthly_surplus,
             leaseSurplus: result.first_result.lease_surplus,
-          }
+          },
         },
         secondScenario: {
           create: {
@@ -67,14 +72,18 @@ export async function saveComparisonAction(
             leaseExpenses: result.second_result.lease_expenses,
             monthlySurplus: result.second_result.monthly_surplus,
             leaseSurplus: result.second_result.lease_surplus,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return { success: true, data: savedComparison };
   } catch (error: any) {
     console.error("Save Comparison Error:", error);
-    return { success: false, error: "An unexpected error occurred while saving. Please try again." };
+
+    return {
+      success: false,
+      error: "An unexpected error occurred while saving. Please try again.",
+    };
   }
 }

@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { CompareRequest } from '@/types/comparison';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+
+import { CompareRequest } from "@/types/comparison";
 
 interface CompareStore {
   formData: CompareRequest | null;
@@ -14,10 +15,10 @@ export const useCompareStore = create<CompareStore>()(
       setFormData: (data) => set({ formData: data }),
     }),
     {
-      name: 'compare-storage',
+      name: "compare-storage",
       // using sessionStorage ensures data is cleared when the tab closes,
       // but persists across navigations and reloads.
-      storage: createJSONStorage(() => sessionStorage), 
-    }
-  )
+      storage: createJSONStorage(() => sessionStorage),
+    },
+  ),
 );

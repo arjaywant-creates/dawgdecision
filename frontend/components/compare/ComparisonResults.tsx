@@ -1,6 +1,7 @@
-import { Card, Table, Separator } from "@heroui/react";
+import { Card, Table } from "@heroui/react";
+import { Info, TrendingDown, Scale } from "lucide-react";
+
 import { ComparisonResult } from "@/types/comparison";
-import { Info, TrendingDown, Scale, Calculator } from "lucide-react";
 
 interface Props {
   results: ComparisonResult;
@@ -24,23 +25,39 @@ export default function ComparisonResults({ results }: Props) {
             <Table.Body>
               <Table.Row>
                 <Table.Cell>Monthly Cost</Table.Cell>
-                <Table.Cell>${results.first_result.monthly_expenses.toLocaleString()}</Table.Cell>
-                <Table.Cell>${results.second_result.monthly_expenses.toLocaleString()}</Table.Cell>
+                <Table.Cell>
+                  ${results.first_result.monthly_expenses.toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                  ${results.second_result.monthly_expenses.toLocaleString()}
+                </Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell>Lease Cost</Table.Cell>
-                <Table.Cell>${results.first_result.lease_expenses.toLocaleString()}</Table.Cell>
-                <Table.Cell>${results.second_result.lease_expenses.toLocaleString()}</Table.Cell>
+                <Table.Cell>
+                  ${results.first_result.lease_expenses.toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                  ${results.second_result.lease_expenses.toLocaleString()}
+                </Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell>Monthly Surplus</Table.Cell>
-                <Table.Cell>${results.first_result.monthly_surplus.toLocaleString()}</Table.Cell>
-                <Table.Cell>${results.second_result.monthly_surplus.toLocaleString()}</Table.Cell>
+                <Table.Cell>
+                  ${results.first_result.monthly_surplus.toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                  ${results.second_result.monthly_surplus.toLocaleString()}
+                </Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell>Lease Surplus</Table.Cell>
-                <Table.Cell>${results.first_result.lease_surplus.toLocaleString()}</Table.Cell>
-                <Table.Cell>${results.second_result.lease_surplus.toLocaleString()}</Table.Cell>
+                <Table.Cell>
+                  ${results.first_result.lease_surplus.toLocaleString()}
+                </Table.Cell>
+                <Table.Cell>
+                  ${results.second_result.lease_surplus.toLocaleString()}
+                </Table.Cell>
               </Table.Row>
             </Table.Body>
           </Table.Content>
@@ -50,7 +67,7 @@ export default function ComparisonResults({ results }: Props) {
       <div className="flex flex-col gap-6 w-full">
         <Card className="w-full bg-content1 shadow-sm p-6">
           <h3 className="mb-4 text-xl font-semibold">Financial Tradeoffs</h3>
-          
+
           <div className="space-y-3">
             {isTie ? (
               <p className="flex items-center gap-2">
@@ -66,8 +83,8 @@ export default function ComparisonResults({ results }: Props) {
             )}
 
             <p className="pl-6">
-              <strong>Monthly Difference:</strong>{" "}
-              ${results.monthly_difference.toLocaleString()}
+              <strong>Monthly Difference:</strong> $
+              {results.monthly_difference.toLocaleString()}
             </p>
           </div>
         </Card>
@@ -77,7 +94,7 @@ export default function ComparisonResults({ results }: Props) {
             <Info className="size-5 text-default-500" />
             Financial Interpretation
           </h3>
-          
+
           <div className="space-y-3">
             {isTie ? (
               <p className="text-default-700">
@@ -86,15 +103,13 @@ export default function ComparisonResults({ results }: Props) {
             ) : (
               <p className="text-default-700">
                 {results.lower_monthly_cost_scenario} costs $
-                {results.monthly_difference.toLocaleString()} less
-                per month.
+                {results.monthly_difference.toLocaleString()} less per month.
               </p>
             )}
 
             <p className="text-sm text-default-500">
-              This information is intended to present
-              financial tradeoffs only and should not be
-              interpreted as a recommendation.
+              This information is intended to present financial tradeoffs only
+              and should not be interpreted as a recommendation.
             </p>
           </div>
         </Card>
