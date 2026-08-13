@@ -1,5 +1,5 @@
 import { CompareRequest } from "@/types/comparison";
-import { Card, Input, Label, TextField, FieldError } from "@heroui/react";
+import { Input, Label, TextField, FieldError, Fieldset, FieldGroup, Description, Surface } from "@heroui/react";
 import { Controller, Control, Path } from "react-hook-form";
 
 interface Props {
@@ -55,7 +55,7 @@ function FieldController({
           isInvalid={!!fieldState.error}
         >
           <Label>{label}</Label>
-          <Input placeholder={placeholder} min={min} />
+          <Input placeholder={placeholder} min={min} variant="secondary" />
           {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
         </TextField>
       )}
@@ -69,69 +69,72 @@ export default function ScenarioForm({
   control,
 }: Props) {
   return (
-    <Card className="p-6">
-      <h2 className="mb-6 text-2xl font-bold">
-        {title}
-      </h2>
+    <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
+      <Fieldset className="w-full">
+        <Fieldset.Legend className="text-2xl font-bold">{title}</Fieldset.Legend>
+        <Description className="mb-4 block text-default-500">
+          Enter the financial details for {title.toLowerCase()}.
+        </Description>
 
-      <div className="grid gap-4">
-        <FieldController
-          name={`${prefix}.name`}
-          label="Scenario Name"
-          control={control}
-          type="text"
-          placeholder={title}
-        />
+        <FieldGroup>
+          <FieldController
+            name={`${prefix}.name`}
+            label="Scenario Name"
+            control={control}
+            type="text"
+            placeholder={title}
+          />
 
-        <FieldController
-          name={`${prefix}.monthly_income`}
-          label="Monthly Income"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.monthly_income`}
+            label="Monthly Income"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.rent`}
-          label="Rent"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.rent`}
+            label="Rent"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.utilities`}
-          label="Utilities"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.utilities`}
+            label="Utilities"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.transportation`}
-          label="Transportation"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.transportation`}
+            label="Transportation"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.mandatory_fees`}
-          label="Mandatory Fees"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.mandatory_fees`}
+            label="Mandatory Fees"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.other_expenses`}
-          label="Other Expenses"
-          control={control}
-          min="0"
-        />
+          <FieldController
+            name={`${prefix}.other_expenses`}
+            label="Other Expenses"
+            control={control}
+            min="0"
+          />
 
-        <FieldController
-          name={`${prefix}.lease_months`}
-          label="Lease Duration (Months)"
-          control={control}
-          min="1"
-        />
-      </div>
-    </Card>
+          <FieldController
+            name={`${prefix}.lease_months`}
+            label="Lease Duration (Months)"
+            control={control}
+            min="1"
+          />
+        </FieldGroup>
+      </Fieldset>
+    </Surface>
   );
 }

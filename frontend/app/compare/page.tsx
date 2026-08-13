@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Spinner, Form, Alert, CloseButton } from "@heroui/react";
+import { Button, Spinner, Form, Alert, CloseButton, Toast, toast } from "@heroui/react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calculator, Eraser } from "lucide-react";
@@ -77,13 +77,20 @@ export default function ComparePage() {
         throw new Error(response.error);
       }
     } catch (error: any) {
-      if (error?.message?.includes("fetch failed")) {
-        setServerError("Unable to connect to the server. Please try again.");
-      } else {
-        setServerError(
-          error?.message || "Unable to connect to the server. Please try again."
-        );
+      let errorMessage = "Unable to connect to the server. Please try again.";
+      if (!error?.message?.includes("fetch failed") && error?.message) {
+        errorMessage = error.message;
       }
+      
+      setServerError(errorMessage);
+
+      toast.danger(errorMessage, {
+        actionProps: {
+          children: "Dismiss",
+          onPress: () => toast.clear(),
+          variant: "danger-soft",
+        },
+      });
     } finally {
       setLoading(false);
     }
@@ -103,6 +110,8 @@ export default function ComparePage() {
 
   return (
     <div className="mx-auto max-w-7xl p-6">
+      <Toast.Provider />
+      
       <div className="mb-8">
         <h1 className="text-4xl font-bold">
           Housing Comparison
