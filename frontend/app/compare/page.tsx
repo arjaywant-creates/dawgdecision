@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Spinner } from "@heroui/react";
 import { AlertCircle } from "lucide-react";
 
@@ -27,14 +27,32 @@ const initialScenario: Scenario = {
 
 export default function ComparePage() {
   const [scenarioA, setScenarioA] =
-    useState<Scenario>({
-      ...initialScenario,
-    });
+  useState<Scenario>(() => {
+    if (typeof window === "undefined") {
+      return { ...initialScenario };
+    }
 
-  const [scenarioB, setScenarioB] =
-    useState<Scenario>({
-      ...initialScenario,
-    });
+    const saved =
+      localStorage.getItem("scenarioA");
+
+    return saved
+      ? JSON.parse(saved)
+      : { ...initialScenario };
+  });
+
+const [scenarioB, setScenarioB] =
+  useState<Scenario>(() => {
+    if (typeof window === "undefined") {
+      return { ...initialScenario };
+    }
+
+    const saved =
+      localStorage.getItem("scenarioB");
+
+    return saved
+      ? JSON.parse(saved)
+      : { ...initialScenario };
+  });
 
   const [results, setResults] =
     useState<ComparisonResult | null>(null);
@@ -44,6 +62,20 @@ export default function ComparePage() {
 
   const [error, setError] =
     useState<string | null>(null);
+
+  useEffect(() => {
+  localStorage.setItem(
+    "scenarioA",
+    JSON.stringify(scenarioA)
+  );
+}, [scenarioA]);
+
+useEffect(() => {
+  localStorage.setItem(
+    "scenarioB",
+    JSON.stringify(scenarioB)
+  );
+}, [scenarioB]);
 
   const updateScenarioA = (
     field: keyof Scenario,
@@ -168,7 +200,7 @@ export default function ComparePage() {
       } else {
         throw new Error(response.error);
       }
-    } catch (err) {
+    } catch {
       setError(
   "Unable to connect to the server. Please try again."
 );

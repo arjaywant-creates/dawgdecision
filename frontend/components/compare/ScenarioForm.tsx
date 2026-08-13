@@ -57,7 +57,7 @@ export default function ScenarioForm({
           }}
         >
           <Label>Scenario Name</Label>
-          <Input placeholder="Apartment A" />
+          <Input placeholder={title} />
         </TextField>
 
         <NumericField
