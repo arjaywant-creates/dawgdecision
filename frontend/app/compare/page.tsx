@@ -13,9 +13,8 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Calculator, Eraser, Save } from "lucide-react";
-
-import { compareScenariosAction, saveComparisonAction } from "./actions";
-
+import { useSearchParams } from "next/navigation";
+import { compareScenariosAction, saveComparisonAction, getSavedComparisonAction, updateComparisonAction } from "./actions";
 import ScenarioForm from "@/components/compare/ScenarioForm";
 import ComparisonResults from "@/components/compare/ComparisonResults";
 import {
@@ -42,8 +41,12 @@ export default function ComparePage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const setFormData = useCompareStore((state) => state.setFormData);
+  const setResultsInStore = useCompareStore((state) => state.setResults,);
+  const comparisonId = useCompareStore((state) => state.comparisonId,);
+  const setComparisonId = useCompareStore((state) => state.setComparisonId,);
 
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -64,6 +67,74 @@ export default function ComparePage() {
       reset(state.formData);
     }
   }, [reset]);
+
+  useEffect(() => {
+    const comparisonId =
+      searchParams.get("comparisonId");
+
+    if (!comparisonId) {
+      return;
+    }
+
+    const loadComparison = async () => {
+      const response =
+        await getSavedComparisonAction(
+          comparisonId,
+        );
+
+      if (
+        response.success &&
+        response.data
+      )  {
+        const comparison =
+          response.data;
+
+        reset({
+          scenario_a: {
+            name: comparison.firstScenario.name,
+            monthly_income:
+              comparison.firstScenario.monthlyIncome,
+            rent: comparison.firstScenario.rent,
+            utilities:
+              comparison.firstScenario.utilities,
+            transportation:
+              comparison.firstScenario.transportation,
+            mandatory_fees:
+              comparison.firstScenario.mandatoryFees,
+            other_expenses:
+              comparison.firstScenario.otherExpenses,
+            lease_months:
+              comparison.firstScenario.leaseMonths,
+          },
+
+        scenario_b: {
+            name: comparison.secondScenario.name,
+            monthly_income:
+              comparison.secondScenario.monthlyIncome,
+            rent: comparison.secondScenario.rent,
+            utilities:
+              comparison.secondScenario.utilities,
+            transportation:
+              comparison.secondScenario.transportation,
+            mandatory_fees:
+              comparison.secondScenario.mandatoryFees,
+            other_expenses:
+              comparison.secondScenario.otherExpenses,
+            lease_months:
+              comparison.secondScenario.leaseMonths,
+          },
+        });
+
+        setComparisonId(comparison.id);
+      }
+    };
+
+    loadComparison();
+  }, [
+    searchParams,
+    reset,
+    setComparisonId,
+  ]);
 
   // Save changes to Zustand on form change
   useEffect(() => {
@@ -89,7 +160,11 @@ export default function ComparePage() {
       );
 
       if (response.success) {
-        setResults(response.data as ComparisonResult);
+        const result =
+        response.data as ComparisonResult;
+
+        setResults(result);
+        setResultsInStore(result);
       } else {
         throw new Error(response.error);
       }
@@ -136,11 +211,18 @@ export default function ComparePage() {
     const formData = getValues();
 
     try {
-      const response = await saveComparisonAction(
-        formData.scenario_a,
-        formData.scenario_b,
-        results,
-      );
+      const response = comparisonId
+  ? await updateComparisonAction(
+      comparisonId,
+      formData.scenario_a,
+      formData.scenario_b,
+      results,
+    )
+  : await saveComparisonAction(
+      formData.scenario_a,
+      formData.scenario_b,
+      results,
+    );
 
       if (response.success) {
         setSaveSuccess(true);
@@ -228,37 +310,45 @@ export default function ComparePage() {
       </Form>
 
       {results && (
-        <div className="flex flex-col items-center">
-          <ComparisonResults results={results} />
-          {session && (
-            <div className="mt-8 flex w-full">
-              <Button
-                className="font-semibold w-fit"
-                isDisabled={saveSuccess}
-                isPending={isSaving}
-                size="lg"
-                variant={saveSuccess ? "primary" : "secondary"}
-                onPress={handleSave}
-              >
-                {({ isPending }) => (
-                  <>
-                    {isPending ? (
-                      <Spinner color="current" size="sm" />
-                    ) : (
-                      <Save className="w-5 h-5 mr-1" />
-                    )}
-                    {isPending
-                      ? "Saving..."
-                      : saveSuccess
-                        ? "Saved!"
-                        : "Save Comparison"}
-                  </>
-                )}
-              </Button>
-            </div>
+      <div className="flex flex-col items-center">
+        <ComparisonResults results={results} />
+
+        <div className="mt-8 flex w-full">
+          {session ? (
+            <Button
+              className="font-semibold w-fit"
+              isDisabled={saveSuccess}
+              isPending={isSaving}
+              size="lg"
+              variant={saveSuccess ? "primary" : "secondary"}
+              onPress={handleSave}
+          >
+          {({ isPending }) => (
+            <>
+              {isPending ? (
+                <Spinner color="current" size="sm" />
+              ) : (
+                <Save className="w-5 h-5 mr-1" />
+              )}
+
+              {isPending
+                ? "Saving..."
+                : saveSuccess
+                  ? "Saved!"
+                  : comparisonId
+                  ? "Update Comparison"
+                  : "Save Comparison"}
+            </>
           )}
-        </div>
+        </Button>
+      ) : (
+        <p className="text-warning font-medium">
+          Sign in to save this comparison.
+        </p>
       )}
     </div>
+  </div>
+)}
+</div>
   );
 }

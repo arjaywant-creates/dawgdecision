@@ -1,24 +1,58 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import {
+  persist,
+  createJSONStorage,
+} from "zustand/middleware";
 
-import { CompareRequest } from "@/types/comparison";
+import {
+  CompareRequest,
+  ComparisonResult,
+} from "@/types/comparison";
 
 interface CompareStore {
   formData: CompareRequest | null;
-  setFormData: (data: CompareRequest) => void;
+  results: ComparisonResult | null;
+  comparisonId: string | null;
+
+  setFormData: (
+    data: CompareRequest,
+  ) => void;
+
+  setResults: (
+    results: ComparisonResult | null,
+  ) => void;
+
+  setComparisonId: (
+    id: string | null,
+  ) => void;
 }
 
-export const useCompareStore = create<CompareStore>()(
-  persist(
-    (set) => ({
-      formData: null,
-      setFormData: (data) => set({ formData: data }),
-    }),
-    {
-      name: "compare-storage",
-      // using sessionStorage ensures data is cleared when the tab closes,
-      // but persists across navigations and reloads.
-      storage: createJSONStorage(() => sessionStorage),
-    },
-  ),
-);
+export const useCompareStore =
+  create<CompareStore>()(
+    persist(
+      (set) => ({
+        formData: null,
+        results: null,
+        comparisonId: null,
+
+        setFormData: (data) =>
+          set({ formData: data }),
+
+        setResults: (results) =>
+          set({ results }),
+
+        setComparisonId: (
+          comparisonId,
+        ) =>
+          set({ comparisonId }),
+      }),
+      {
+        name: "compare-storage",
+
+        storage:
+          createJSONStorage(
+            () => sessionStorage,
+          ),
+      },
+    ),
+  );
