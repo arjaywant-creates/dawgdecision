@@ -19,6 +19,72 @@ Rather than evaluating decisions in isolation, DawgDecision shows how multiple c
 
 ---
 
+## Quick Start
+
+The easiest way to start the project (which automatically copies your `.env` file if it's missing, starts the database, syncs the schema, and boots up the frontend and backend) is to use the unified start script.
+
+Ensure you have Node.js and Python installed, then run:
+
+**Windows:**
+```bash
+npm start
+```
+*(This runs everything in the background of your current terminal).*
+
+**Mac/Linux:**
+```bash
+npm run start:unix
+```
+*(This runs everything in the background of your current terminal and cleanly closes them all when you press `Ctrl+C`).*
+
+---
+
+### Manual Setup (Step-by-Step Alternative)
+If you prefer to run services individually in separate tabs, follow these steps:
+
+#### 1. Environment Setup
+Before running the application, set up the frontend environment variables by copying the example file:
+
+**Mac/Linux:**
+```bash
+cp frontend/.env.example frontend/.env
+```
+**Windows:**
+```cmd
+copy frontend\.env.example frontend\.env
+```
+
+*(Note: The default values will work out of the box for local development).*
+
+#### Important Production Note
+When deploying to production, you **must** change the `BETTER_AUTH_SECRET` in your environment variables to a secure, random string.
+
+#### 2. Local Database
+Start the local PostgreSQL database (keep this running in its own terminal tab):
+```bash
+npm run db
+```
+*(Note: You may need to sync the database schema first by running `npm run db:push` in a new tab before starting the frontend development server for the first time).*
+
+#### 3. Frontend Development Server
+In a new terminal tab, start the Next.js frontend:
+```bash
+npm run dev
+```
+
+#### 4. Python Backend
+In another terminal tab, start the FastAPI backend:
+```bash
+npm run backend
+```
+*(For Windows, use `npm run backend:win`)*
+
+For more detailed setup and running instructions for each specific service, please refer to their respective READMEs:
+- [Frontend Documentation](./frontend/README.md)
+- [Backend Documentation](./backend/README.md)
+
+---
+
 ## How It Works
 
 A student enters information about financial decisions such as housing, dining, transportation, employment, and other expenses.
@@ -40,24 +106,30 @@ The application's core calculations and recommendations do not depend on AI.
 ## Tech Stack
 
 ### Frontend
-- **React** — Builds the interactive user interface
-- **TypeScript** — Adds static typing to improve reliability and catch errors during development
-- **Zod** — Enforces runtime schema validation for API payloads and forms
+- **Next.js (React)** - React framework for the user interface
+- **TypeScript** - Adds static typing to improve reliability
+- **TailwindCSS & HeroUI** - Utility-first styling and UI components
+- **Zustand** - Global state management
+- **Lucide Icons** - Icons
+- **BetterAuth** - Secure user authentication
+- **Zod** - Enforces runtime schema validation for API payloads and forms
 
 ### Backend
-- **FastAPI (Python)** — Provides REST APIs and connects the application to the decision engine
+- **FastAPI (Python)** - Provides REST APIs and connects the application to the decision engine
 
 ### Decision Engine
-- **Python** — Performs financial calculations, scenario comparisons, consolidated-plan analysis, and recommendation scoring
+- **Python** - Performs financial calculations, scenario comparisons, consolidated-plan analysis, and recommendation scoring
 
-### Database
-- **PostgreSQL** — Stores users, decisions, scenarios, plans, and application data
+### Database & ORM
+- **PostgreSQL** - Relational database for storing users, decisions, scenarios, plans, and app data
+- **Prisma** - Modern database ORM for Node.js/TypeScript
 
-### Cloud Infrastructure
-- **AWS** — Provides hosting, database infrastructure, monitoring, security, and deployment services
+### Cloud Infrastructure & Deployment
+- **AWS** - Provides hosting, database infrastructure, monitoring, security, and deployment services
+- **Docker** - Used for running database and backend services locally
 
 ### Development
-- **Git & GitHub** — Version control, collaboration, pull requests, issue tracking, and project management
+- **Git & GitHub** - Version control, collaboration, pull requests, issue tracking, and project management
 
 ---
 
@@ -189,4 +261,4 @@ The project is beginning with University of Georgia students as its initial user
 
 ## License
 
-This project is licensed under the MIT License.
+See LICENSE file for details.
