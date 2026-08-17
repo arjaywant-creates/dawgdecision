@@ -184,7 +184,7 @@ export const Navbar = () => {
                         ? "text-danger"
                         : "text-foreground",
                   )}
-                  href="#"
+                  href={item.href}
                 >
                   {item.label}
                 </Link>

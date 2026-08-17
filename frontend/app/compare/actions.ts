@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 import { compareScenarios } from "@/lib/decision-engine";
 import { Scenario, ComparisonResult } from "@/types/comparison";
@@ -26,15 +27,10 @@ export async function saveComparisonAction(
   result: ComparisonResult,
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const session = await auth.api.getSession({ headers: await headers() });
 
-    if (!session?.user) {
-      return { success: false, error: "Unauthorized" };
-    }
+    if (!session?.user) return { success: false, error: "Unauthorized" };
 
-    // Save to database
     const savedComparison = await prisma.comparison.create({
       data: {
         user: { connect: { id: session.user.id } },
@@ -77,8 +73,11 @@ export async function saveComparisonAction(
       },
     });
 
+    revalidatePath("/");
+    revalidatePath("/comparisons");
+
     return { success: true, data: savedComparison };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Save Comparison Error:", error);
 
     return {
@@ -88,126 +87,32 @@ export async function saveComparisonAction(
   }
 }
 
-export async function getSavedComparisonsAction() {
+export async function deleteComparisonAction(comparisonId: string) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const session = await auth.api.getSession({ headers: await headers() });
+
+    if (!session?.user) return { success: false, error: "Unauthorized" };
+
+    const comparison = await prisma.comparison.findUnique({
+      where: { id: comparisonId, userId: session.user.id },
+      select: { firstScenarioId: true, secondScenarioId: true },
     });
 
-    if (!session?.user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
+    if (!comparison) return { success: false, error: "Comparison not found." };
 
-    const comparisons = await prisma.comparison.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        firstScenario: true,
-        secondScenario: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    await prisma.$transaction([
+      prisma.scenario.delete({ where: { id: comparison.firstScenarioId } }),
+      prisma.scenario.delete({ where: { id: comparison.secondScenarioId } }),
+    ]);
 
-    return {
-      success: true,
-      data: comparisons,
-    };
+    revalidatePath("/");
+    revalidatePath("/comparisons");
+
+    return { success: true };
   } catch (error) {
-    console.error(
-      "Get Saved Comparisons Error:",
-      error,
-    );
+    console.error("Delete Comparison Error:", error);
 
-    return {
-      success: false,
-      error: "Unable to load saved comparisons.",
-    };
-  }
-}
-
-export async function getSavedComparisonAction(
-  comparisonId: string,
-) {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    const comparison =
-      await prisma.comparison.findUnique({
-        where: {
-          id: comparisonId,
-        },
-        include: {
-          firstScenario: true,
-          secondScenario: true,
-        },
-      });
-
-    return {
-      success: true,
-      data: comparison,
-    };
-  } catch (error) {
-    console.error(
-      "Get Comparison Error:",
-      error,
-    );
-
-    return {
-      success: false,
-      error: "Unable to load comparison.",
-    };
-  }
-}
-
-export async function deleteComparisonAction(
-  comparisonId: string,
-) {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    await prisma.comparison.delete({
-      where: {
-        id: comparisonId,
-      },
-    });
-
-    return {
-      success: true,
-    };
-  } catch (error) {
-    console.error(
-      "Delete Comparison Error:",
-      error,
-    );
-
-    return {
-      success: false,
-      error: "Unable to delete comparison.",
-    };
+    return { success: false, error: "Unable to delete comparison." };
   }
 }
 
@@ -218,35 +123,19 @@ export async function updateComparisonAction(
   result: ComparisonResult,
 ) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
+    const session = await auth.api.getSession({ headers: await headers() });
+
+    if (!session?.user) return { success: false, error: "Unauthorized" };
+
+    const existingComparison = await prisma.comparison.findUnique({
+      where: { id: comparisonId, userId: session.user.id },
     });
 
-    if (!session?.user) {
-      return {
-        success: false,
-        error: "Unauthorized",
-      };
-    }
-
-    const existingComparison =
-      await prisma.comparison.findUnique({
-        where: {
-          id: comparisonId,
-        },
-      });
-
-    if (!existingComparison) {
-      return {
-        success: false,
-        error: "Comparison not found.",
-      };
-    }
+    if (!existingComparison)
+      return { success: false, error: "Comparison not found." };
 
     await prisma.scenario.update({
-      where: {
-        id: existingComparison.firstScenarioId,
-      },
+      where: { id: existingComparison.firstScenarioId },
       data: {
         name: scenarioA.name,
         monthlyIncome: scenarioA.monthly_income,
@@ -256,22 +145,15 @@ export async function updateComparisonAction(
         mandatoryFees: scenarioA.mandatory_fees || 0,
         otherExpenses: scenarioA.other_expenses || 0,
         leaseMonths: scenarioA.lease_months || 12,
-
-        monthlyExpenses:
-          result.first_result.monthly_expenses,
-        leaseExpenses:
-          result.first_result.lease_expenses,
-        monthlySurplus:
-          result.first_result.monthly_surplus,
-        leaseSurplus:
-          result.first_result.lease_surplus,
+        monthlyExpenses: result.first_result.monthly_expenses,
+        leaseExpenses: result.first_result.lease_expenses,
+        monthlySurplus: result.first_result.monthly_surplus,
+        leaseSurplus: result.first_result.lease_surplus,
       },
     });
 
     await prisma.scenario.update({
-      where: {
-        id: existingComparison.secondScenarioId,
-      },
+      where: { id: existingComparison.secondScenarioId },
       data: {
         name: scenarioB.name,
         monthlyIncome: scenarioB.monthly_income,
@@ -281,45 +163,28 @@ export async function updateComparisonAction(
         mandatoryFees: scenarioB.mandatory_fees || 0,
         otherExpenses: scenarioB.other_expenses || 0,
         leaseMonths: scenarioB.lease_months || 12,
-
-        monthlyExpenses:
-          result.second_result.monthly_expenses,
-        leaseExpenses:
-          result.second_result.lease_expenses,
-        monthlySurplus:
-          result.second_result.monthly_surplus,
-        leaseSurplus:
-          result.second_result.lease_surplus,
+        monthlyExpenses: result.second_result.monthly_expenses,
+        leaseExpenses: result.second_result.lease_expenses,
+        monthlySurplus: result.second_result.monthly_surplus,
+        leaseSurplus: result.second_result.lease_surplus,
       },
     });
 
-    const updatedComparison =
-      await prisma.comparison.update({
-        where: {
-          id: comparisonId,
-        },
-        data: {
-          lowerMonthlyCostScenario:
-            result.lower_monthly_cost_scenario,
-          monthlyDifference:
-            result.monthly_difference,
-        },
-      });
+    const updatedComparison = await prisma.comparison.update({
+      where: { id: comparisonId },
+      data: {
+        lowerMonthlyCostScenario: result.lower_monthly_cost_scenario,
+        monthlyDifference: result.monthly_difference,
+      },
+    });
 
-    return {
-      success: true,
-      data: updatedComparison,
-    };
+    revalidatePath("/");
+    revalidatePath("/comparisons");
+
+    return { success: true, data: updatedComparison };
   } catch (error) {
-    console.error(
-      "Update Comparison Error:",
-      error,
-    );
+    console.error("Update Comparison Error:", error);
 
-    return {
-      success: false,
-      error:
-        "Unable to update comparison.",
-    };
+    return { success: false, error: "Unable to update comparison." };
   }
 }

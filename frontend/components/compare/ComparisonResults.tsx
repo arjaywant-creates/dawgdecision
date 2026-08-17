@@ -1,118 +1,123 @@
-import { Card, Table } from "@heroui/react";
-import { Info, TrendingDown, Scale } from "lucide-react";
+import { Info, TrendingDown, Scale, CircleDollarSign } from "lucide-react";
 
 import { ComparisonResult } from "@/types/comparison";
 
 interface Props {
   results: ComparisonResult;
+  scenarioA?: string;
+  scenarioB?: string;
 }
 
-export default function ComparisonResults({ results }: Props) {
+interface MetricRowProps {
+  label: string;
+  a: number;
+  b: number;
+  nameA: string;
+  nameB: string;
+}
+
+const MetricRow = ({ label, a, b, nameA, nameB }: MetricRowProps) => (
+  <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
+    <span className="text-xs text-default-500 uppercase tracking-wider font-semibold mb-1">
+      {label}
+    </span>
+    <div className="flex justify-between items-center text-sm">
+      <span className={`font-medium ${a < b ? "text-success" : ""}`}>
+        {nameA}: ${a.toLocaleString()}
+      </span>
+      <span className={`font-medium ${b < a ? "text-success" : ""}`}>
+        {nameB}: ${b.toLocaleString()}
+      </span>
+    </div>
+  </div>
+);
+
+export default function ComparisonResults({
+  results,
+  scenarioA,
+  scenarioB,
+}: Props) {
   const isTie = results.monthly_difference === 0;
+  const nameA = scenarioA || "Option A";
+  const nameB = scenarioB || "Option B";
 
   return (
-    <div className="mt-10 space-y-8 w-full max-w-full">
-      <h2 className="text-3xl font-bold">Comparison Results</h2>
-
-      <Table className="w-full">
-        <Table.ScrollContainer>
-          <Table.Content aria-label="Detailed Comparison Results">
-            <Table.Header>
-              <Table.Column isRowHeader>Metric</Table.Column>
-              <Table.Column>{results.first_result.scenario_name}</Table.Column>
-              <Table.Column>{results.second_result.scenario_name}</Table.Column>
-            </Table.Header>
-            <Table.Body>
-              <Table.Row>
-                <Table.Cell>Monthly Cost</Table.Cell>
-                <Table.Cell>
-                  ${results.first_result.monthly_expenses.toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
-                  ${results.second_result.monthly_expenses.toLocaleString()}
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Lease Cost</Table.Cell>
-                <Table.Cell>
-                  ${results.first_result.lease_expenses.toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
-                  ${results.second_result.lease_expenses.toLocaleString()}
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Monthly Surplus</Table.Cell>
-                <Table.Cell>
-                  ${results.first_result.monthly_surplus.toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
-                  ${results.second_result.monthly_surplus.toLocaleString()}
-                </Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Lease Surplus</Table.Cell>
-                <Table.Cell>
-                  ${results.first_result.lease_surplus.toLocaleString()}
-                </Table.Cell>
-                <Table.Cell>
-                  ${results.second_result.lease_surplus.toLocaleString()}
-                </Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table.Content>
-        </Table.ScrollContainer>
-      </Table>
-
-      <div className="flex flex-col gap-6 w-full">
-        <Card className="w-full bg-content1 shadow-sm p-6">
-          <h3 className="mb-4 text-xl font-semibold">Financial Tradeoffs</h3>
-
-          <div className="space-y-3">
-            {isTie ? (
-              <p className="flex items-center gap-2">
-                <Scale className="size-4 text-default-500" />
-                <strong>Monthly Cost:</strong> Equal
+    <div className="flex flex-col gap-5 w-full">
+      {/* Summary Section */}
+      <div className="flex items-start gap-3">
+        {isTie ? (
+          <Scale className="text-primary size-6 shrink-0 mt-0.5" />
+        ) : (
+          <TrendingDown className="text-success size-6 shrink-0 mt-0.5" />
+        )}
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            SUMMARY
+          </span>
+          {isTie ? (
+            <>
+              <h4 className="text-sm font-semibold text-primary">
+                Costs are equal
+              </h4>
+              <p className="text-xs text-default-600">
+                Both options have the same financial impact.
               </p>
-            ) : (
-              <p className="flex items-center gap-2">
-                <TrendingDown className="size-4 text-default-500" />
-                <strong>Lower-Cost Option:</strong>{" "}
-                {results.lower_monthly_cost_scenario}
+            </>
+          ) : (
+            <>
+              <h4 className="text-sm font-bold text-success">
+                {results.lower_monthly_cost_scenario} is cheaper
+              </h4>
+              <p className="text-xs font-medium text-default-600">
+                Saves{" "}
+                <span className="text-success font-bold">
+                  ${results.monthly_difference.toLocaleString()}
+                </span>{" "}
+                /mo
               </p>
-            )}
+            </>
+          )}
+        </div>
+      </div>
 
-            <p className="pl-6">
-              <strong>Monthly Difference:</strong> $
-              {results.monthly_difference.toLocaleString()}
-            </p>
-          </div>
-        </Card>
+      {/* Breakdown Section */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
+          <CircleDollarSign className="text-primary size-4 shrink-0" />
+          <h4 className="text-sm font-bold">Breakdown</h4>
+        </div>
+        <div className="flex flex-col">
+          <MetricRow
+            a={results.first_result.monthly_expenses}
+            b={results.second_result.monthly_expenses}
+            label="Total Monthly Cost"
+            nameA={nameA}
+            nameB={nameB}
+          />
+          <MetricRow
+            a={results.first_result.lease_expenses}
+            b={results.second_result.lease_expenses}
+            label="Total Lease Cost"
+            nameA={nameA}
+            nameB={nameB}
+          />
+          <MetricRow
+            a={results.first_result.monthly_surplus}
+            b={results.second_result.monthly_surplus}
+            label="Monthly Surplus"
+            nameA={nameA}
+            nameB={nameB}
+          />
+        </div>
+      </div>
 
-        <Card className="w-full bg-content1 shadow-sm p-6">
-          <h3 className="mb-4 text-xl font-semibold flex items-center gap-2">
-            <Info className="size-5 text-default-500" />
-            Financial Interpretation
-          </h3>
-
-          <div className="space-y-3">
-            {isTie ? (
-              <p className="text-default-700">
-                Both options have the same monthly cost.
-              </p>
-            ) : (
-              <p className="text-default-700">
-                {results.lower_monthly_cost_scenario} costs $
-                {results.monthly_difference.toLocaleString()} less per month.
-              </p>
-            )}
-
-            <p className="text-sm text-default-500">
-              This information is intended to present financial tradeoffs only
-              and should not be interpreted as a recommendation.
-            </p>
-          </div>
-        </Card>
+      {/* Note Section */}
+      <div className="flex items-start gap-2 bg-content2/50 p-3 rounded-lg border border-separator/30">
+        <Info className="size-4 text-default-500 shrink-0" />
+        <p className="text-xs text-default-500 leading-relaxed font-medium">
+          This presents financial tradeoffs only and should not be interpreted
+          as a firm financial recommendation.
+        </p>
       </div>
     </div>
   );

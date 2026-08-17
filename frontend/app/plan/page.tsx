@@ -1,6 +1,6 @@
 export default function PlanPage() {
   return (
-    <div className="p-6">
+    <div className="pb-12">
       <h1 className="mb-2 text-4xl font-bold">Financial Plan</h1>
 
       <p className="text-default-500">Build and manage your financial plan.</p>
