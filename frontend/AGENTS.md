@@ -30,7 +30,7 @@ This file provides instructions and context for AI coding agents working on the 
 - `types/` - TypeScript type definitions.
 
 ## Guidelines for Agents
-1. **Component Design:** Prioritize creating reusable components in the `components/` directory.
+1. **Component Design:** Prioritize creating reusable components in the `components/` directory. Page-specific components, hooks, and tests should be colocated directly within the `app/` folder alongside the route they belong to (e.g., `app/compare/CompareForm.tsx`).
 2. **Styling:** Use TailwindCSS utility classes for styling. Avoid writing custom CSS unless absolutely necessary.
 3. **UI Components:** Leverage HeroUI components whenever possible to maintain a consistent design language.
 4. **Icons:** Use `lucide-react` for all icons.

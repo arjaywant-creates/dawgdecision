@@ -28,10 +28,10 @@ import {
   saveComparisonAction,
   updateComparisonAction,
 } from "./actions";
+import ScenarioForm from "./ScenarioForm";
+import ComparisonResults from "./ComparisonResults";
 
 import { Prisma } from "@/generated/prisma/client";
-import ScenarioForm from "@/components/compare/ScenarioForm";
-import ComparisonResults from "@/components/compare/ComparisonResults";
 import {
   CompareRequest,
   CompareRequestSchema,

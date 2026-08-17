@@ -31,9 +31,5 @@ export const siteConfig = {
       label: "Financial Plan",
       href: "/plan",
     },
-    {
-      label: "About",
-      href: "/about",
-    },
   ],
 };

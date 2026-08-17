@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth";
 export default async function ComparePage({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const id = (await searchParams).id as string | undefined;
 
