@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Input,
   Label,
@@ -83,7 +84,7 @@ function FieldController({
   );
 }
 
-export default function ScenarioForm({ title, prefix, control }: Props) {
+export default memo(function ScenarioForm({ title, prefix, control }: Props) {
   return (
     <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
       <Fieldset className="w-full">
@@ -155,4 +156,4 @@ export default function ScenarioForm({ title, prefix, control }: Props) {
       </Fieldset>
     </Surface>
   );
-}
+});

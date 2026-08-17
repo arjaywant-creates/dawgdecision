@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Button,
   Spinner,
@@ -223,7 +223,7 @@ export default function CompareForm({
     }
   };
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     const emptyData = {
       scenario_a: { ...initialScenario },
       scenario_b: { ...initialScenario },
@@ -239,9 +239,9 @@ export default function CompareForm({
     if (comparisonId) {
       router.push("/compare");
     }
-  };
+  }, [reset, setFormData, setStoreResults, comparisonId, router]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!session || !results) return;
     setIsSaving(true);
     setServerError(null);
@@ -279,7 +279,7 @@ export default function CompareForm({
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [session, results, isEditing, comparisonId, getValues]);
 
   return (
     <div className="pb-12">
