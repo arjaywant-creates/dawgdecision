@@ -2,43 +2,72 @@
 
 ## Purpose
 
-This document defines the current MVP API contract between the React/Next.js frontend, FastAPI backend, and DawgDecision decision engine.
+This document defines the MVP API contract between the React/Next.js frontend, FastAPI backend, persistence layer, and DawgDecision decision engine.
 
-The contract reflects the current Week 2 housing-comparison architecture and may evolve as additional decision categories and consolidated-plan functionality are added.
+The contract reflects the Housing v1 comparison model used in Deliverable Set 4.
+
+The decision engine remains the source of truth for all housing-comparison calculations and tradeoff logic.
+
+The FastAPI layer should expose that behavior rather than reimplement it.
+
+---
 
 ## Base Behavior
 
 The FastAPI layer is responsible for:
 
-1. Receiving and validating request data.
-2. Converting request data into decision-engine models.
-3. Calling the decision engine.
-4. Returning structured results to the frontend.
+1. Receiving request data.
+2. Validating request structure.
+3. Converting request data into decision-engine models.
+4. Calling the decision engine.
+5. Returning structured results to the frontend.
+6. Enforcing authentication and ownership where persistence is involved.
 
-The FastAPI layer should not duplicate the financial calculations performed by the decision engine.
+The FastAPI layer should not duplicate financial calculations or tradeoff logic already implemented in the decision engine.
 
 ---
 
-## Analyze One Scenario
+# Housing Scenario Model
 
-### Endpoint
+Each housing option uses the following fields.
 
-`POST /api/analyze`
+## Required Fields
 
-### Purpose
+- `name`
+- `housing_cost`
+- `cost_period_months`
+- `contract_months`
 
-Analyzes one housing scenario and returns its calculated financial results.
+## Optional Fields
 
-### Request
+- `utilities`
+- `mandatory_fees`
+- `parking`
+- `transportation`
+- `upfront_costs`
+- `commute_minutes`
+
+Optional values may be `null`.
+
+Important:
+
+- `null` means unknown or not provided.
+- `0` means the value is explicitly known to be zero.
+
+The backend and frontend must preserve this distinction.
+
+Example:
 
 ```json
 {
   "name": "Apartment A",
-  "monthly_income": 1500,
-  "rent": 900,
-  "utilities": 100,
-  "transportation": 150,
-  "mandatory_fees": 50,
-  "other_expenses": 0,
-  "lease_months": 12
+  "housing_cost": 1200,
+  "cost_period_months": 1,
+  "contract_months": 12,
+  "utilities": 110,
+  "mandatory_fees": 35,
+  "parking": 60,
+  "transportation": 80,
+  "upfront_costs": 620,
+  "commute_minutes": 20
 }
