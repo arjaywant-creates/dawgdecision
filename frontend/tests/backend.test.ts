@@ -1,15 +1,17 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { deleteComparisonAction } from '../app/actions';
-import { saveComparisonAction } from '../app/compare/actions';
+import { deleteComparisonAction, saveComparisonAction, updateComparisonAction } from '../app/compare/actions';
 
 const mockPrisma = vi.hoisted(() => ({
   comparison: {
     create: vi.fn(),
     findUnique: vi.fn(),
+    findMany: vi.fn(),
+    update: vi.fn(),
   },
   scenario: {
     create: vi.fn(),
     delete: vi.fn(),
+    update: vi.fn(),
   },
   $transaction: vi.fn(),
 }));
@@ -87,6 +89,14 @@ describe('Backend & Access Control Tests', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe("Unauthorized");
     });
+
+    it('should prevent unauthenticated access to update comparison', async () => {
+      const result = await updateComparisonAction("comp_123", {} as any, {} as any, {} as any);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe("Unauthorized");
+    });
+
+
   });
 
   describe('Authenticated Access & CRUD Operations', () => {
@@ -115,6 +125,38 @@ describe('Backend & Access Control Tests', () => {
       expect(callArgs.data.user.connect.id).toBe("test_user_123");
     });
 
+
+
+    it('should update an existing comparison for the logged-in user', async () => {
+      mockPrisma.comparison.findUnique.mockResolvedValueOnce({ 
+        id: "comp_123", 
+        userId: "test_user_123",
+        firstScenarioId: "scen_1",
+        secondScenarioId: "scen_2" 
+      } as any);
+
+      mockPrisma.scenario.update.mockResolvedValue({} as any);
+      mockPrisma.comparison.update.mockResolvedValue({ id: "comp_123" } as any);
+
+      const scenarioA = { name: "Updated A", monthly_income: 1500, rent: 500, utilities: 100, transportation: 50 };
+      const scenarioB = { name: "Updated B", monthly_income: 1500, rent: 600, utilities: 100, transportation: 50 };
+      const compareResult = { 
+        lower_monthly_cost_scenario: "Updated A", 
+        monthly_difference: 100,
+        first_result: { monthly_expenses: 650, lease_expenses: 7800, monthly_surplus: 850, lease_surplus: 10200 },
+        second_result: { monthly_expenses: 750, lease_expenses: 9000, monthly_surplus: 750, lease_surplus: 9000 }
+      };
+
+      const result = await updateComparisonAction("comp_123", scenarioA as any, scenarioB as any, compareResult as any);
+
+      expect(result.success).toBe(true);
+      expect(mockPrisma.comparison.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "comp_123", userId: "test_user_123" } })
+      );
+      expect(mockPrisma.scenario.update).toHaveBeenCalledTimes(2);
+      expect(mockPrisma.comparison.update).toHaveBeenCalledTimes(1);
+    });
+
     it('should delete a comparison if it belongs to the user', async () => {
       mockPrisma.comparison.findUnique.mockResolvedValueOnce({ 
         id: "comp_123", 
@@ -138,14 +180,32 @@ describe('Backend & Access Control Tests', () => {
       mockState.session = { user: { id: "malicious_user" } };
     });
 
+
+
     it('should prevent deleting another users comparison', async () => {
       mockPrisma.comparison.findUnique.mockResolvedValueOnce(null);
 
       const result = await deleteComparisonAction("comp_victim_123");
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe("Comparison not found");
+      expect(result.error).toBe("Comparison not found.");
+      expect(mockPrisma.comparison.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "comp_victim_123", userId: "malicious_user" } })
+      );
       expect(mockPrisma.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('should prevent updating another users comparison', async () => {
+      mockPrisma.comparison.findUnique.mockResolvedValueOnce(null);
+
+      const result = await updateComparisonAction("comp_victim_123", {} as any, {} as any, {} as any);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe("Comparison not found.");
+      expect(mockPrisma.comparison.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: "comp_victim_123", userId: "malicious_user" } })
+      );
+      expect(mockPrisma.scenario.update).not.toHaveBeenCalled();
     });
   });
 });
