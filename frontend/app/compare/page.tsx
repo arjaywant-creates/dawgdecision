@@ -31,6 +31,7 @@ export default async function ComparePage({
 
   return (
     <CompareForm
+      key={id || "new"}
       comparisonId={id || null}
       initialComparison={initialComparison}
     />

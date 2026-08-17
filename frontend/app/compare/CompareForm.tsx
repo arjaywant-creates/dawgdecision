@@ -167,13 +167,15 @@ export default function CompareForm({
 
   // Sync form edits to Zustand drafts automatically
   useEffect(() => {
+    if (isEditing) return;
+
     // eslint-disable-next-line react-hooks/incompatible-library
     const subscription = watch((value) => {
       setFormData(value as CompareRequest);
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, setFormData]);
+  }, [watch, setFormData, isEditing]);
 
   // Sync results to Zustand
   useEffect(() => {
