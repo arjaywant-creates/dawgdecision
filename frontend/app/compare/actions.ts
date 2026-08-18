@@ -8,6 +8,12 @@ import { Scenario, ComparisonResult } from "@/types/comparison";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+/**
+ * Compares two housing scenarios against the decision engine to calculate financial outcomes.
+ * @param scenarioA The first scenario input data.
+ * @param scenarioB The second scenario input data.
+ * @returns An object containing success status and the ComparisonResult if successful.
+ */
 export async function compareScenariosAction(
   scenarioA: Scenario,
   scenarioB: Scenario,
@@ -21,6 +27,13 @@ export async function compareScenariosAction(
   }
 }
 
+/**
+ * Saves a new comparison and its associated scenarios to the database for the authenticated user.
+ * @param scenarioA The first scenario input data.
+ * @param scenarioB The second scenario input data.
+ * @param result The calculated results of the comparison.
+ * @returns The saved Comparison object from the database or an error state.
+ */
 export async function saveComparisonAction(
   scenarioA: Scenario,
   scenarioB: Scenario,
@@ -77,9 +90,7 @@ export async function saveComparisonAction(
     revalidatePath("/comparisons");
 
     return { success: true, data: savedComparison };
-  } catch (error) {
-    console.error("Save Comparison Error:", error);
-
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred while saving. Please try again.",
@@ -87,6 +98,11 @@ export async function saveComparisonAction(
   }
 }
 
+/**
+ * Deletes an existing comparison and its associated scenarios from the database.
+ * @param comparisonId The unique identifier of the comparison to delete.
+ * @returns Success status or an error message.
+ */
 export async function deleteComparisonAction(comparisonId: string) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -109,13 +125,19 @@ export async function deleteComparisonAction(comparisonId: string) {
     revalidatePath("/comparisons");
 
     return { success: true };
-  } catch (error) {
-    console.error("Delete Comparison Error:", error);
-
+  } catch {
     return { success: false, error: "Unable to delete comparison." };
   }
 }
 
+/**
+ * Updates an existing comparison and its scenarios in the database.
+ * @param comparisonId The unique identifier of the comparison to update.
+ * @param scenarioA The updated first scenario data.
+ * @param scenarioB The updated second scenario data.
+ * @param result The newly calculated comparison results.
+ * @returns The updated Comparison object or an error message.
+ */
 export async function updateComparisonAction(
   comparisonId: string,
   scenarioA: Scenario,
@@ -182,9 +204,7 @@ export async function updateComparisonAction(
     revalidatePath("/comparisons");
 
     return { success: true, data: updatedComparison };
-  } catch (error) {
-    console.error("Update Comparison Error:", error);
-
+  } catch {
     return { success: false, error: "Unable to update comparison." };
   }
 }

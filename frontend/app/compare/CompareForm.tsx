@@ -1,6 +1,11 @@
 "use client";
 
+/** React & Next.js */
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import NextLink from "next/link";
+
+/** UI Components (HeroUI) */
 import {
   Button,
   Spinner,
@@ -11,8 +16,12 @@ import {
   toast,
   Surface,
 } from "@heroui/react";
+
+/** Form Handling & Validation */
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+/** Icons */
 import {
   Calculator,
   Eraser,
@@ -20,9 +29,8 @@ import {
   ArrowRight,
   CheckCircle2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import NextLink from "next/link";
 
+/** Local Actions & Components */
 import {
   compareScenariosAction,
   saveComparisonAction,
@@ -31,6 +39,7 @@ import {
 import ScenarioForm from "./ScenarioForm";
 import ComparisonResults from "./ComparisonResults";
 
+/** Types, State & Auth */
 import { Prisma } from "@/generated/prisma/client";
 import {
   CompareRequest,
@@ -60,7 +69,11 @@ interface Props {
   comparisonId: string | null;
 }
 
-// Extracts and formats the results state from database comparison to the UI
+/**
+ * Extracts and formats the results state from database comparison to the UI
+ * @param comparison - The database comparison object
+ * @returns Formatted comparison result or null
+ */
 function getInitialResultsState(
   comparison: ComparisonWithScenarios | null,
 ): ComparisonResult | null {
@@ -86,7 +99,11 @@ function getInitialResultsState(
   };
 }
 
-// Set the form values if editing an existing comparison.
+/**
+ * Set the form values if editing an existing comparison.
+ * @param comparison - The database comparison object
+ * @returns Initial values for the compare request form
+ */
 function getInitialFormValues(
   comparison: ComparisonWithScenarios | null,
 ): CompareRequest {
@@ -121,10 +138,14 @@ function getInitialFormValues(
   };
 }
 
+/**
+ * Main form component for comparing two housing scenarios
+ */
 export default function CompareForm({
   initialComparison,
   comparisonId,
 }: Props) {
+  /** Convert to boolean using !! to ensure strict boolean type for edit mode */
   const isEditing = !!comparisonId && !!initialComparison;
 
   const setFormData = useCompareStore((state) => state.setFormData);
@@ -287,6 +308,7 @@ export default function CompareForm({
     <div className="pb-12">
       <Toast.Provider />
 
+      {/* Header Section */}
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-4xl font-bold flex items-center gap-3">
@@ -307,6 +329,7 @@ export default function CompareForm({
         </NextLink>
       </div>
 
+      {/* Error Alert Section */}
       <div className="mb-6">
         {serverError && (
           <Alert status="danger">
@@ -319,12 +342,15 @@ export default function CompareForm({
         )}
       </div>
 
+      {/* Main Grid Layout */}
       <div className="grid gap-8 lg:grid-cols-12 items-start">
+        {/* Left Column: Forms */}
         <div className="lg:col-span-8 flex flex-col gap-6">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
               <ScenarioForm
                 control={control}
@@ -338,6 +364,7 @@ export default function CompareForm({
               />
             </div>
 
+            {/* Action Buttons */}
             <div className="mt-8 flex gap-4">
               <Button
                 className="font-semibold flex-1 md:flex-none shadow-sm"
@@ -376,15 +403,18 @@ export default function CompareForm({
           </Form>
         </div>
 
+        {/* Right Column: Sticky Results Container */}
         <div className="col-span-12 lg:col-span-4 sticky top-24">
           <Surface
             className="w-full h-full min-h-[350px] flex flex-col rounded-2xl shadow-sm border border-separator/30 overflow-hidden p-0"
             variant="default"
           >
+            {/* Results Header */}
             <div className="p-5 border-b border-separator/50 bg-content2/30">
               <h3 className="text-lg font-bold">Results</h3>
             </div>
 
+            {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
               {results ? (
                 <>
@@ -394,6 +424,7 @@ export default function CompareForm({
                     scenarioB={scenarioBName}
                   />
 
+                  {/* Save Actions Section */}
                   <div className="mt-auto pt-8">
                     {session ? (
                       <div className="flex flex-col gap-2">
@@ -441,6 +472,7 @@ export default function CompareForm({
                   </div>
                 </>
               ) : (
+                /* Empty Results State */
                 <div className="flex flex-col items-center justify-center text-center h-full gap-4 py-12">
                   <div className="w-16 h-16 bg-content2 rounded-full flex items-center justify-center mb-2">
                     <Calculator className="w-8 h-8 text-default-400" />

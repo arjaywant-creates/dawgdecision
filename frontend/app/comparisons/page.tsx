@@ -1,13 +1,22 @@
+/** React & Next.js */
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import NextLink from "next/link";
+
+/** UI Components (HeroUI) */
 import { Button, Card } from "@heroui/react";
 
+/** Auth & Database */
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+
+/** Local Components & Actions */
 import { ComparisonCard } from "@/components/ComparisonCard";
 import { deleteComparisonAction } from "@/app/compare/actions";
 
+/**
+ * Page displaying all saved comparisons for an authenticated user
+ */
 export default async function SavedComparisonsPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -29,6 +38,7 @@ export default async function SavedComparisonsPage() {
 
   return (
     <div className="pb-12">
+      {/* Header Section */}
       <h1 className="mb-8 text-4xl font-bold">Saved Comparisons</h1>
 
       {comparisons.length === 0 ? (

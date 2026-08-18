@@ -1,14 +1,25 @@
+/** React & Next.js */
 import NextLink from "next/link";
 import { headers } from "next/headers";
+
+/** UI Components (HeroUI) */
 import { Card, Button } from "@heroui/react";
+
+/** Icons */
 import { ArrowRight } from "lucide-react";
 
+/** Local Components & Actions */
 import { ComparisonCard } from "@/components/ComparisonCard";
+import StatCard from "@/components/StatCard";
+import { deleteComparisonAction } from "@/app/compare/actions";
+
+/** Auth & Database */
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { deleteComparisonAction } from "@/app/compare/actions";
-import StatCard from "@/components/StatCard";
 
+/**
+ * Main dashboard home page for authenticated users and guests
+ */
 export default async function Home() {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -22,6 +33,7 @@ export default async function Home() {
           secondScenario: true,
         },
         orderBy: { createdAt: "desc" },
+        // Limit to 4 comparisons to fit nicely on the dashboard grid
         take: 4,
       })
     : [];
@@ -34,6 +46,7 @@ export default async function Home() {
 
   return (
     <div className="pb-12">
+      {/* Header Section */}
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="mb-2 text-4xl font-bold">Dashboard</h1>
@@ -49,12 +62,14 @@ export default async function Home() {
         </NextLink>
       </div>
 
+      {/* Stats Grid Section */}
       <div className="grid gap-6 md:grid-cols-3">
         <StatCard title="Financial Plans" value="0" />
         <StatCard title="Comparisons" value={comparisonCount.toString()} />
         <StatCard title="Goals" value="0" />
       </div>
 
+      {/* Recent Comparisons Section */}
       <div className="mt-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold">Recent Comparisons</h2>

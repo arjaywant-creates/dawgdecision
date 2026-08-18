@@ -1,5 +1,7 @@
+/** Icons */
 import { Info, TrendingDown, Scale, CircleDollarSign } from "lucide-react";
 
+/** Types */
 import { ComparisonResult } from "@/types/comparison";
 
 interface Props {
@@ -16,6 +18,9 @@ interface MetricRowProps {
   nameB: string;
 }
 
+/**
+ * Reusable row component for displaying a specific financial metric comparison
+ */
 const MetricRow = ({ label, a, b, nameA, nameB }: MetricRowProps) => (
   <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
     <span className="text-xs text-default-500 uppercase tracking-wider font-semibold mb-1">
@@ -32,6 +37,9 @@ const MetricRow = ({ label, a, b, nameA, nameB }: MetricRowProps) => (
   </div>
 );
 
+/**
+ * Component to display the calculated comparison results
+ */
 export default function ComparisonResults({
   results,
   scenarioA,

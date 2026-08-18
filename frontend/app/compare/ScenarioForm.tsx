@@ -1,4 +1,7 @@
+/** React & Next.js */
 import { memo } from "react";
+
+/** UI Components (HeroUI) */
 import {
   Input,
   Label,
@@ -9,8 +12,11 @@ import {
   Description,
   Surface,
 } from "@heroui/react";
+
+/** Form Handling & Validation */
 import { Controller, Control, Path } from "react-hook-form";
 
+/** Types */
 import { CompareRequest } from "@/types/comparison";
 
 interface Props {
@@ -19,6 +25,9 @@ interface Props {
   control: Control<CompareRequest>;
 }
 
+/**
+ * Controller wrapper for form fields to handle typing and validation automatically
+ */
 function FieldController({
   name,
   label,
@@ -41,6 +50,7 @@ function FieldController({
       render={({ field, fieldState }) => (
         <TextField
           className="w-full"
+          /** Convert error object to a boolean to indicate invalid state */
           isInvalid={!!fieldState.error}
           type={type}
           value={
@@ -84,6 +94,9 @@ function FieldController({
   );
 }
 
+/**
+ * Reusable form component for capturing scenario details
+ */
 export default memo(function ScenarioForm({ title, prefix, control }: Props) {
   return (
     <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
@@ -95,6 +108,7 @@ export default memo(function ScenarioForm({ title, prefix, control }: Props) {
           Enter the financial details for {title.toLowerCase()}.
         </Description>
 
+        {/* Form Fields */}
         <FieldGroup>
           <FieldController
             control={control}
