@@ -22,17 +22,10 @@ import {
 /** Form Handling & Validation */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-/** Auth Actions */
+/** Auth Actions & Types */
 import { signIn } from "@/lib/auth-client";
-
-const loginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginInput = z.infer<typeof loginSchema>;
+import { loginSchema, type LoginInput } from "@/types/auth";
 
 /**
  * Login page component handling user authentication
@@ -74,7 +67,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-100px)] py-10">
+    <div className="flex justify-center items-center flex-1 pt-4 pb-24">
       {/* Login Card Surface */}
       <Surface
         className="w-full max-w-md rounded-2xl shadow-sm p-6"

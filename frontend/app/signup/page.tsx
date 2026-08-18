@@ -22,18 +22,10 @@ import {
 /** Form Handling & Validation */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
-/** Auth Actions */
+/** Auth Actions & Types */
 import { signUp } from "@/lib/auth-client";
-
-const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type SignupInput = z.infer<typeof signupSchema>;
+import { signupSchema, type SignupInput } from "@/types/auth";
 
 /**
  * Signup page component handling new user registration
@@ -78,7 +70,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-100px)] py-10">
+    <div className="flex justify-center items-center flex-1 pt-4 pb-24">
       {/* Signup Card Surface */}
       <Surface
         className="w-full max-w-md rounded-2xl shadow-sm p-6"
@@ -147,6 +139,23 @@ export default function SignupPage() {
                 <Description>Must be at least 8 characters</Description>
                 {errors.password && (
                   <FieldError>{errors.password.message}</FieldError>
+                )}
+              </TextField>
+              <TextField
+                isRequired
+                className="w-full"
+                /** Convert error object to boolean */
+                isInvalid={!!errors.confirmPassword}
+              >
+                <Label>Confirm Password</Label>
+                <Input
+                  placeholder="Confirm your password"
+                  type="password"
+                  variant="secondary"
+                  {...register("confirmPassword")}
+                />
+                {errors.confirmPassword && (
+                  <FieldError>{errors.confirmPassword.message}</FieldError>
                 )}
               </TextField>
             </Fieldset.Group>
