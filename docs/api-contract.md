@@ -12,7 +12,20 @@ The FastAPI layer should expose that behavior rather than reimplement it.
 
 ---
 
-## Base Behavior
+- Individual housing scenario analysis
+- Two-scenario housing comparison
+
+Deliverable Set 3 adds:
+
+- Authentication-backed user access
+- Saved comparisons
+- Persistent comparison retrieval, updating, and deletion
+
+The current housing model is intentionally an MVP model and may change before private beta. Persistence should therefore avoid unnecessarily coupling the rest of the application to the exact current housing fields.
+
+---
+
+# Base Behavior
 
 The FastAPI layer is responsible for:
 
