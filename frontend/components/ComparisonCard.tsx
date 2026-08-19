@@ -17,7 +17,6 @@ interface Props {
 }
 
 export function ComparisonCard({ comp, onDelete }: Props) {
-  const isTie = comp.monthlyDifference === 0;
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -53,38 +52,24 @@ export function ComparisonCard({ comp, onDelete }: Props) {
       <Card.Content className="pt-2 px-4 pb-4 flex flex-col flex-1">
         <div className="flex flex-col gap-1 mb-4 flex-1">
           <div className="text-sm">
-            <span className="font-medium text-muted-foreground mr-1">
-              Winner:
-            </span>
-            <span
-              className={
-                isTie
-                  ? "font-semibold text-muted"
-                  : "font-semibold text-success"
-              }
-            >
-              {isTie ? "Tie" : comp.lowerMonthlyCostScenario}
+            <span className="text-muted-foreground">
+              {comp.firstScenario?.name || "Option A"}: $
+              {comp.firstScenario?.housingCost?.toLocaleString()}
             </span>
           </div>
           <div className="text-sm">
-            <span className="font-medium text-muted-foreground mr-1">
-              Difference:
-            </span>
-            <span className="font-semibold">
-              ${comp.monthlyDifference?.toLocaleString()} /mo
+            <span className="text-muted-foreground">
+              {comp.secondScenario?.name || "Option B"}: $
+              {comp.secondScenario?.housingCost?.toLocaleString()}
             </span>
           </div>
         </div>
 
         <div className="flex justify-end items-center gap-2 mt-auto">
           <AlertDialog>
-            <Button
-              aria-label="Delete comparison"
-              className="bg-danger/10 text-danger hover:bg-danger hover:text-white"
-              size="sm"
-              variant="danger"
-            >
-              <Trash className="size-4 mr-1" /> Delete
+            <Button aria-label="Delete comparison" size="sm" variant="danger">
+              <Trash className="size-4" />
+              Delete
             </Button>
             <AlertDialog.Backdrop>
               <AlertDialog.Container>
@@ -124,8 +109,9 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           </AlertDialog>
 
           <NextLink href={`/compare?id=${comp.id}`}>
-            <Button className="font-medium" size="sm" variant="secondary">
-              Open <ExternalLink className="size-4 ml-1" />
+            <Button size="sm" variant="secondary">
+              <ExternalLink className="size-4" />
+              Open
             </Button>
           </NextLink>
         </div>

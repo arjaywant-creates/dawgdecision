@@ -2,12 +2,12 @@
 import { Info, TrendingDown, Scale, CircleDollarSign } from "lucide-react";
 
 /** Types */
-import { ComparisonResult } from "@/types/comparison";
+import { ComparisonResult, Scenario } from "@/types/comparison";
 
 interface Props {
   results: ComparisonResult;
-  scenarioA?: string;
-  scenarioB?: string;
+  scenarioA: Scenario;
+  scenarioB: Scenario;
 }
 
 interface MetricRowProps {
@@ -16,22 +16,30 @@ interface MetricRowProps {
   b: number;
   nameA: string;
   nameB: string;
+  aNull?: boolean;
+  bNull?: boolean;
 }
 
 /**
  * Reusable row component for displaying a specific financial metric comparison
  */
-const MetricRow = ({ label, a, b, nameA, nameB }: MetricRowProps) => (
+const MetricRow = ({
+  label,
+  a,
+  b,
+  nameA,
+  nameB,
+  aNull,
+  bNull,
+}: MetricRowProps) => (
   <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
-    <span className="text-xs text-default-500 uppercase tracking-wider font-semibold mb-1">
-      {label}
-    </span>
+    <span className="text-sm text-default-600 font-semibold mb-1">{label}</span>
     <div className="flex justify-between items-center text-sm">
-      <span className={`font-medium ${a < b ? "text-success" : ""}`}>
-        {nameA}: ${a.toLocaleString()}
+      <span className={`font-medium`}>
+        {nameA}: {aNull ? "Unknown" : `$${a?.toLocaleString()}`}
       </span>
-      <span className={`font-medium ${b < a ? "text-success" : ""}`}>
-        {nameB}: ${b.toLocaleString()}
+      <span className={`font-medium`}>
+        {nameB}: {bNull ? "Unknown" : `$${b?.toLocaleString()}`}
       </span>
     </div>
   </div>
@@ -45,79 +53,157 @@ export default function ComparisonResults({
   scenarioA,
   scenarioB,
 }: Props) {
-  const isTie = results.monthly_difference === 0;
-  const nameA = scenarioA || "Option A";
-  const nameB = scenarioB || "Option B";
+  const nameA = scenarioA?.name || "Option A";
+  const nameB = scenarioB?.name || "Option B";
+
+  const diffStr = (val: number | null) =>
+    val === null ? "Unknown" : `$${val.toLocaleString()}`;
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      {/* Summary Section */}
-      <div className="flex items-start gap-3">
-        {isTie ? (
-          <Scale className="text-primary size-6 shrink-0 mt-0.5" />
-        ) : (
-          <TrendingDown className="text-success size-6 shrink-0 mt-0.5" />
-        )}
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-            SUMMARY
-          </span>
-          {isTie ? (
-            <>
-              <h4 className="text-sm font-semibold text-primary">
-                Costs are equal
-              </h4>
-              <p className="text-xs text-default-600">
-                Both options have the same financial impact.
-              </p>
-            </>
-          ) : (
-            <>
-              <h4 className="text-sm font-bold text-success">
-                {results.lower_monthly_cost_scenario} is cheaper
-              </h4>
-              <p className="text-xs font-medium text-default-600">
-                Saves{" "}
-                <span className="text-success font-bold">
-                  ${results.monthly_difference.toLocaleString()}
-                </span>{" "}
-                /mo
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Breakdown Section */}
+      {/* Overview */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
           <CircleDollarSign className="text-primary size-4 shrink-0" />
-          <h4 className="text-sm font-bold">Breakdown</h4>
+          <h4 className="text-sm font-bold">Totals</h4>
         </div>
         <div className="flex flex-col">
           <MetricRow
-            a={results.first_result.monthly_expenses}
-            b={results.second_result.monthly_expenses}
-            label="Total Monthly Cost"
+            a={results.first_result.monthly_recurring_cost}
+            aNull={false}
+            b={results.second_result.monthly_recurring_cost}
+            bNull={false}
+            label="Monthly Recurring Subtotal"
             nameA={nameA}
             nameB={nameB}
           />
+          {!results.first_result.recurring_costs_complete ||
+          !results.second_result.recurring_costs_complete ? (
+            <p className="text-[10px] text-warning-500 mb-2">
+              Note: Monthly subtotal is incomplete due to unknown optional
+              costs.
+            </p>
+          ) : null}
+
           <MetricRow
-            a={results.first_result.lease_expenses}
-            b={results.second_result.lease_expenses}
-            label="Total Lease Cost"
+            a={results.first_result.term_cost}
+            aNull={false}
+            b={results.second_result.term_cost}
+            bNull={false}
+            label="Full-Term Cost"
             nameA={nameA}
             nameB={nameB}
           />
-          <MetricRow
-            a={results.first_result.monthly_surplus}
-            b={results.second_result.monthly_surplus}
-            label="Monthly Surplus"
-            nameA={nameA}
-            nameB={nameB}
-          />
+          {!results.first_result.term_cost_complete ||
+          !results.second_result.term_cost_complete ? (
+            <p className="text-[10px] text-warning-500 mb-2">
+              Note: Full-term cost is incomplete.
+            </p>
+          ) : null}
         </div>
       </div>
+
+      {/* Differences */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
+          <Scale className="text-primary size-4 shrink-0" />
+          <h4 className="text-sm font-bold">Category Differences</h4>
+        </div>
+        <div className="flex flex-col text-sm space-y-2 py-2">
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Monthly Cost</span>
+            <span className="font-semibold">
+              {diffStr(results.monthly_difference)}
+            </span>
+          </div>
+          {results.term_difference !== null && (
+            <div className="flex justify-between border-b border-separator/10 pb-1">
+              <span className="text-default-600">Full-Term Cost</span>
+              <span className="font-semibold">
+                {diffStr(results.term_difference)}
+              </span>
+            </div>
+          )}
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Housing</span>
+            <span className="font-semibold">
+              {diffStr(results.housing_cost_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Utilities</span>
+            <span className="font-semibold">
+              {diffStr(results.utilities_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Mandatory Fees</span>
+            <span className="font-semibold">
+              {diffStr(results.mandatory_fees_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Parking</span>
+            <span className="font-semibold">
+              {diffStr(results.parking_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Transportation</span>
+            <span className="font-semibold">
+              {diffStr(results.transportation_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between border-b border-separator/10 pb-1">
+            <span className="text-default-600">Upfront Costs</span>
+            <span className="font-semibold">
+              {diffStr(results.upfront_cost_difference)}
+            </span>
+          </div>
+          <div className="flex justify-between pb-1">
+            <span className="text-default-600">Commute Time</span>
+            <span className="font-semibold">
+              {results.commute_difference !== null
+                ? `${results.commute_difference} min`
+                : "Unknown"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tradeoffs */}
+      {results.tradeoffs && results.tradeoffs.length > 0 && (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-2">
+            <TrendingDown className="text-success size-4 shrink-0" />
+            <h4 className="text-sm font-bold">Key Tradeoffs</h4>
+          </div>
+          <div className="flex flex-col gap-2">
+            {results.tradeoffs.map((t, idx) => (
+              <div
+                key={idx}
+                className="bg-content2/50 p-3 rounded-lg border border-separator/30 text-sm"
+              >
+                {t.favored_scenario ? (
+                  <p>
+                    <strong className="text-success">
+                      {t.favored_scenario}
+                    </strong>{" "}
+                    wins on <strong>{t.type}</strong> by{" "}
+                    {t.type === "Shorter Commute"
+                      ? `${t.difference} min`
+                      : `$${t.difference.toLocaleString()}`}
+                  </p>
+                ) : (
+                  <p>
+                    Tie on <strong>{t.type}</strong>
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Note Section */}
       <div className="flex items-start gap-2 bg-content2/50 p-3 rounded-lg border border-separator/30">

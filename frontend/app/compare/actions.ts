@@ -4,7 +4,13 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 import { compareScenarios } from "@/lib/decision-engine";
-import { Scenario, ComparisonResult } from "@/types/comparison";
+
+import {
+  Scenario,
+  ComparisonResult,
+  ComparisonResultSchema,
+} from "@/types/comparison";
+
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
@@ -44,43 +50,41 @@ export async function saveComparisonAction(
 
     if (!session?.user) return { success: false, error: "Unauthorized" };
 
+    // Validate the result payload to prevent invalid JSON
+    const safeResult = ComparisonResultSchema.parse(result);
+
     const savedComparison = await prisma.comparison.create({
       data: {
         user: { connect: { id: session.user.id } },
-        lowerMonthlyCostScenario: result.lower_monthly_cost_scenario,
-        monthlyDifference: result.monthly_difference,
+        resultSnapshot: safeResult,
         firstScenario: {
           create: {
             user: { connect: { id: session.user.id } },
             name: scenarioA.name,
-            monthlyIncome: scenarioA.monthly_income,
-            rent: scenarioA.rent,
+            housingCost: scenarioA.housing_cost,
+            costPeriodMonths: scenarioA.cost_period_months,
+            contractMonths: scenarioA.contract_months,
             utilities: scenarioA.utilities,
+            mandatoryFees: scenarioA.mandatory_fees,
+            parking: scenarioA.parking,
             transportation: scenarioA.transportation,
-            mandatoryFees: scenarioA.mandatory_fees || 0,
-            otherExpenses: scenarioA.other_expenses || 0,
-            leaseMonths: scenarioA.lease_months || 12,
-            monthlyExpenses: result.first_result.monthly_expenses,
-            leaseExpenses: result.first_result.lease_expenses,
-            monthlySurplus: result.first_result.monthly_surplus,
-            leaseSurplus: result.first_result.lease_surplus,
+            upfrontCosts: scenarioA.upfront_costs,
+            commuteMinutes: scenarioA.commute_minutes,
           },
         },
         secondScenario: {
           create: {
             user: { connect: { id: session.user.id } },
             name: scenarioB.name,
-            monthlyIncome: scenarioB.monthly_income,
-            rent: scenarioB.rent,
+            housingCost: scenarioB.housing_cost,
+            costPeriodMonths: scenarioB.cost_period_months,
+            contractMonths: scenarioB.contract_months,
             utilities: scenarioB.utilities,
+            mandatoryFees: scenarioB.mandatory_fees,
+            parking: scenarioB.parking,
             transportation: scenarioB.transportation,
-            mandatoryFees: scenarioB.mandatory_fees || 0,
-            otherExpenses: scenarioB.other_expenses || 0,
-            leaseMonths: scenarioB.lease_months || 12,
-            monthlyExpenses: result.second_result.monthly_expenses,
-            leaseExpenses: result.second_result.lease_expenses,
-            monthlySurplus: result.second_result.monthly_surplus,
-            leaseSurplus: result.second_result.lease_surplus,
+            upfrontCosts: scenarioB.upfront_costs,
+            commuteMinutes: scenarioB.commute_minutes,
           },
         },
       },
@@ -160,17 +164,15 @@ export async function updateComparisonAction(
       where: { id: existingComparison.firstScenarioId },
       data: {
         name: scenarioA.name,
-        monthlyIncome: scenarioA.monthly_income,
-        rent: scenarioA.rent,
+        housingCost: scenarioA.housing_cost,
+        costPeriodMonths: scenarioA.cost_period_months,
+        contractMonths: scenarioA.contract_months,
         utilities: scenarioA.utilities,
+        mandatoryFees: scenarioA.mandatory_fees,
+        parking: scenarioA.parking,
         transportation: scenarioA.transportation,
-        mandatoryFees: scenarioA.mandatory_fees || 0,
-        otherExpenses: scenarioA.other_expenses || 0,
-        leaseMonths: scenarioA.lease_months || 12,
-        monthlyExpenses: result.first_result.monthly_expenses,
-        leaseExpenses: result.first_result.lease_expenses,
-        monthlySurplus: result.first_result.monthly_surplus,
-        leaseSurplus: result.first_result.lease_surplus,
+        upfrontCosts: scenarioA.upfront_costs,
+        commuteMinutes: scenarioA.commute_minutes,
       },
     });
 
@@ -178,25 +180,25 @@ export async function updateComparisonAction(
       where: { id: existingComparison.secondScenarioId },
       data: {
         name: scenarioB.name,
-        monthlyIncome: scenarioB.monthly_income,
-        rent: scenarioB.rent,
+        housingCost: scenarioB.housing_cost,
+        costPeriodMonths: scenarioB.cost_period_months,
+        contractMonths: scenarioB.contract_months,
         utilities: scenarioB.utilities,
+        mandatoryFees: scenarioB.mandatory_fees,
+        parking: scenarioB.parking,
         transportation: scenarioB.transportation,
-        mandatoryFees: scenarioB.mandatory_fees || 0,
-        otherExpenses: scenarioB.other_expenses || 0,
-        leaseMonths: scenarioB.lease_months || 12,
-        monthlyExpenses: result.second_result.monthly_expenses,
-        leaseExpenses: result.second_result.lease_expenses,
-        monthlySurplus: result.second_result.monthly_surplus,
-        leaseSurplus: result.second_result.lease_surplus,
+        upfrontCosts: scenarioB.upfront_costs,
+        commuteMinutes: scenarioB.commute_minutes,
       },
     });
+
+    // Validate the result payload to prevent invalid JSON
+    const safeResult = ComparisonResultSchema.parse(result);
 
     const updatedComparison = await prisma.comparison.update({
       where: { id: comparisonId },
       data: {
-        lowerMonthlyCostScenario: result.lower_monthly_cost_scenario,
-        monthlyDifference: result.monthly_difference,
+        resultSnapshot: safeResult,
       },
     });
 

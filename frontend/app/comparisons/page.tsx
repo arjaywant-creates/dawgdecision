@@ -5,6 +5,7 @@ import NextLink from "next/link";
 
 /** UI Components (HeroUI) */
 import { Button, Card } from "@heroui/react";
+import { Plus } from "lucide-react";
 
 /** Auth & Database */
 import { prisma } from "@/lib/db";
@@ -50,7 +51,10 @@ export default async function SavedComparisonsPage() {
               reference.
             </p>
             <NextLink href="/compare">
-              <Button variant="primary">Create Your First Comparison</Button>
+              <Button variant="primary">
+                <Plus className="size-4" />
+                Create Your First Comparison
+              </Button>
             </NextLink>
           </div>
         </Card>

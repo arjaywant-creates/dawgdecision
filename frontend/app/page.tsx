@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { Card, Button } from "@heroui/react";
 
 /** Icons */
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 
 /** Local Components & Actions */
 import { ComparisonCard } from "@/components/ComparisonCard";
@@ -54,11 +54,11 @@ export default async function Home() {
             Welcome back, {session?.user?.name || "Guest"}.
           </p>
         </div>
-        <NextLink
-          className="text-primary font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
-          href="/compare"
-        >
-          New Comparison <ArrowRight className="size-4" />
+        <NextLink href="/compare">
+          <Button variant="tertiary">
+            <Plus className="size-4" />
+            New Comparison
+          </Button>
         </NextLink>
       </div>
 
@@ -73,11 +73,11 @@ export default async function Home() {
       <div className="mt-12">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold">Recent Comparisons</h2>
-          <NextLink
-            className="text-primary font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
-            href="/comparisons"
-          >
-            View All <ArrowRight className="size-4" />
+          <NextLink href="/comparisons">
+            <Button variant="tertiary">
+              View All
+              <ArrowRight className="size-4" />
+            </Button>
           </NextLink>
         </div>
 
@@ -89,7 +89,10 @@ export default async function Home() {
                 Start comparing housing options to see them here.
               </p>
               <NextLink href="/compare">
-                <Button variant="primary">Create Comparison</Button>
+                <Button variant="primary">
+                  <Plus className="size-4" />
+                  Create Comparison
+                </Button>
               </NextLink>
             </div>
           </Card>

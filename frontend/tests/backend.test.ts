@@ -59,20 +59,20 @@ describe('Backend & Access Control Tests', () => {
   describe('Authentication (Signup/Login)', () => {
     it('should successfully sign up a new user', async () => {
       const { auth } = await import('@/lib/auth');
-      const result = await auth.api.signUp({ email: "new@example.com", password: "password123", name: "New User" });
+      const result = await (auth.api as any).signUp({ email: "new@example.com", password: "password123", name: "New User" });
       expect(result.user.id).toBe("new_user_123");
       expect(result.user.email).toBe("new@example.com");
     });
 
     it('should successfully log in an existing user', async () => {
       const { auth } = await import('@/lib/auth');
-      const result = await auth.api.signIn({ email: "test@example.com", password: "password" });
+      const result = await (auth.api as any).signIn({ email: "test@example.com", password: "password" });
       expect(result.user.id).toBe("test_user_123");
     });
 
     it('should reject login with invalid credentials', async () => {
       const { auth } = await import('@/lib/auth');
-      await expect(auth.api.signIn({ email: "wrong@example.com", password: "wrong" }))
+      await expect((auth.api as any).signIn({ email: "wrong@example.com", password: "wrong" }))
         .rejects.toThrow("Invalid credentials");
     });
   });
@@ -107,13 +107,38 @@ describe('Backend & Access Control Tests', () => {
     it('should save a comparison for the logged-in user', async () => {
       mockPrisma.comparison.create.mockResolvedValueOnce({ id: "new_comp_123" } as any);
 
-      const scenarioA = { name: "A", monthly_income: 1000, rent: 500, utilities: 100, transportation: 50 };
-      const scenarioB = { name: "B", monthly_income: 1000, rent: 600, utilities: 100, transportation: 50 };
+      const scenarioA = { name: "A", housing_cost: 500, cost_period_months: 1, contract_months: 12, utilities: 100, transportation: 50 };
+      const scenarioB = { name: "B", housing_cost: 600, cost_period_months: 1, contract_months: 12, utilities: 100, transportation: 50 };
+      const validDecisionResult = {
+        scenario_name: "A",
+        monthly_housing_cost: 500,
+        monthly_recurring_cost: 650,
+        term_cost: 7800,
+        upfront_costs: 0,
+        housing_cost: 500,
+        utilities: 100,
+        mandatory_fees: 0,
+        parking: 0,
+        transportation: 50,
+        commute_minutes: 0,
+        missing_recurring_costs: [],
+        recurring_costs_complete: true,
+        term_cost_complete: true,
+      };
+
       const compareResult = { 
-        lower_monthly_cost_scenario: "A", 
+        first_result: validDecisionResult,
+        second_result: { ...validDecisionResult, scenario_name: "B", monthly_recurring_cost: 750, term_cost: 9000 },
         monthly_difference: 100,
-        first_result: { monthly_expenses: 650, lease_expenses: 7800, monthly_surplus: 350, lease_surplus: 4200 },
-        second_result: { monthly_expenses: 750, lease_expenses: 9000, monthly_surplus: 250, lease_surplus: 3000 }
+        term_difference: 1200,
+        housing_cost_difference: 100,
+        utilities_difference: 0,
+        mandatory_fees_difference: 0,
+        parking_difference: 0,
+        transportation_difference: 0,
+        upfront_cost_difference: 0,
+        commute_difference: 0,
+        tradeoffs: [{ type: "Lower Monthly Cost", favored_scenario: "A", difference: 100 }],
       };
 
       const result = await saveComparisonAction(scenarioA as any, scenarioB as any, compareResult as any);
@@ -138,13 +163,38 @@ describe('Backend & Access Control Tests', () => {
       mockPrisma.scenario.update.mockResolvedValue({} as any);
       mockPrisma.comparison.update.mockResolvedValue({ id: "comp_123" } as any);
 
-      const scenarioA = { name: "Updated A", monthly_income: 1500, rent: 500, utilities: 100, transportation: 50 };
-      const scenarioB = { name: "Updated B", monthly_income: 1500, rent: 600, utilities: 100, transportation: 50 };
+      const scenarioA = { name: "Updated A", housing_cost: 500, cost_period_months: 1, contract_months: 12, utilities: 100, transportation: 50 };
+      const scenarioB = { name: "Updated B", housing_cost: 600, cost_period_months: 1, contract_months: 12, utilities: 100, transportation: 50 };
+      const validDecisionResult = {
+        scenario_name: "Updated A",
+        monthly_housing_cost: 500,
+        monthly_recurring_cost: 650,
+        term_cost: 7800,
+        upfront_costs: 0,
+        housing_cost: 500,
+        utilities: 100,
+        mandatory_fees: 0,
+        parking: 0,
+        transportation: 50,
+        commute_minutes: 0,
+        missing_recurring_costs: [],
+        recurring_costs_complete: true,
+        term_cost_complete: true,
+      };
+
       const compareResult = { 
-        lower_monthly_cost_scenario: "Updated A", 
+        first_result: validDecisionResult,
+        second_result: { ...validDecisionResult, scenario_name: "Updated B", monthly_recurring_cost: 750, term_cost: 9000 },
         monthly_difference: 100,
-        first_result: { monthly_expenses: 650, lease_expenses: 7800, monthly_surplus: 850, lease_surplus: 10200 },
-        second_result: { monthly_expenses: 750, lease_expenses: 9000, monthly_surplus: 750, lease_surplus: 9000 }
+        term_difference: 1200,
+        housing_cost_difference: 100,
+        utilities_difference: 0,
+        mandatory_fees_difference: 0,
+        parking_difference: 0,
+        transportation_difference: 0,
+        upfront_cost_difference: 0,
+        commute_difference: 0,
+        tradeoffs: [{ type: "Lower Monthly Cost", favored_scenario: "Updated A", difference: 100 }],
       };
 
       const result = await updateComparisonAction("comp_123", scenarioA as any, scenarioB as any, compareResult as any);

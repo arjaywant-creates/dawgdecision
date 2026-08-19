@@ -17,7 +17,7 @@ import {
 import { Controller, Control, Path } from "react-hook-form";
 
 /** Types */
-import { CompareRequest } from "@/types/comparison";
+import { CompareRequest, Scenario } from "@/types/comparison";
 
 interface Props {
   title: string;
@@ -98,6 +98,59 @@ function FieldController({
  * Reusable form component for capturing scenario details
  */
 export default memo(function ScenarioForm({ title, prefix, control }: Props) {
+  type FieldConfig = {
+    name: Path<Scenario>;
+    label: string;
+    placeholder?: string;
+    type?: "text" | "number";
+    min?: string;
+  };
+
+  const requiredFields: FieldConfig[] = [
+    { name: "name", label: "Housing Name", placeholder: title, type: "text" },
+    { name: "housing_cost", label: "Housing Cost (Your Share)", min: "0" },
+    {
+      name: "cost_period_months",
+      label: "Cost Period (Months)",
+      min: "1",
+      placeholder: "e.g. 1 for Monthly",
+    },
+    {
+      name: "contract_months",
+      label: "Contract/Stay Length (Months)",
+      min: "1",
+    },
+  ];
+
+  const optionalFields: FieldConfig[] = [
+    { name: "utilities", label: "Utilities", min: "0", placeholder: "Unknown" },
+    {
+      name: "mandatory_fees",
+      label: "Mandatory Recurring Fees",
+      min: "0",
+      placeholder: "Unknown",
+    },
+    { name: "parking", label: "Parking", min: "0", placeholder: "Unknown" },
+    {
+      name: "transportation",
+      label: "Transportation",
+      min: "0",
+      placeholder: "Unknown",
+    },
+    {
+      name: "upfront_costs",
+      label: "Upfront/Move-in Costs",
+      min: "0",
+      placeholder: "Unknown",
+    },
+    {
+      name: "commute_minutes",
+      label: "Commute Time (Minutes)",
+      min: "0",
+      placeholder: "Unknown",
+    },
+  ];
+
   return (
     <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
       <Fieldset className="w-full">
@@ -108,65 +161,46 @@ export default memo(function ScenarioForm({ title, prefix, control }: Props) {
           Enter the financial details for {title.toLowerCase()}.
         </Description>
 
-        {/* Form Fields */}
-        <FieldGroup>
-          <FieldController
-            control={control}
-            label="Scenario Name"
-            name={`${prefix}.name`}
-            placeholder={title}
-            type="text"
-          />
+        <div className="flex flex-col gap-6">
+          {/* Required Fields */}
+          <div>
+            <h4 className="font-semibold text-sm uppercase tracking-wide text-primary mb-3">
+              Required
+            </h4>
+            <FieldGroup>
+              {requiredFields.map((field) => (
+                <FieldController
+                  key={field.name}
+                  control={control}
+                  label={field.label}
+                  min={field.min}
+                  name={`${prefix}.${field.name}` as Path<CompareRequest>}
+                  placeholder={field.placeholder}
+                  type={field.type}
+                />
+              ))}
+            </FieldGroup>
+          </div>
 
-          <FieldController
-            control={control}
-            label="Monthly Income"
-            min="0"
-            name={`${prefix}.monthly_income`}
-          />
-
-          <FieldController
-            control={control}
-            label="Rent"
-            min="0"
-            name={`${prefix}.rent`}
-          />
-
-          <FieldController
-            control={control}
-            label="Utilities"
-            min="0"
-            name={`${prefix}.utilities`}
-          />
-
-          <FieldController
-            control={control}
-            label="Transportation"
-            min="0"
-            name={`${prefix}.transportation`}
-          />
-
-          <FieldController
-            control={control}
-            label="Mandatory Fees"
-            min="0"
-            name={`${prefix}.mandatory_fees`}
-          />
-
-          <FieldController
-            control={control}
-            label="Other Expenses"
-            min="0"
-            name={`${prefix}.other_expenses`}
-          />
-
-          <FieldController
-            control={control}
-            label="Lease Duration (Months)"
-            min="1"
-            name={`${prefix}.lease_months`}
-          />
-        </FieldGroup>
+          {/* Optional Fields */}
+          <div>
+            <h4 className="font-semibold text-sm uppercase tracking-wide text-default-400 mb-3">
+              Optional
+            </h4>
+            <FieldGroup>
+              {optionalFields.map((field) => (
+                <FieldController
+                  key={field.name}
+                  control={control}
+                  label={field.label}
+                  min={field.min}
+                  name={`${prefix}.${field.name}` as Path<CompareRequest>}
+                  placeholder={field.placeholder}
+                />
+              ))}
+            </FieldGroup>
+          </div>
+        </div>
       </Fieldset>
     </Surface>
   );

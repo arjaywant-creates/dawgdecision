@@ -45,19 +45,22 @@ import {
   CompareRequest,
   CompareRequestSchema,
   ComparisonResult,
+  ComparisonResultSchema,
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
 
 const initialScenario = {
   name: "",
-  monthly_income: 0,
-  rent: 0,
-  utilities: 0,
-  transportation: 0,
-  mandatory_fees: 0,
-  other_expenses: 0,
-  lease_months: 12,
+  housing_cost: 0,
+  cost_period_months: 1,
+  contract_months: 12,
+  utilities: null,
+  mandatory_fees: null,
+  parking: null,
+  transportation: null,
+  upfront_costs: null,
+  commute_minutes: null,
 };
 
 type ComparisonWithScenarios = Prisma.ComparisonGetPayload<{
@@ -77,26 +80,15 @@ interface Props {
 function getInitialResultsState(
   comparison: ComparisonWithScenarios | null,
 ): ComparisonResult | null {
-  if (!comparison) return null;
+  if (!comparison || !comparison.resultSnapshot) return null;
 
-  return {
-    first_result: {
-      scenario_name: comparison.firstScenario.name,
-      monthly_expenses: comparison.firstScenario.monthlyExpenses ?? 0,
-      lease_expenses: comparison.firstScenario.leaseExpenses ?? 0,
-      monthly_surplus: comparison.firstScenario.monthlySurplus ?? 0,
-      lease_surplus: comparison.firstScenario.leaseSurplus ?? 0,
-    },
-    second_result: {
-      scenario_name: comparison.secondScenario.name,
-      monthly_expenses: comparison.secondScenario.monthlyExpenses ?? 0,
-      lease_expenses: comparison.secondScenario.leaseExpenses ?? 0,
-      monthly_surplus: comparison.secondScenario.monthlySurplus ?? 0,
-      lease_surplus: comparison.secondScenario.leaseSurplus ?? 0,
-    },
-    lower_monthly_cost_scenario: comparison.lowerMonthlyCostScenario ?? "",
-    monthly_difference: comparison.monthlyDifference ?? 0,
-  };
+  // Rehydrate (load) the results from the database using Zod
+  try {
+    return ComparisonResultSchema.parse(comparison.resultSnapshot);
+  } catch {
+    // Failed to parse result snapshot
+    return null;
+  }
 }
 
 /**
@@ -117,23 +109,27 @@ function getInitialFormValues(
   return {
     scenario_a: {
       name: comparison.firstScenario.name,
-      monthly_income: comparison.firstScenario.monthlyIncome,
-      rent: comparison.firstScenario.rent,
+      housing_cost: comparison.firstScenario.housingCost,
+      cost_period_months: comparison.firstScenario.costPeriodMonths,
+      contract_months: comparison.firstScenario.contractMonths,
       utilities: comparison.firstScenario.utilities,
-      transportation: comparison.firstScenario.transportation,
       mandatory_fees: comparison.firstScenario.mandatoryFees,
-      other_expenses: comparison.firstScenario.otherExpenses,
-      lease_months: comparison.firstScenario.leaseMonths,
+      parking: comparison.firstScenario.parking,
+      transportation: comparison.firstScenario.transportation,
+      upfront_costs: comparison.firstScenario.upfrontCosts,
+      commute_minutes: comparison.firstScenario.commuteMinutes,
     },
     scenario_b: {
       name: comparison.secondScenario.name,
-      monthly_income: comparison.secondScenario.monthlyIncome,
-      rent: comparison.secondScenario.rent,
+      housing_cost: comparison.secondScenario.housingCost,
+      cost_period_months: comparison.secondScenario.costPeriodMonths,
+      contract_months: comparison.secondScenario.contractMonths,
       utilities: comparison.secondScenario.utilities,
-      transportation: comparison.secondScenario.transportation,
       mandatory_fees: comparison.secondScenario.mandatoryFees,
-      other_expenses: comparison.secondScenario.otherExpenses,
-      lease_months: comparison.secondScenario.leaseMonths,
+      parking: comparison.secondScenario.parking,
+      transportation: comparison.secondScenario.transportation,
+      upfront_costs: comparison.secondScenario.upfrontCosts,
+      commute_minutes: comparison.secondScenario.commuteMinutes,
     },
   };
 }
@@ -205,8 +201,8 @@ export default function CompareForm({
     }
   }, [results, isEditing, setStoreResults]);
 
-  const scenarioAName = watch("scenario_a.name");
-  const scenarioBName = watch("scenario_b.name");
+  const scenarioA = watch("scenario_a");
+  const scenarioB = watch("scenario_b");
 
   const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
     setServerError(null);
@@ -317,15 +313,15 @@ export default function CompareForm({
 
           <p className="mt-2 text-default-500">
             {isEditing
-              ? `Currently editing your comparison between ${scenarioAName || "Option A"} and ${scenarioBName || "Option B"}.`
+              ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
               : "Compare two housing options side-by-side to understand the financial tradeoffs."}
           </p>
         </div>
-        <NextLink
-          className="text-primary font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
-          href="/comparisons"
-        >
-          View Saved <ArrowRight className="size-4" />
+        <NextLink href="/comparisons">
+          <Button variant="tertiary">
+            View Saved
+            <ArrowRight className="size-4" />
+          </Button>
         </NextLink>
       </div>
 
@@ -409,19 +405,14 @@ export default function CompareForm({
             className="w-full h-full min-h-[350px] flex flex-col rounded-2xl shadow-sm border border-separator/30 overflow-hidden p-0"
             variant="default"
           >
-            {/* Results Header */}
-            <div className="p-5 border-b border-separator/50 bg-content2/30">
-              <h3 className="text-lg font-bold">Results</h3>
-            </div>
-
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
               {results ? (
                 <>
                   <ComparisonResults
                     results={results}
-                    scenarioA={scenarioAName}
-                    scenarioB={scenarioBName}
+                    scenarioA={scenarioA}
+                    scenarioB={scenarioB}
                   />
 
                   {/* Save Actions Section */}
