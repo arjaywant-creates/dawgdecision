@@ -12,11 +12,10 @@ The FastAPI layer should expose that behavior rather than reimplement it.
 
 ---
 
+The current API supports:
+
 - Individual housing scenario analysis
 - Two-scenario housing comparison
-
-Deliverable Set 3 adds:
-
 - Authentication-backed user access
 - Saved comparisons
 - Persistent comparison retrieval, updating, and deletion
