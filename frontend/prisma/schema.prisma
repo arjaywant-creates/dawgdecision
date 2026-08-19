@@ -100,19 +100,17 @@ model Scenario {
   userId          String?
   user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  name            String
-  monthlyIncome   Float
-  rent            Float
-  utilities       Float
-  transportation  Float
-  mandatoryFees   Float    @default(0)
-  otherExpenses   Float    @default(0)
-  leaseMonths     Int      @default(12)
+  name               String
+  housingCost        Float
+  costPeriodMonths   Int
+  contractMonths     Int
   
-  monthlyExpenses Float?
-  leaseExpenses   Float?
-  monthlySurplus  Float?
-  leaseSurplus    Float?
+  utilities          Float?
+  mandatoryFees      Float?
+  parking            Float?
+  transportation     Float?
+  upfrontCosts       Float?
+  commuteMinutes     Int?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -139,8 +137,7 @@ model Comparison {
   secondScenarioId            String
   secondScenario              Scenario  @relation("SecondScenario", fields: [secondScenarioId], references: [id], onDelete: Cascade)
 
-  lowerMonthlyCostScenario    String?
-  monthlyDifference           Float?
+  resultSnapshot              Json?
 
   createdAt                   DateTime  @default(now())
   updatedAt                   DateTime  @updatedAt

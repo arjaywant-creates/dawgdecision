@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "npm run dev --prefix frontend",
     "db": "npm run db --prefix frontend",
+    "db:push": "npm run db:push --prefix frontend",
+    "db:reset": "npm run db:reset --prefix frontend",
     "backend": "cd backend && venv/bin/uvicorn main:app --reload",
-    "backend:win": "cd backend && venv\\Scripts\\uvicorn main:app --reload"
+    "backend:win": "cd backend && venv\\Scripts\\uvicorn main:app --reload",
+    "start": "start.bat",
+    "start:unix": "bash start.sh"
   }
 }

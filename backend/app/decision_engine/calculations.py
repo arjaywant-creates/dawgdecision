@@ -37,6 +37,9 @@ def analyze_scenario(scenario: Scenario) -> DecisionResult:
             + _known_or_zero(scenario.upfront_costs)
     )
 
+    recurring_costs_complete = len(missing_recurring_costs) == 0
+    term_cost_complete = recurring_costs_complete and scenario.upfront_costs is not None
+
     return DecisionResult(
         scenario_name=scenario.name,
         monthly_housing_cost=monthly_housing_cost,
@@ -50,4 +53,6 @@ def analyze_scenario(scenario: Scenario) -> DecisionResult:
         transportation=scenario.transportation,
         commute_minutes=scenario.commute_minutes,
         missing_recurring_costs=missing_recurring_costs,
+        recurring_costs_complete=recurring_costs_complete,
+        term_cost_complete=term_cost_complete,
     )

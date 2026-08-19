@@ -1,66 +1,34 @@
-# dawgdecision
-Helping UGA students make smarter financial decisions through scenario planning.
+# DawgDecision Frontend
 
-This is a temporary README file. Subject to change.
+This directory contains the Next.js frontend for DawgDecision.
 
-# Stack
-- Next.js
-- TailwindCSS
-- HeroUI (Next.js UI Kit)
-- Zustand (Global State Management)
-- Lucide Icons
-- BetterAuth (Authentication)
-- Prisma (ORM)
-- PostgreSQL (Database)
-- Docker Compose (for running database and backend services)
+## Local Development Setup
 
-# Layout
-- `app/` - contains the main application code
-- `components/` - contains reusable React components
-- `config/` - contains configuration files like siteConfig
-- `lib/` - contains utility functions and libraries (including auth.ts for BetterAuth)
-- `lib/store/` - contains Zustand stores for global state management
-- `prisma/` - contains Prisma schema and migrations (for database)
-- `public/` - contains static assets like images and fonts
-- `styles/` - contains global styles and TailwindCSS configuration
-- `types/` - contains TypeScript type definitions
+1. Copy `.env.example` to `.env`.
+2. Run `npm install` to install dependencies.
+3. Run `npx prisma dev` to automatically start a local PostgreSQL database (keep this running in its own terminal tab).
+4. In a new terminal tab, run `npx prisma db push` to initialize the database schema.
 
-# How to run from scratch
-1. Install Git and Node.js
-2. Clone the repo
-3. See `backend/README.md` for more details on running the Python backend (will be needed to access decision engine API)
-4. Go to the frontend directory (`cd dawgdecision/frontend`).
-5. Copy `.env.example` to `.env`.
-6. Run `npm install` to install dependencies.
-7. Run `npx prisma dev` to automatically start a local PostgreSQL database (keep this running in its own terminal tab).
-8. In a new terminal tab (inside `frontend`), run `npx prisma db push` to initialize the database schema.
-9. Run `npm run dev` to start the Next.js development server.
-10. Open http://localhost:3000 in your browser to view the app.
+*Note: You can run the development server from the project root using `npm run dev`, and the database using `npm run db`.*
 
-# Project Structure Guide
-
-## Where to add new Pages
-All new pages should be added as `page.tsx` files inside directories within the `app/` folder.
-- Example: To create a page at `/dashboard`, create the file `app/dashboard/page.tsx`.
-
-## Where to add new Components
-Reusable components should be placed in the `components/` directory.
-- Example: A custom navigation bar should go in `components/Navbar.tsx`.
-- Highly specific, non-reusable components can be co-located with their respective pages, but placing them in `components/` is generally preferred to keep `app/` clean.
-
-## State Management
-We use **Zustand** for global state management.
-- Stores are located in `lib/store/`.
-- **Persistence:** We use Zustand's `persist` middleware with `sessionStorage` for data that needs to survive page refreshes (like form drafts) but should automatically clear when the user closes their browser tab. If data needs to persist forever, use `localStorage` instead.
+## Layout & Architecture
+- `app/` - Main Next.js App Router application code. Add new pages here (e.g. `app/dashboard/page.tsx`).
+- `components/` - Reusable React components.
+- `config/` - Configuration files like siteConfig.
+- `lib/` - Utility functions and libraries (including `auth.ts` for BetterAuth).
+- `lib/store/` - Zustand stores for global state management. We use Zustand's `persist` middleware with `sessionStorage` for form drafts.
+- `prisma/` - Prisma schema and migrations (for database).
+- `public/` - Static assets like images and fonts.
+- `styles/` - Global styles and TailwindCSS configuration.
+- `types/` - TypeScript type definitions (and Zod schemas).
 
 ## Authentication Architecture
 We use **Better Auth** with strict **Database Sessions** for security.
 - **Proxy (`proxy.ts`):** We use a full Node.js check `auth.api.getSession()` before loading secure pages to prevent unauthenticated access. 
-- **Scaling Note:** If database latency ever becomes an issue under massive load, this app is designed to easily swap to the **Better Auth JWT Plugin** (which checks cryptographically signed cookies instead of querying the database).
 
-# Development Examples
+## Development Examples
 
-## How to add HeroUI components
+### How to add HeroUI components
 HeroUI components are provided via `@heroui/react` and typically imported directly.
 ```tsx
 import { Button } from "@heroui/react";
@@ -70,7 +38,7 @@ export function MyComponent() {
 }
 ```
 
-## How to add Icons (Lucide)
+### How to add Icons (Lucide)
 We use `lucide-react` for all icons in the project. You can import icons directly from the library.
 ```tsx
 import { Home, Settings } from "lucide-react";
@@ -85,7 +53,7 @@ export function IconExample() {
 }
 ```
 
-## How to use Tailwind CSS
+### How to use Tailwind CSS
 We use Tailwind CSS for all custom styling. Instead of writing separate `.css` files, use Tailwind's utility classes directly in your React components' `className` props.
 ```tsx
 export function TailwindExample() {
@@ -97,30 +65,3 @@ export function TailwindExample() {
   );
 }
 ```
-
-### Common Tailwind Classes to Know
-Here are a few frequently used utility classes:
-
-- **Layout**
-  - `flex`, `flex-col`, `flex-row` (Container and direction)
-  - `items-center`, `justify-center`, `justify-between` (Alignment)
-  - `grid`, `grid-cols-2`, `gap-4` (CSS Grid and spacing)
-  - `hidden`, `block`, `inline-block` (Display properties)
-
-- **Spacing (Margin & Padding):**
-  - `p-4` (Padding all sides), `px-4` (Padding left/right), `py-4` (Padding top/bottom)
-  - `m-4` (Margin all sides), `mx-auto` (Center horizontally)
-  - `mt-2` (Margin top), `mb-4` (Margin bottom)
-
-- **Typography:**
-  - `text-sm`, `text-base`, `text-lg`, `text-2xl` (Font sizes)
-  - `font-normal`, `font-semibold`, `font-bold` (Font weights)
-  - `text-center`, `text-left`, `text-right` (Text alignment)
-  - `text-gray-500`, `text-blue-600` (Text colors)
-
-- **Borders, Backgrounds & Effects:**
-  - `bg-white`, `bg-gray-100` (Background colors)
-  - `rounded-md`, `rounded-full` (Border radius)
-  - `border`, `border-gray-200` (Borders)
-  - `shadow-sm`, `shadow-md`, `shadow-lg` (Box shadows)
-  - `hover:bg-gray-50`, `focus:ring-2` (Interactive states)

@@ -9,7 +9,9 @@
 		"start": "next start",
 		"lint": "eslint --fix",
 		"test": "vitest run",
-		"db": "prisma dev"
+		"db": "prisma dev",
+		"db:push": "prisma db push",
+		"db:reset": "prisma migrate reset"
 	},
 	"dependencies": {
 		"@heroui/react": "3.2.4",

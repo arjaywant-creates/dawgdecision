@@ -1,10 +1,11 @@
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import path from "path";
+
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     alias: {
-      '@': path.resolve(import.meta.dirname, './')
-    }
-  }
+      "@": path.resolve(import.meta.dirname, "./"),
+    },
+  },
 });

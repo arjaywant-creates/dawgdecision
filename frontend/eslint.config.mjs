@@ -122,7 +122,7 @@ export default defineConfig([globalIgnores([
                 position: "after",
             }],
 
-            "newlines-between": "always",
+            "newlines-between": "always-and-inside-groups",
         }],
 
         "react/self-closing-comp": "warn",

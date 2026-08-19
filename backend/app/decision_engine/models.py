@@ -68,14 +68,8 @@ class DecisionResult:
     commute_minutes: Optional[float]
 
     missing_recurring_costs: list[str] = field(default_factory=list)
-
-    @property
-    def recurring_costs_complete(self) -> bool:
-        return len(self.missing_recurring_costs) == 0
-
-    @property
-    def term_cost_complete(self) -> bool:
-        return self.recurring_costs_complete and self.upfront_costs is not None
+    recurring_costs_complete: bool = False
+    term_cost_complete: bool = False
 
 
 @dataclass

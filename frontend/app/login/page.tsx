@@ -1,7 +1,10 @@
 "use client";
 
+/** React & Next.js */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
+/** UI Components (HeroUI) */
 import {
   Button,
   Surface,
@@ -15,19 +18,18 @@ import {
   Description,
   Spinner,
 } from "@heroui/react";
+
+/** Form Handling & Validation */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
+/** Auth Actions & Types */
 import { signIn } from "@/lib/auth-client";
+import { loginSchema, type LoginInput } from "@/types/auth";
 
-const loginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginInput = z.infer<typeof loginSchema>;
-
+/**
+ * Login page component handling user authentication
+ */
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -65,26 +67,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-100px)] py-10">
+    <div className="flex justify-center items-center flex-1 pt-4 pb-24">
+      {/* Login Card Surface */}
       <Surface
         className="w-full max-w-md rounded-2xl shadow-sm p-6"
         variant="default"
       >
+        {/* Authentication Form */}
         <Form
           className="w-full"
           validationBehavior="aria"
           onSubmit={handleSubmit(onSubmit)}
         >
           <Fieldset className="w-full">
+            {/* Header Section */}
             <Fieldset.Legend className="text-2xl font-bold">
               Welcome Back
             </Fieldset.Legend>
             <Description>Sign in to your account</Description>
 
+            {/* Form Fields Section */}
             <Fieldset.Group>
               <TextField
                 isRequired
                 className="w-full"
+                /** Convert error object to boolean */
                 isInvalid={!!errors.email}
               >
                 <Label>Email</Label>
@@ -101,6 +108,7 @@ export default function LoginPage() {
               <TextField
                 isRequired
                 className="w-full"
+                /** Convert error object to boolean */
                 isInvalid={!!errors.password}
               >
                 <Label>Password</Label>
@@ -116,8 +124,10 @@ export default function LoginPage() {
               </TextField>
             </Fieldset.Group>
 
+            {/* Error Message Display */}
             {error && <p className="text-danger text-sm">{error}</p>}
 
+            {/* Submit & Links Actions */}
             <Fieldset.Actions className="flex flex-col w-full gap-4">
               <Button
                 className="w-full"

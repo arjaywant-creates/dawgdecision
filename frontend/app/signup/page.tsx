@@ -1,7 +1,10 @@
 "use client";
 
+/** React & Next.js */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
+/** UI Components (HeroUI) */
 import {
   Button,
   Surface,
@@ -15,20 +18,18 @@ import {
   Fieldset,
   Spinner,
 } from "@heroui/react";
+
+/** Form Handling & Validation */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 
+/** Auth Actions & Types */
 import { signUp } from "@/lib/auth-client";
+import { signupSchema, type SignupInput } from "@/types/auth";
 
-const signupSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type SignupInput = z.infer<typeof signupSchema>;
-
+/**
+ * Signup page component handling new user registration
+ */
 export default function SignupPage() {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -69,26 +70,31 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-100px)] py-10">
+    <div className="flex justify-center items-center flex-1 pt-4 pb-24">
+      {/* Signup Card Surface */}
       <Surface
         className="w-full max-w-md rounded-2xl shadow-sm p-6"
         variant="default"
       >
+        {/* Registration Form */}
         <Form
           className="w-full"
           validationBehavior="aria"
           onSubmit={handleSubmit(onSubmit)}
         >
           <Fieldset className="w-full">
+            {/* Header Section */}
             <Fieldset.Legend className="text-2xl font-bold">
               Create Account
             </Fieldset.Legend>
             <Description>Join DawgDecision today</Description>
 
+            {/* Form Fields Section */}
             <Fieldset.Group>
               <TextField
                 isRequired
                 className="w-full"
+                /** Convert error object to boolean */
                 isInvalid={!!errors.name}
               >
                 <Label>Name</Label>
@@ -103,6 +109,7 @@ export default function SignupPage() {
               <TextField
                 isRequired
                 className="w-full"
+                /** Convert error object to boolean */
                 isInvalid={!!errors.email}
               >
                 <Label>Email</Label>
@@ -119,6 +126,7 @@ export default function SignupPage() {
               <TextField
                 isRequired
                 className="w-full"
+                /** Convert error object to boolean */
                 isInvalid={!!errors.password}
               >
                 <Label>Password</Label>
@@ -133,10 +141,29 @@ export default function SignupPage() {
                   <FieldError>{errors.password.message}</FieldError>
                 )}
               </TextField>
+              <TextField
+                isRequired
+                className="w-full"
+                /** Convert error object to boolean */
+                isInvalid={!!errors.confirmPassword}
+              >
+                <Label>Confirm Password</Label>
+                <Input
+                  placeholder="Confirm your password"
+                  type="password"
+                  variant="secondary"
+                  {...register("confirmPassword")}
+                />
+                {errors.confirmPassword && (
+                  <FieldError>{errors.confirmPassword.message}</FieldError>
+                )}
+              </TextField>
             </Fieldset.Group>
 
+            {/* Error Message Display */}
             {error && <p className="text-danger text-sm">{error}</p>}
 
+            {/* Submit & Links Actions */}
             <Fieldset.Actions className="flex flex-col w-full gap-4">
               <Button
                 className="w-full gap-2"
