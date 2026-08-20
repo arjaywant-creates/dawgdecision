@@ -308,8 +308,10 @@ export default function CompareForm({
       <div className="flex justify-between items-end mb-8">
         <div>
           <h1 className="text-4xl font-bold flex items-center gap-3">
-            {isEditing ? "Edit Comparison" : "Housing Comparison"}
-          </h1>
+  {isEditing
+    ? "Editing Saved Comparison"
+    : "Housing Comparison"}
+</h1>
 
           <p className="mt-2 text-default-500">
             {isEditing
@@ -469,12 +471,21 @@ export default function CompareForm({
                     <Calculator className="w-8 h-8 text-default-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold mb-2">No Data Yet</h3>
-                    <p className="text-default-500 text-sm">
-                      Fill out the financial details for both housing options
-                      and click <strong>Compare Options</strong> to see the
-                      detailed breakdown.
-                    </p>
+                    <h3 className="text-lg font-semibold mb-2">
+  Compare Housing Options
+</h3>
+
+<p className="text-default-500 text-sm">
+  Complete the required fields for both options and run a
+  comparison to view:
+</p>
+
+<ul className="mt-3 text-sm text-default-500 text-left list-disc pl-5">
+  <li>Monthly Cost</li>
+  <li>Full-Term Cost</li>
+  <li>Category Differences</li>
+  <li>Key Tradeoffs</li>
+</ul>
                   </div>
                 </div>
               )}
