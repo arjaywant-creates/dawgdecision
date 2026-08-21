@@ -224,14 +224,15 @@ const isCommuteTradeoff = (type: string) =>
             <TrendingDown className="text-success size-4 shrink-0" />
             <h4 className="text-sm font-bold">Key Tradeoffs</h4>
           </div>
+
           <div className="flex flex-col gap-2">
             {results.tradeoffs.map((t, idx) => (
               <div
                 key={idx}
                 className="bg-content2/50 p-3 rounded-lg border border-separator/30 text-sm"
               >
-              {t.favored_scenario ? (
-                <div>
+                {t.favored_scenario ? (
+                  <div>
                     <p>
                       <strong>
                         {tradeoffLabels[t.type] ?? t.type}
@@ -242,18 +243,14 @@ const isCommuteTradeoff = (type: string) =>
                       {t.favored_scenario}
                     </p>
 
-                    const isCommuteTradeoff =
-                    t.type === "shorter_commute" ||
-                    t.type === "Shorter Commute";
-
-                  <p className="text-default-500 text-sm">
-                    Difference:{" "}
-                    {isCommuteTradeoff(t.type)
-                      ? `${t.difference} min`
-                      : `$${t.difference.toLocaleString()}`}
-                  </p>
-                </div>
-              ) : (
+                    <p className="text-default-500 text-sm">
+                      Difference:{" "}
+                      {isCommuteTradeoff(t.type)
+                        ? `${t.difference} min`
+                        : `$${t.difference.toLocaleString()}`}
+                    </p>
+                  </div>
+                ) : (
                   <p>
                     Tie on{" "}
                     <strong>
