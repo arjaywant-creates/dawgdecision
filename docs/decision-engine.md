@@ -287,3 +287,164 @@ Future versions may add:
 - Source and freshness metadata
 - More advanced financial calculations
 - Optional AI-generated explanations of deterministic decision-engine results
+
+
+# Decision Impact Analysis
+
+Deliverable Set 5 adds deterministic decision-impact analysis for a housing option the student has selected.
+
+The purpose is to answer:
+
+> What am I actually committing to, and what am I giving up by choosing this option?
+
+This analysis is separate from the standard two-option comparison.
+
+## Inputs
+
+Decision-impact analysis receives:
+
+- Scenario A
+- Scenario B
+- selected scenario: `"A"` or `"B"`
+
+The selected scenario is treated as the student's chosen option.
+
+All deltas are calculated from the selected option's perspective.
+
+## Signed Delta Semantics
+
+Positive financial delta:
+
+- selected option costs more
+
+Negative financial delta:
+
+- selected option costs less
+
+Example:
+
+`monthly_commitment_delta = 75`
+
+means:
+
+> The selected option costs $75 more per month.
+
+Example:
+
+`monthly_commitment_delta = -75`
+
+means:
+
+> The selected option saves $75 per month.
+
+For commute:
+
+- negative delta = selected option has shorter commute
+- positive delta = selected option has longer commute
+
+## Commitment Outputs
+
+The engine may calculate:
+
+- `monthly_commitment_delta`
+- `upfront_commitment_delta`
+- `term_commitment_delta`
+- `commute_delta`
+- `approximate_daily_delta`
+
+Monthly and term deltas are only returned when the underlying information is complete enough to make the comparison honestly.
+
+Full-term commitment deltas are only returned when both options have complete term costs and equal contract lengths.
+
+## Category Cost Drivers
+
+The engine calculates signed differences for known recurring categories:
+
+- housing
+- utilities
+- mandatory fees
+- parking
+- transportation
+
+Unknown categories are excluded rather than treated as zero.
+
+The engine also identifies:
+
+- `largest_cost_increase`
+- `largest_cost_offset`
+
+These indicate the largest known category increasing the selected option's cost and the largest known category offsetting that increase.
+
+## Break-Even Analysis
+
+Break-even is calculated only when the selected option:
+
+1. costs more upfront, and
+2. costs less per month.
+
+Formula:
+
+`extra upfront cost / monthly savings`
+
+Example:
+
+- selected option costs $600 more upfront
+- selected option saves $100 per month
+
+Break-even:
+
+`6 months`
+
+If no meaningful crossover exists, `break_even_months` is `null`.
+
+## Commute Tradeoff
+
+When the selected option:
+
+1. costs more per month, and
+2. has a shorter commute,
+
+the engine exposes:
+
+- `extra_monthly_cost_for_shorter_commute`
+- `commute_minutes_saved`
+
+Example:
+
+> The selected option costs $60 more per month in exchange for a 15-minute shorter commute.
+
+The engine does not determine whether that tradeoff is worth it.
+
+## Completeness
+
+The engine exposes:
+
+- `monthly_comparison_complete`
+- `term_comparison_complete`
+- `commute_comparison_complete`
+
+Unknown values remain unknown.
+
+The decision-impact layer must not create false precision from incomplete information.
+
+## Recommendation Policy
+
+Decision-impact analysis does not produce:
+
+- a winner
+- overall score
+- recommendation
+- preference weighting
+- affordability judgment
+
+It describes the measurable consequences of the student's selected option.
+
+## Architecture Principle
+
+All decision-impact calculations belong in the deterministic decision engine.
+
+The API should expose these results.
+
+The frontend should present them.
+
+Neither layer should independently recreate the formulas.

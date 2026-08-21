@@ -96,3 +96,42 @@ class ComparisonResult:
     commute_difference: Optional[float]
 
     tradeoffs: list[Tradeoff] = field(default_factory=list)
+
+
+@dataclass
+class CategoryDelta:
+    category: str
+    difference: float
+
+
+@dataclass
+class CostDriver:
+    category: str
+    difference: float
+
+
+@dataclass
+class DecisionImpactResult:
+    selected_scenario: str
+    alternative_scenario: str
+
+    monthly_commitment_delta: Optional[float]
+    upfront_commitment_delta: Optional[float]
+    term_commitment_delta: Optional[float]
+    commute_delta: Optional[float]
+
+    category_deltas: list[CategoryDelta] = field(default_factory=list)
+
+    largest_cost_increase: Optional[CostDriver] = None
+    largest_cost_offset: Optional[CostDriver] = None
+
+    break_even_months: Optional[float] = None
+
+    extra_monthly_cost_for_shorter_commute: Optional[float] = None
+    commute_minutes_saved: Optional[float] = None
+
+    approximate_daily_delta: Optional[float] = None
+
+    monthly_comparison_complete: bool = False
+    term_comparison_complete: bool = False
+    commute_comparison_complete: bool = False
