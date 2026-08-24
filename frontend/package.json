@@ -10,7 +10,7 @@
 		"lint": "eslint --fix",
 		"test": "vitest run",
 		"db": "prisma dev",
-		"db:push": "prisma db push",
+		"db:push": "prisma db push && prisma generate",
 		"db:reset": "prisma migrate reset"
 	},
 	"dependencies": {

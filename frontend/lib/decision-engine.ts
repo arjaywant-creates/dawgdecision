@@ -4,7 +4,12 @@
 
 const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
 
-import { Scenario, DecisionResult, ComparisonResult } from "@/types/comparison";
+import {
+  Scenario,
+  DecisionResult,
+  ComparisonResult,
+  DecisionImpactResult,
+} from "@/types/comparison";
 
 /**
  * Call the Python backend to analyze a single scenario
@@ -42,6 +47,33 @@ export async function compareScenarios(
     body: JSON.stringify({
       scenario_a: scenarioA,
       scenario_b: scenarioB,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Python API Error: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Call the Python backend to calculate decision impact
+ */
+export async function analyzeDecisionImpact(
+  scenarioA: Scenario,
+  scenarioB: Scenario,
+  selectedScenario: string,
+): Promise<DecisionImpactResult> {
+  const response = await fetch(`${PYTHON_API_URL}/api/analyze-impact`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      scenario_a: scenarioA,
+      scenario_b: scenarioB,
+      selected_scenario: selectedScenario,
     }),
   });
 

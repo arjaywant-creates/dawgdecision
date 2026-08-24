@@ -154,7 +154,7 @@ This is intentional for the current MVP and should not be renamed unless the con
 
 ---
 
-# Set 5 — Financial Plan
+# Set 5 - Financial Plan
 
 ## Purpose
 
