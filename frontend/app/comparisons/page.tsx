@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import NextLink from "next/link";
 
 /** UI Components (HeroUI) */
-import { Button, Card } from "@heroui/react";
+import { Button, Card, ToastProvider } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 /** Auth & Database */
@@ -39,6 +39,7 @@ export default async function SavedComparisonsPage() {
 
   return (
     <div className="pb-12">
+      <ToastProvider />
       {/* Header Section */}
       <h1 className="mb-8 text-4xl font-bold">Saved Comparisons</h1>
 

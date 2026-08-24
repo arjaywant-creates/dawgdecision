@@ -7,7 +7,8 @@ import {
   ScenarioSchema, 
   DecisionResultSchema, 
   ComparisonResultSchema, 
-  CompareRequestSchema 
+  CompareRequestSchema,
+  DecisionImpactResultSchema
 } from '../types/comparison';
 
 describe('Schema Synchronization', () => {
@@ -117,6 +118,22 @@ describe('Schema Synchronization', () => {
 
     // TS Using Zod
     const tsFields = new Set(Object.keys(CompareRequestSchema.shape));
+    
+    expect(Array.from(apiFields).sort()).toEqual(Array.from(tsFields).sort());
+  });
+
+  test('DecisionImpactResult schema matches between Python API and TS Types', async () => {
+    const response = await fetch('http://127.0.0.1:8000/openapi.json');
+    if (!response.ok) throw new Error('Failed to fetch OpenAPI schema');
+    const openapiSchema = await response.json();
+    
+    // API
+    const apiSchema = openapiSchema?.components?.schemas?.DecisionImpactResult?.properties || {};
+    const apiFields = new Set(Object.keys(apiSchema));
+    expect(apiFields.size).toBeGreaterThan(0);
+
+    // TS Using Zod
+    const tsFields = new Set(Object.keys(DecisionImpactResultSchema.shape));
     
     expect(Array.from(apiFields).sort()).toEqual(Array.from(tsFields).sort());
   });

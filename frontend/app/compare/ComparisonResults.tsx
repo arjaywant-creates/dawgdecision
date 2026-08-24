@@ -57,21 +57,19 @@ export default function ComparisonResults({
   const nameB = scenarioB?.name || "Option B";
 
   const tradeoffLabels: Record<string, string> = {
-  lower_monthly_cost: "Lower Monthly Cost",
-  lower_full_term_cost: "Lower Full-Term Cost",
-  lower_housing_cost: "Lower Housing Cost",
-  lower_utilities: "Lower Utilities Cost",
-  lower_mandatory_fees: "Lower Mandatory Fees",
-  lower_parking_cost: "Lower Parking Cost",
-  lower_transportation_cost: "Lower Transportation Cost",
-  lower_upfront_cost: "Lower Upfront Costs",
-  shorter_commute: "Shorter Commute",
-};
+    lower_monthly_cost: "Lower Monthly Cost",
+    lower_full_term_cost: "Lower Full-Term Cost",
+    lower_housing_cost: "Lower Housing Cost",
+    lower_utilities: "Lower Utilities Cost",
+    lower_mandatory_fees: "Lower Mandatory Fees",
+    lower_parking_cost: "Lower Parking Cost",
+    lower_transportation_cost: "Lower Transportation Cost",
+    lower_upfront_cost: "Lower Upfront Costs",
+    shorter_commute: "Shorter Commute",
+  };
 
-const isCommuteTradeoff = (type: string) =>
-  type === "shorter_commute" ||
-  type === "Shorter Commute";
-
+  const isCommuteTradeoff = (type: string) =>
+    type === "shorter_commute" || type === "Shorter Commute";
 
   const diffStr = (val: number | null) =>
     val === null ? "Unknown" : `$${val.toLocaleString()}`;
@@ -95,41 +93,41 @@ const isCommuteTradeoff = (type: string) =>
             nameB={nameB}
           />
           {!results.first_result.recurring_costs_complete ||
-!results.second_result.recurring_costs_complete ? (
-  <div className="mb-3 rounded-lg border border-warning-200 bg-warning-50/50 p-3 text-xs">
-    <p className="font-semibold text-warning-600">
-      Monthly subtotal is incomplete.
-    </p>
+          !results.second_result.recurring_costs_complete ? (
+            <div className="mb-3 rounded-lg border border-warning-200 bg-warning-50/50 p-3 text-xs">
+              <p className="font-semibold text-warning-600">
+                Monthly subtotal is incomplete.
+              </p>
 
-    {results.first_result.missing_recurring_costs.length > 0 && (
-      <div className="mt-2">
-        <p className="font-medium">
-          {nameA} missing:
-        </p>
+              {results.first_result.missing_recurring_costs.length > 0 && (
+                <div className="mt-2">
+                  <p className="font-medium">{nameA} missing:</p>
 
-        <ul className="list-disc pl-4">
-          {results.first_result.missing_recurring_costs.map((item) => (
-            <li key={`a-${item}`}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    )}
+                  <ul className="list-disc pl-4">
+                    {results.first_result.missing_recurring_costs.map(
+                      (item) => (
+                        <li key={`a-${item}`}>{item}</li>
+                      ),
+                    )}
+                  </ul>
+                </div>
+              )}
 
-    {results.second_result.missing_recurring_costs.length > 0 && (
-      <div className="mt-2">
-        <p className="font-medium">
-          {nameB} missing:
-        </p>
+              {results.second_result.missing_recurring_costs.length > 0 && (
+                <div className="mt-2">
+                  <p className="font-medium">{nameB} missing:</p>
 
-        <ul className="list-disc pl-4">
-          {results.second_result.missing_recurring_costs.map((item) => (
-            <li key={`b-${item}`}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    )}
-  </div>
-) : null}
+                  <ul className="list-disc pl-4">
+                    {results.second_result.missing_recurring_costs.map(
+                      (item) => (
+                        <li key={`b-${item}`}>{item}</li>
+                      ),
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : null}
 
           <MetricRow
             a={results.first_result.term_cost}
@@ -234,9 +232,7 @@ const isCommuteTradeoff = (type: string) =>
                 {t.favored_scenario ? (
                   <div>
                     <p>
-                      <strong>
-                        {tradeoffLabels[t.type] ?? t.type}
-                      </strong>
+                      <strong>{tradeoffLabels[t.type] ?? t.type}</strong>
                     </p>
 
                     <p className="text-success font-medium">
@@ -252,10 +248,7 @@ const isCommuteTradeoff = (type: string) =>
                   </div>
                 ) : (
                   <p>
-                    Tie on{" "}
-                    <strong>
-                      {tradeoffLabels[t.type] ?? t.type}
-                    </strong>
+                    Tie on <strong>{tradeoffLabels[t.type] ?? t.type}</strong>
                   </p>
                 )}
               </div>

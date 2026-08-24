@@ -86,3 +86,42 @@ export const ComparisonResultSchema = z.object({
 });
 
 export type ComparisonResult = z.infer<typeof ComparisonResultSchema>;
+
+export const CategoryDeltaSchema = z.object({
+  category: z.string(),
+  difference: z.number(),
+});
+export type CategoryDelta = z.infer<typeof CategoryDeltaSchema>;
+
+export const CostDriverSchema = z.object({
+  category: z.string(),
+  difference: z.number(),
+});
+export type CostDriver = z.infer<typeof CostDriverSchema>;
+
+export const DecisionImpactResultSchema = z.object({
+  selected_scenario: z.string(),
+  alternative_scenario: z.string(),
+
+  monthly_commitment_delta: z.number().nullable(),
+  upfront_commitment_delta: z.number().nullable(),
+  term_commitment_delta: z.number().nullable(),
+  commute_delta: z.number().nullable(),
+
+  category_deltas: z.array(CategoryDeltaSchema),
+
+  largest_cost_increase: CostDriverSchema.nullable(),
+  largest_cost_offset: CostDriverSchema.nullable(),
+
+  break_even_months: z.number().nullable(),
+
+  extra_monthly_cost_for_shorter_commute: z.number().nullable(),
+  commute_minutes_saved: z.number().nullable(),
+
+  approximate_daily_delta: z.number().nullable(),
+
+  monthly_comparison_complete: z.boolean(),
+  term_comparison_complete: z.boolean(),
+  commute_comparison_complete: z.boolean(),
+});
+export type DecisionImpactResult = z.infer<typeof DecisionImpactResultSchema>;

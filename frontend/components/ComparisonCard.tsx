@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import NextLink from "next/link";
-import { Card, Button, AlertDialog, toast } from "@heroui/react";
-import { Trash, ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Card, Button, AlertDialog, toast, Dropdown } from "@heroui/react";
+import { Trash, ExternalLink, Plus } from "lucide-react";
 
 import { Prisma } from "@/generated/prisma/client";
+
+import { setFinancialPlanHousingAction } from "@/app/plan/actions";
 
 type ComparisonWithScenarios = Prisma.ComparisonGetPayload<{
   include: { firstScenario: true; secondScenario: true };
@@ -17,7 +20,9 @@ interface Props {
 }
 
 export function ComparisonCard({ comp, onDelete }: Props) {
+  const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -33,6 +38,19 @@ export function ComparisonCard({ comp, onDelete }: Props) {
       toast.danger("An error occurred while deleting.");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleAddToPlan = async (scenarioKey: "A" | "B") => {
+    setIsAdding(true);
+    try {
+      await setFinancialPlanHousingAction(comp.id, scenarioKey);
+      toast.success("Added to Financial Plan!");
+      router.push("/plan");
+    } catch (e: any) {
+      toast.danger(e.message || "Failed to add to plan");
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -66,10 +84,34 @@ export function ComparisonCard({ comp, onDelete }: Props) {
         </div>
 
         <div className="flex justify-end items-center gap-2 mt-auto">
+          <Dropdown>
+            <Button isPending={isAdding} size="sm" variant="secondary">
+              <Plus className="size-4" />
+              Add to Plan
+            </Button>
+            <Dropdown.Popover>
+              <Dropdown.Menu
+                onAction={(key) => handleAddToPlan(key as "A" | "B")}
+              >
+                <Dropdown.Item
+                  id="A"
+                  textValue={`Select ${comp.firstScenario?.name || "Option A"}`}
+                >
+                  Select {comp.firstScenario?.name || "Option A"}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  id="B"
+                  textValue={`Select ${comp.secondScenario?.name || "Option B"}`}
+                >
+                  Select {comp.secondScenario?.name || "Option B"}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
+
           <AlertDialog>
             <Button aria-label="Delete comparison" size="sm" variant="danger">
               <Trash className="size-4" />
-              Delete
             </Button>
             <AlertDialog.Backdrop>
               <AlertDialog.Container>
@@ -109,9 +151,8 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           </AlertDialog>
 
           <NextLink href={`/compare?id=${comp.id}`}>
-            <Button size="sm" variant="secondary">
+            <Button aria-label="Open comparison" size="sm" variant="secondary">
               <ExternalLink className="size-4" />
-              Open
             </Button>
           </NextLink>
         </div>
