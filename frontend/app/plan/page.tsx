@@ -131,7 +131,7 @@ export default async function PlanPage() {
         <div className="space-y-6">
           <Card className="p-6">
             <h2 className="text-2xl font-bold mb-4">
-              Housing - {impactResult.selected_scenario}
+              Housing - {selectedModel.name}
             </h2>
 
             <div className="flex flex-col gap-1 mb-6">
@@ -147,6 +147,9 @@ export default async function PlanPage() {
                 {selectedResult.term_cost_complete
                   ? `$${selectedResult.term_cost.toLocaleString()} over ${selectedModel.contract_months} months`
                   : `Unknown full-term cost over ${selectedModel.contract_months} months`}
+              </p>
+              <p className="text-default-500">
+                Contract Length: {selectedModel.contract_months} months
               </p>
             </div>
 
@@ -254,6 +257,19 @@ export default async function PlanPage() {
                 </div>
               )}
 
+              {selectedResult.missing_recurring_costs.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold">
+                    Missing Information
+                  </h3>
+
+                  <ul className="list-disc pl-5 mt-2 space-y-1 text-default-700">
+                    {selectedResult.missing_recurring_costs.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div>
                 <h3 className="text-lg font-semibold">Information status</h3>
                 <ul className="list-disc pl-5 mt-2 space-y-1 text-default-700">
