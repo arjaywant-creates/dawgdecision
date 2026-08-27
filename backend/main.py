@@ -1,4 +1,7 @@
-from fastapi import FastAPI
+import json
+from pathlib import Path
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from app.decision_engine.models import Scenario, DecisionResult, ComparisonResult, DecisionImpactResult
@@ -45,3 +48,32 @@ def analyze_impact(request: ImpactRequest):
         scenario_b=request.scenario_b,
         selected_scenario=request.selected_scenario
     )
+
+def get_data_path() -> Path:
+    return Path(__file__).resolve().parent.parent / "data" / "housing_sources.json"
+
+@app.get("/api/housing-sources")
+def get_housing_sources():
+    data_path = get_data_path()
+    if not data_path.exists():
+        raise HTTPException(status_code=500, detail="Housing dataset not found")
+        
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    return JSONResponse(content=data)
+
+@app.get("/api/housing-sources/{id}")
+def get_housing_source_by_id(id: str):
+    data_path = get_data_path()
+    if not data_path.exists():
+        raise HTTPException(status_code=500, detail="Housing dataset not found")
+        
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    for option in data.get("housing_options", []):
+        if option.get("id") == id:
+            return JSONResponse(content=option)
+            
+    raise HTTPException(status_code=404, detail="Housing option not found")
