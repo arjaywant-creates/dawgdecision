@@ -259,9 +259,7 @@ export default async function PlanPage() {
 
               {selectedResult.missing_recurring_costs.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-semibold">
-                    Missing Information
-                  </h3>
+                  <h3 className="text-lg font-semibold">Missing Information</h3>
 
                   <ul className="list-disc pl-5 mt-2 space-y-1 text-default-700">
                     {selectedResult.missing_recurring_costs.map((item) => (

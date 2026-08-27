@@ -1,0 +1,224 @@
+{
+  "housing_options": [
+    {
+      "id": "payne_double_community",
+      "category": "on_campus",
+      "property_name": "Payne Hall",
+      "configuration": "Double with community bath",
+      "housing_cost": 3411,
+      "price_type": "term_rate",
+      "cost_period_months": 4,
+      "contract_months": 8,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "UGA University Housing",
+        "url": "https://housing.uga.edu/rates/",
+        "last_checked": "2026-08-25",
+        "notes": "2026-27 rate per resident per term. Programming fee included in published rate."
+      }
+    },
+    {
+      "id": "brumby_double_community",
+      "category": "on_campus",
+      "property_name": "Brumby Hall",
+      "configuration": "Double with community bath",
+      "housing_cost": 3595,
+      "price_type": "term_rate",
+      "cost_period_months": 4,
+      "contract_months": 8,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "UGA University Housing",
+        "url": "https://housing.uga.edu/rates/",
+        "last_checked": "2026-08-25",
+        "notes": "2026-27 rate per resident per term. Programming fee included in published rate."
+      }
+    },
+    {
+      "id": "oglethorpe_double_suite",
+      "category": "on_campus",
+      "property_name": "Oglethorpe House",
+      "configuration": "Double in suite with bath",
+      "housing_cost": 3696,
+      "price_type": "term_rate",
+      "cost_period_months": 4,
+      "contract_months": 8,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "UGA University Housing",
+        "url": "https://housing.uga.edu/rates/",
+        "last_checked": "2026-08-25",
+        "notes": "2026-27 rate per resident per term. Programming fee included in published rate."
+      }
+    },
+    {
+      "id": "bdm_double_bath",
+      "category": "on_campus",
+      "property_name": "Black-Diallo-Miller Hall",
+      "configuration": "Double with bath",
+      "housing_cost": 4189,
+      "price_type": "term_rate",
+      "cost_period_months": 4,
+      "contract_months": 8,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "UGA University Housing",
+        "url": "https://housing.uga.edu/rates/",
+        "last_checked": "2026-08-25",
+        "notes": "2026-27 rate per resident per term. Programming fee included in published rate."
+      }
+    },
+    {
+      "id": "myers_double_suite",
+      "category": "on_campus",
+      "property_name": "Myers Hall",
+      "configuration": "Double in suite with bath",
+      "housing_cost": 4212,
+      "price_type": "term_rate",
+      "cost_period_months": 4,
+      "contract_months": 8,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "UGA University Housing",
+        "url": "https://housing.uga.edu/rates/",
+        "last_checked": "2026-08-25",
+        "notes": "2026-27 rate per resident per term. Programming fee included in published rate."
+      }
+    },
+    {
+      "id": "river_club_4x4_classic",
+      "category": "off_campus",
+      "property_name": "River Club Apartments",
+      "configuration": "4x4 Classic",
+      "housing_cost": 459,
+      "price_type": "starting_at",
+      "cost_period_months": 1,
+      "contract_months": 12,
+      "utilities": null,
+      "mandatory_fees": null,
+      "parking": 0,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "River Club Athens",
+        "url": "https://www.riverclubathens.com/floor-plan/4x4-classic/",
+        "last_checked": "2026-08-25",
+        "notes": "Starting monthly installment. Water, sewer, trash, furniture, parking, and amenities are included. Contract may be paid in 12 equal monthly installments."
+      }
+    },
+    {
+      "id": "woodsong_cypress_4x4",
+      "category": "off_campus",
+      "property_name": "Woodsong Village",
+      "configuration": "4BR Cypress",
+      "housing_cost": 677.95,
+      "price_type": "starting_inclusive_installment",
+      "cost_period_months": 1,
+      "contract_months": null,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "Woodsong Village",
+        "url": "https://www.livewoodsongvillage.com/floorplans/",
+        "last_checked": "2026-08-25",
+        "notes": "Starting inclusive monthly installment per person/per bed. Base price is $650.00/month. Published starting price includes all mandatory monthly fees; optional and one-time charges are not included."
+      }
+    },
+    {
+      "id": "haven_willow_4x4_5",
+      "category": "off_campus",
+      "property_name": "The Haven of Athens",
+      "configuration": "The Willow - 4x4.5",
+      "housing_cost": 827.95,
+      "price_type": "starting_inclusive_installment",
+      "cost_period_months": 1,
+      "contract_months": 12,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": 0,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "The Haven of Athens",
+        "url": "https://www.thehavenathens.com/floorplans/",
+        "last_checked": "2026-08-25",
+        "notes": "Starting inclusive monthly installment per person/per bed. Base price is $800/month. Pricing is based on a standard 11.5-month lease divided into 12 equal monthly payments. Standard parking is free; covered parking is optional. Utilities are usage-based and billed separately."
+      }
+    },
+    {
+      "id": "mark_davis_i_4x4",
+      "category": "off_campus",
+      "property_name": "The Mark Athens",
+      "configuration": "Davis I - 4x4",
+      "housing_cost": 1037.95,
+      "price_type": "starting_inclusive_installment",
+      "cost_period_months": 1,
+      "contract_months": null,
+      "utilities": null,
+      "mandatory_fees": 0,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": null,
+      "commute_minutes": null,
+      "source": {
+        "name": "The Mark Athens",
+        "url": "https://themarkathens.landmark-properties.com/floorplans/",
+        "last_checked": "2026-08-25",
+        "notes": "Starting inclusive monthly installment per person/per bed. Base price is $999/month. Inclusive installment includes mandatory monthly fees. Optional premiums and one-time charges are excluded."
+      }
+    },
+    {
+      "id": "hub_athens_5x4",
+      "category": "off_campus",
+      "property_name": "Hub Athens",
+      "configuration": "5x4",
+      "housing_cost": 1099,
+      "price_type": "starting_at",
+      "cost_period_months": 1,
+      "contract_months": null,
+      "utilities": null,
+      "mandatory_fees": 5,
+      "parking": null,
+      "transportation": null,
+      "upfront_costs": 200,
+      "commute_minutes": null,
+      "source": {
+        "name": "Hub Athens",
+        "url": "https://www.hubathens.com/floor-plans/",
+        "last_checked": "2026-08-25",
+        "notes": "Starting monthly price is $1,099 plus fees. $5 monthly tech fee is represented in mandatory_fees. $50 application fee and $150 administrative fee are represented in upfront_costs. A required $68.40 annual Conservice fee is published but is not represented in the current calculation model. Parking starts at $175/month and is optional."
+      }
+    }
+  ]
+}
