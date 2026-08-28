@@ -8,7 +8,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+
   emailAndPassword: {
-    enabled: true, // Example: Enable basic email/password auth
+    enabled: true,
   },
+
+  trustedOrigins: [
+    "https://dawgdecision-v2.vercel.app",
+  ],
 });
