@@ -149,3 +149,5 @@ __pycache__/
 
 # Python virtual environments
 venv/
+.vercel
+.env*
