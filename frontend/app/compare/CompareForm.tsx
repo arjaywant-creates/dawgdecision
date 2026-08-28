@@ -21,9 +21,6 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import SourcedHousingSelector from "@/components/SourcedHousingSelector";
-import { SourcedHousingOption } from "@/types/sourced-housing";
-
 /** Icons */
 import {
   Calculator,
@@ -42,6 +39,9 @@ import {
 import ScenarioForm from "./ScenarioForm";
 import ComparisonResults from "./ComparisonResults";
 
+import { SourcedHousingOption } from "@/types/sourced-housing";
+import SourcedHousingSelector from "@/components/SourcedHousingSelector";
+
 /** Types, State & Auth */
 import { Prisma } from "@/generated/prisma/client";
 import {
@@ -49,6 +49,7 @@ import {
   CompareRequestSchema,
   ComparisonResult,
   ComparisonResultSchema,
+  Scenario,
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
@@ -73,6 +74,8 @@ type ComparisonWithScenarios = Prisma.ComparisonGetPayload<{
 interface Props {
   initialComparison: ComparisonWithScenarios | null;
   comparisonId: string | null;
+  sourcedOptions: SourcedHousingOption[];
+  apiError?: boolean;
 }
 
 /**
@@ -143,6 +146,8 @@ function getInitialFormValues(
 export default function CompareForm({
   initialComparison,
   comparisonId,
+  sourcedOptions,
+  apiError,
 }: Props) {
   /** Convert to boolean using !! to ensure strict boolean type for edit mode */
   const isEditing = !!comparisonId && !!initialComparison;
@@ -150,15 +155,31 @@ export default function CompareForm({
   const setFormData = useCompareStore((state) => state.setFormData);
   const setStoreResults = useCompareStore((state) => state.setResults);
 
+  // Selected housing IDs and functions to save state
+  const selectedHousingIdA = useCompareStore(
+    (state) => state.selectedHousingIdA,
+  );
+  const selectedHousingIdB = useCompareStore(
+    (state) => state.selectedHousingIdB,
+  );
+  const setSelectedHousingIdA = useCompareStore(
+    (state) => state.setSelectedHousingIdA,
+  );
+  const setSelectedHousingIdB = useCompareStore(
+    (state) => state.setSelectedHousingIdB,
+  );
+
+  const clearStore = useCompareStore((state) => state.clearStore);
+
   const [results, setResults] = useState<ComparisonResult | null>(() =>
     isEditing ? getInitialResultsState(initialComparison) : null,
   );
 
   const [scenarioAOriginalValues, setScenarioAOriginalValues] =
-  useState<Record<string, unknown> | null>(null);
+    useState<Partial<Scenario> | null>(null);
 
   const [scenarioBOriginalValues, setScenarioBOriginalValues] =
-  useState<Record<string, unknown> | null>(null);
+    useState<Partial<Scenario> | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -181,58 +202,34 @@ export default function CompareForm({
     resolver: zodResolver(CompareRequestSchema) as any,
     defaultValues: getInitialFormValues(isEditing ? initialComparison : null),
   });
+
   const populateScenario = (
-  prefix: "scenario_a" | "scenario_b",
-  housing: SourcedHousingOption,
-) => {
-  const sourcedValues = {
-    housing_cost: housing.housing_cost,
-    cost_period_months: housing.cost_period_months,
-    contract_months: housing.contract_months,
-    utilities: housing.utilities,
-    mandatory_fees: housing.mandatory_fees,
-    parking: housing.parking,
-    transportation: housing.transportation,
-    upfront_costs: housing.upfront_costs,
-    commute_minutes: housing.commute_minutes,
+    prefix: "scenario_a" | "scenario_b",
+    housing: SourcedHousingOption,
+  ) => {
+    const newScenarioData = {
+      name: `${housing.property_name} - ${housing.configuration}`,
+      housing_cost: housing.housing_cost ?? ("" as any),
+      cost_period_months: housing.cost_period_months ?? ("" as any),
+      contract_months: housing.contract_months ?? ("" as any),
+      utilities: housing.utilities ?? ("" as any),
+      mandatory_fees: housing.mandatory_fees ?? ("" as any),
+      parking: housing.parking ?? ("" as any),
+      transportation: housing.transportation ?? ("" as any),
+      upfront_costs: housing.upfront_costs ?? ("" as any),
+      commute_minutes: housing.commute_minutes ?? ("" as any),
+    };
+
+    if (prefix === "scenario_a") {
+      setScenarioAOriginalValues(newScenarioData);
+    } else {
+      setScenarioBOriginalValues(newScenarioData);
+    }
+
+    setValue(prefix, newScenarioData, {
+      shouldDirty: true,
+    });
   };
-
-  if (prefix === "scenario_a") {
-    setScenarioAOriginalValues(sourcedValues);
-  } else {
-    setScenarioBOriginalValues(sourcedValues);
-  }
-
-  setValue(
-    `${prefix}.name`,
-    `${housing.property_name} — ${housing.configuration}`,
-  );
-
-  if (housing.housing_cost !== null) {
-    setValue(`${prefix}.housing_cost`, housing.housing_cost);
-  }
-
-  if (housing.cost_period_months !== null) {
-    setValue(
-      `${prefix}.cost_period_months`,
-      housing.cost_period_months,
-    );
-  }
-
-  if (housing.contract_months !== null) {
-    setValue(
-      `${prefix}.contract_months`,
-      housing.contract_months,
-    );
-  }
-
-  setValue(`${prefix}.utilities`, housing.utilities);
-  setValue(`${prefix}.mandatory_fees`, housing.mandatory_fees);
-  setValue(`${prefix}.parking`, housing.parking);
-  setValue(`${prefix}.transportation`, housing.transportation);
-  setValue(`${prefix}.upfront_costs`, housing.upfront_costs);
-  setValue(`${prefix}.commute_minutes`, housing.commute_minutes);
-};
 
   // Re-hydrate drafts from Zustand
   useEffect(() => {
@@ -311,11 +308,10 @@ export default function CompareForm({
     };
 
     reset(emptyData);
-    setFormData(emptyData);
     setResults(null);
-    setStoreResults(null);
     setServerError(null);
     setSaveSuccess(false);
+    clearStore();
 
     if (comparisonId) {
       router.push("/compare");
@@ -411,34 +407,42 @@ export default function CompareForm({
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
               <ScenarioForm
-  control={control}
-  prefix="scenario_a"
-  title="Option A"
-  sourcedValues={scenarioAOriginalValues}
-  selector={
-    <SourcedHousingSelector
-      onSelect={(option) => {
-        if (option) {
-          populateScenario("scenario_a", option);
-        }
-      }}
-    />
-  }
-/>
+                control={control}
+                prefix="scenario_a"
+                selector={
+                  <SourcedHousingSelector
+                    apiError={apiError}
+                    options={sourcedOptions}
+                    selectedId={selectedHousingIdA}
+                    onSelect={(option) => {
+                      setSelectedHousingIdA(option?.id || "");
+                      if (option) {
+                        populateScenario("scenario_a", option);
+                      }
+                    }}
+                  />
+                }
+                sourcedValues={scenarioAOriginalValues}
+                title="Option A"
+              />
               <ScenarioForm
                 control={control}
                 prefix="scenario_b"
-                title="Option B"
-                sourcedValues={scenarioBOriginalValues}
                 selector={
                   <SourcedHousingSelector
+                    apiError={apiError}
+                    options={sourcedOptions}
+                    selectedId={selectedHousingIdB}
                     onSelect={(option) => {
+                      setSelectedHousingIdB(option?.id || "");
                       if (option) {
                         populateScenario("scenario_b", option);
                       }
                     }}
                   />
                 }
+                sourcedValues={scenarioBOriginalValues}
+                title="Option B"
               />
             </div>
 

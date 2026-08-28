@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { Alert, Spinner, Surface } from "@heroui/react";
+import { Surface, Alert } from "@heroui/react";
 
-import {
-  HousingSourcesResponse,
-  SourcedHousingOption,
-} from "@/types/sourced-housing";
+import { SourcedHousingOption } from "@/types/sourced-housing";
 
 function getPriceTypeLabel(priceType: string) {
   switch (priceType) {
@@ -27,47 +24,19 @@ function getPriceTypeLabel(priceType: string) {
 
 interface Props {
   label?: string;
+  options: SourcedHousingOption[];
   onSelect: (option: SourcedHousingOption | null) => void;
+  apiError?: boolean;
+  selectedId: string;
 }
 
 export default function SourcedHousingSelector({
   label = "Sourced Housing",
+  options,
   onSelect,
+  apiError,
+  selectedId,
 }: Props) {
-  const [options, setOptions] = useState<SourcedHousingOption[]>([]);
-  const [selectedId, setSelectedId] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadOptions = async () => {
-      try {
-        setLoading(true);
-
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-        const response = await fetch(
-          `${apiUrl}/api/housing-sources`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to load housing sources");
-        }
-
-        const data: HousingSourcesResponse = await response.json();
-
-        setOptions(data.housing_options ?? []);
-      } catch (err: any) {
-        setError(err.message ?? "Failed to load housing options");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadOptions();
-  }, []);
-
   const onCampus = useMemo(
     () => options.filter((o) => o.category === "on_campus"),
     [options],
@@ -78,27 +47,7 @@ export default function SourcedHousingSelector({
     [options],
   );
 
-  const selectedOption =
-    options.find((o) => o.id === selectedId) ?? null;
-
-  if (loading) {
-    return (
-      <Surface className="p-4">
-        <div className="flex items-center gap-2">
-          <Spinner size="sm" />
-          Loading sourced housing options...
-        </div>
-      </Surface>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert status="danger">
-        Failed to load sourced housing options.
-      </Alert>
-    );
-  }
+  const selectedOption = options.find((o) => o.id === selectedId) ?? null;
 
   return (
     <div className="mb-6">
@@ -106,22 +55,25 @@ export default function SourcedHousingSelector({
         {label}
       </h4>
 
+      {apiError && (
+        <Alert className="mb-3" color="danger">
+          Failed to load housing options. Manual entry is available.
+        </Alert>
+      )}
+
       <select
         className="w-full rounded-lg border px-3 py-2 dark:[color-scheme:dark]"
         value={selectedId}
         onChange={(e) => {
           const value = e.target.value;
 
-          setSelectedId(value);
-
           if (!value) {
-            setSelectedId("");
             onSelect(null);
+
             return;
           }
 
-          const selected =
-            options.find((o) => o.id === value) ?? null;
+          const selected = options.find((o) => o.id === value) ?? null;
 
           onSelect(selected);
         }}
@@ -139,11 +91,11 @@ export default function SourcedHousingSelector({
         >
           {onCampus.map((option) => (
             <option
-              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
               key={option.id}
+              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
               value={option.id}
             >
-              {option.property_name} — {option.configuration}
+              {option.property_name} - {option.configuration}
             </option>
           ))}
         </optgroup>
@@ -154,11 +106,11 @@ export default function SourcedHousingSelector({
         >
           {offCampus.map((option) => (
             <option
-              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
               key={option.id}
+              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
               value={option.id}
             >
-              {option.property_name} — {option.configuration}
+              {option.property_name} - {option.configuration}
             </option>
           ))}
         </optgroup>
@@ -168,13 +120,12 @@ export default function SourcedHousingSelector({
         <Surface className="mt-3 p-4">
           <div className="flex flex-col gap-2 text-sm">
             <p>
-              <strong>Source:</strong>{" "}
-              {selectedOption.source_name}
+              <strong>Source:</strong> {selectedOption.source.name}
             </p>
 
             <p>
               <strong>Last Updated:</strong>{" "}
-              {selectedOption.last_checked}
+              {selectedOption.source.last_checked}
             </p>
 
             <p>
@@ -184,15 +135,15 @@ export default function SourcedHousingSelector({
 
             <a
               className="text-primary underline"
-              href={selectedOption.source_url}
+              href={selectedOption.source.url}
               rel="noopener noreferrer"
               target="_blank"
             >
               View
             </a>
 
-            {selectedOption.source_notes && (
-              <p>{selectedOption.source_notes}</p>
+            {selectedOption.source.notes && (
+              <p>{selectedOption.source.notes}</p>
             )}
           </div>
         </Surface>

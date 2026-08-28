@@ -12,6 +12,7 @@ from app.decision_engine.impact import analyze_decision_impact
 
 app = FastAPI(title="DawgDecision Engine API")
 frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
 # Allow requests from the Next.js frontend
 app.add_middleware(
     CORSMiddleware,
@@ -53,26 +54,30 @@ def analyze_impact(request: ImpactRequest):
 def get_data_path() -> Path:
     return Path(__file__).resolve().parent.parent / "data" / "housing_sources.json"
 
-@app.get("/api/housing-sources")
-def get_housing_sources():
+_cached_housing_data = None
+
+def get_housing_data():
+    global _cached_housing_data
+    if _cached_housing_data is not None:
+        return _cached_housing_data
+        
     data_path = get_data_path()
     if not data_path.exists():
         raise HTTPException(status_code=500, detail="Housing dataset not found")
         
     with open(data_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        _cached_housing_data = json.load(f)
         
+    return _cached_housing_data
+
+@app.get("/api/housing-sources")
+def get_housing_sources():
+    data = get_housing_data()
     return JSONResponse(content=data)
 
 @app.get("/api/housing-sources/{id}")
 def get_housing_source_by_id(id: str):
-    data_path = get_data_path()
-    if not data_path.exists():
-        raise HTTPException(status_code=500, detail="Housing dataset not found")
-        
-    with open(data_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        
+    data = get_housing_data()
     for option in data.get("housing_options", []):
         if option.get("id") == id:
             return JSONResponse(content=option)

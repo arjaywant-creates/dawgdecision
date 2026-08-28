@@ -11,6 +11,13 @@ import {
   DecisionImpactResult,
 } from "@/types/comparison";
 
+import {
+  HousingSourcesResponse,
+  SourcedHousingOption,
+  HousingSourcesResponseSchema,
+  SourcedHousingOptionSchema,
+} from "@/types/sourced-housing";
+
 /**
  * Call the Python backend to analyze a single scenario
  */
@@ -82,4 +89,34 @@ export async function analyzeDecisionImpact(
   }
 
   return response.json();
+}
+
+/**
+ * Fetch sourced housing options
+ */
+export async function getHousingSources(): Promise<HousingSourcesResponse> {
+  const response = await fetch(`${PYTHON_API_URL}/api/housing-sources`);
+
+  if (!response.ok) {
+    throw new Error(`Python API Error: ${response.statusText}`);
+  }
+  const data = await response.json();
+
+  return HousingSourcesResponseSchema.parse(data);
+}
+
+/**
+ * Fetch single sourced housing option
+ */
+export async function getHousingSourceById(
+  id: string,
+): Promise<SourcedHousingOption> {
+  const response = await fetch(`${PYTHON_API_URL}/api/housing-sources/${id}`);
+
+  if (!response.ok) {
+    throw new Error(`Python API Error: ${response.statusText}`);
+  }
+  const data = await response.json();
+
+  return SourcedHousingOptionSchema.parse(data);
 }

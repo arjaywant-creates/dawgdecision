@@ -8,6 +8,9 @@ import CompareForm from "./CompareForm";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 
+import { getHousingSources } from "@/lib/decision-engine";
+import { SourcedHousingOption } from "@/types/sourced-housing";
+
 /**
  * The compare page handling data fetching and passing state to the CompareForm
  */
@@ -19,6 +22,17 @@ export default async function ComparePage({
   const id = (await searchParams).id as string | undefined;
 
   let initialComparison = null;
+
+  let sourcedOptions: SourcedHousingOption[] = [];
+  let apiError = false;
+
+  try {
+    const data = await getHousingSources();
+
+    sourcedOptions = data.housing_options || [];
+  } catch {
+    apiError = true;
+  }
 
   if (id) {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -38,8 +52,10 @@ export default async function ComparePage({
   return (
     <CompareForm
       key={id || "new"}
+      apiError={apiError}
       comparisonId={id || null}
       initialComparison={initialComparison}
+      sourcedOptions={sourcedOptions}
     />
   );
 }

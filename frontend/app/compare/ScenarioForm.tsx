@@ -25,7 +25,7 @@ interface Props {
   control: Control<CompareRequest>;
   selector?: React.ReactNode;
 
-  sourcedValues?: Record<string, unknown> | null;
+  sourcedValues?: Partial<Scenario> | null;
 }
 
 type FieldConfig = {
@@ -70,41 +70,59 @@ function FieldController({
           <TextField
             className="w-full"
             isInvalid={!!fieldState.error}
+            name={field.name}
             type={type}
             value={
               field.value === undefined || field.value === null
                 ? ""
                 : field.value.toString()
             }
+            onBlur={field.onBlur}
             onChange={(val: any) => {
               if (type === "number") {
                 let strVal = "";
+
                 if (typeof val === "string") strVal = val;
                 else if (typeof val === "number") strVal = val.toString();
-                else if (val?.target?.value !== undefined) strVal = val.target.value;
+                else if (val?.target?.value !== undefined)
+                  strVal = val.target.value;
                 field.onChange(strVal === "" ? "" : Number(strVal));
               } else {
                 field.onChange(val);
               }
             }}
+            // Prevent scrolling changing number
             onKeyDown={(e: any) => {
               if (
                 type === "number" &&
-                (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")
+                (e.key === "-" ||
+                  e.key === "e" ||
+                  e.key === "E" ||
+                  e.key === "+")
               ) {
                 e.preventDefault();
               }
             }}
+            onWheel={(e: any) => {
+              if (type === "number") {
+                e.target.blur();
+              }
+            }}
           >
             <Label>{label}</Label>
-            <Input min={min} placeholder={placeholder} variant="secondary" />
+            <Input
+              min={min}
+              placeholder={placeholder}
+              step={type === "number" ? "any" : undefined}
+              variant="secondary"
+            />
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
             {edited && (
-            <Description className="text-warning-500 text-xs">
-              Edited by you
-            </Description>
+              <Description className="text-warning-500 text-xs">
+                Edited by you
+              </Description>
             )}
           </TextField>
         );
@@ -123,7 +141,6 @@ export default memo(function ScenarioForm({
   selector,
   sourcedValues,
 }: Props) {
-
   const requiredFields: FieldConfig[] = [
     { name: "name", label: "Housing Name", placeholder: title, type: "text" },
     { name: "housing_cost", label: "Housing Cost (Your Share)", min: "0" },
@@ -193,11 +210,12 @@ export default memo(function ScenarioForm({
                   key={field.name}
                   control={control}
                   label={field.label}
-                  min={field.min} 
+                  min={field.min}
                   name={`${prefix}.${field.name}` as Path<CompareRequest>}
                   placeholder={field.placeholder}
                   sourcedValue={sourcedValues?.[field.name]}
-/>
+                  type={field.type}
+                />
               ))}
             </FieldGroup>
           </div>

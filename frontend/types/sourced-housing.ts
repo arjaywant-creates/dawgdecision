@@ -1,39 +1,36 @@
-export type HousingCategory = "on_campus" | "off_campus";
+import { z } from "zod";
 
-export type PriceType =
-  | "term_rate"
-  | "starting_at"
-  | "starting_inclusive_installment"
-  | string;
+export const SourceMetadataSchema = z.object({
+  name: z.string(),
+  url: z.string(),
+  last_checked: z.string(),
+  notes: z.string().nullable().optional(),
+});
 
-export interface SourcedHousingOption {
-  id: string;
+export const SourcedHousingOptionSchema = z.object({
+  id: z.string(),
+  category: z.enum(["on_campus", "off_campus"]),
+  property_name: z.string(),
+  configuration: z.string(),
+  housing_cost: z.number().nullable(),
+  price_type: z.string(),
+  cost_period_months: z.number().nullable(),
+  contract_months: z.number().nullable(),
+  utilities: z.number().nullable(),
+  mandatory_fees: z.number().nullable(),
+  parking: z.number().nullable(),
+  transportation: z.number().nullable(),
+  upfront_costs: z.number().nullable(),
+  commute_minutes: z.number().nullable(),
+  source: SourceMetadataSchema,
+});
 
-  category: HousingCategory;
+export type SourcedHousingOption = z.infer<typeof SourcedHousingOptionSchema>;
 
-  property_name: string;
-  configuration: string;
+export const HousingSourcesResponseSchema = z.object({
+  housing_options: z.array(SourcedHousingOptionSchema),
+});
 
-  housing_cost: number | null;
-  price_type: PriceType;
-
-  cost_period_months: number | null;
-  contract_months: number | null;
-
-  utilities: number | null;
-  mandatory_fees: number | null;
-  parking: number | null;
-  transportation: number | null;
-  upfront_costs: number | null;
-  commute_minutes: number | null;
-
-  source_name: string;
-  source_url: string;
-  last_checked: string;
-
-  source_notes?: string | null;
-}
-
-export interface HousingSourcesResponse {
-  housing_options: SourcedHousingOption[];
-}
+export type HousingSourcesResponse = z.infer<
+  typeof HousingSourcesResponseSchema
+>;

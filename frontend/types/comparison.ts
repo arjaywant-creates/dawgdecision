@@ -14,8 +14,14 @@ const emptyStringToNull = z.preprocess(
 export const ScenarioSchema = z.object({
   name: z.string().min(1, "Name is required"),
   housing_cost: z.coerce.number().min(0, "Cannot be negative"),
-  cost_period_months: z.coerce.number().min(1, "Must be at least 1 month"),
-  contract_months: z.coerce.number().int().min(1, "Must be at least 1 month"),
+  cost_period_months: z.coerce
+    .number()
+    .int({ message: "Must use whole number" })
+    .min(1, "Must be at least 1 month"),
+  contract_months: z.coerce
+    .number()
+    .int({ message: "Must use whole number" })
+    .min(1, "Must be at least 1 month"),
 
   utilities: emptyStringToNull,
   mandatory_fees: emptyStringToNull,
