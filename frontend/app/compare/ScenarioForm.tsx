@@ -1,5 +1,5 @@
 /** React & Next.js */
-import { memo } from "react";
+import React, { memo } from "react";
 
 /** UI Components (HeroUI) */
 import {
@@ -23,7 +23,18 @@ interface Props {
   title: string;
   prefix: "scenario_a" | "scenario_b";
   control: Control<CompareRequest>;
+  selector?: React.ReactNode;
+
+  sourcedValues?: Record<string, unknown> | null;
 }
+
+type FieldConfig = {
+  name: keyof Scenario;
+  label: string;
+  type?: "text" | "number";
+  placeholder?: string;
+  min?: string;
+};
 
 /**
  * Controller wrapper for form fields to handle typing and validation automatically
@@ -35,6 +46,7 @@ function FieldController({
   type = "number",
   placeholder,
   min,
+  sourcedValue,
 }: {
   name: Path<CompareRequest>;
   label: string;
@@ -42,54 +54,61 @@ function FieldController({
   type?: "text" | "number";
   placeholder?: string;
   min?: string;
+  sourcedValue?: unknown;
 }) {
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
-        <TextField
-          className="w-full"
-          /** Convert error object to a boolean to indicate invalid state */
-          isInvalid={!!fieldState.error}
-          type={type}
-          value={
-            field.value === undefined || field.value === null
-              ? ""
-              : field.value.toString()
-          }
-          onChange={(val: any) => {
-            if (type === "number") {
-              let strVal = "";
+      render={({ field, fieldState }) => {
+        const edited =
+          sourcedValue !== undefined &&
+          sourcedValue !== null &&
+          field.value !== sourcedValue;
 
-              if (typeof val === "string") {
-                strVal = val;
-              } else if (typeof val === "number") {
-                strVal = val.toString();
-              } else if (val?.target?.value !== undefined) {
-                strVal = val.target.value;
+        return (
+          <TextField
+            className="w-full"
+            isInvalid={!!fieldState.error}
+            type={type}
+            value={
+              field.value === undefined || field.value === null
+                ? ""
+                : field.value.toString()
+            }
+            onChange={(val: any) => {
+              if (type === "number") {
+                let strVal = "";
+                if (typeof val === "string") strVal = val;
+                else if (typeof val === "number") strVal = val.toString();
+                else if (val?.target?.value !== undefined) strVal = val.target.value;
+                field.onChange(strVal === "" ? "" : Number(strVal));
+              } else {
+                field.onChange(val);
               }
-              field.onChange(strVal === "" ? "" : Number(strVal));
-            } else {
-              field.onChange(val);
-            }
-          }}
-          onKeyDown={(e: any) => {
-            if (
-              type === "number" &&
-              (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")
-            ) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <Label>{label}</Label>
-          <Input min={min} placeholder={placeholder} variant="secondary" />
-          {fieldState.error && (
-            <FieldError>{fieldState.error.message}</FieldError>
-          )}
-        </TextField>
-      )}
+            }}
+            onKeyDown={(e: any) => {
+              if (
+                type === "number" &&
+                (e.key === "-" || e.key === "e" || e.key === "E" || e.key === "+")
+              ) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <Label>{label}</Label>
+            <Input min={min} placeholder={placeholder} variant="secondary" />
+            {fieldState.error && (
+              <FieldError>{fieldState.error.message}</FieldError>
+            )}
+            {edited && (
+            <Description className="text-warning-500 text-xs">
+              Edited by you
+            </Description>
+            )}
+          </TextField>
+        );
+      }}
     />
   );
 }
@@ -97,14 +116,13 @@ function FieldController({
 /**
  * Reusable form component for capturing scenario details
  */
-export default memo(function ScenarioForm({ title, prefix, control }: Props) {
-  type FieldConfig = {
-    name: Path<Scenario>;
-    label: string;
-    placeholder?: string;
-    type?: "text" | "number";
-    min?: string;
-  };
+export default memo(function ScenarioForm({
+  title,
+  prefix,
+  control,
+  selector,
+  sourcedValues,
+}: Props) {
 
   const requiredFields: FieldConfig[] = [
     { name: "name", label: "Housing Name", placeholder: title, type: "text" },
@@ -161,6 +179,8 @@ export default memo(function ScenarioForm({ title, prefix, control }: Props) {
           Enter the financial details for {title.toLowerCase()}.
         </Description>
 
+        {selector}
+
         <div className="flex flex-col gap-6">
           {/* Required Fields */}
           <div>
@@ -173,11 +193,11 @@ export default memo(function ScenarioForm({ title, prefix, control }: Props) {
                   key={field.name}
                   control={control}
                   label={field.label}
-                  min={field.min}
+                  min={field.min} 
                   name={`${prefix}.${field.name}` as Path<CompareRequest>}
                   placeholder={field.placeholder}
-                  type={field.type}
-                />
+                  sourcedValue={sourcedValues?.[field.name]}
+/>
               ))}
             </FieldGroup>
           </div>

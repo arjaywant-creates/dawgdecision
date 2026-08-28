@@ -21,6 +21,9 @@ import {
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import SourcedHousingSelector from "@/components/SourcedHousingSelector";
+import { SourcedHousingOption } from "@/types/sourced-housing";
+
 /** Icons */
 import {
   Calculator,
@@ -151,6 +154,12 @@ export default function CompareForm({
     isEditing ? getInitialResultsState(initialComparison) : null,
   );
 
+  const [scenarioAOriginalValues, setScenarioAOriginalValues] =
+  useState<Record<string, unknown> | null>(null);
+
+  const [scenarioBOriginalValues, setScenarioBOriginalValues] =
+  useState<Record<string, unknown> | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -166,11 +175,64 @@ export default function CompareForm({
     getValues,
     reset,
     watch,
+    setValue,
     formState: { isDirty },
   } = useForm<CompareRequest>({
     resolver: zodResolver(CompareRequestSchema) as any,
     defaultValues: getInitialFormValues(isEditing ? initialComparison : null),
   });
+  const populateScenario = (
+  prefix: "scenario_a" | "scenario_b",
+  housing: SourcedHousingOption,
+) => {
+  const sourcedValues = {
+    housing_cost: housing.housing_cost,
+    cost_period_months: housing.cost_period_months,
+    contract_months: housing.contract_months,
+    utilities: housing.utilities,
+    mandatory_fees: housing.mandatory_fees,
+    parking: housing.parking,
+    transportation: housing.transportation,
+    upfront_costs: housing.upfront_costs,
+    commute_minutes: housing.commute_minutes,
+  };
+
+  if (prefix === "scenario_a") {
+    setScenarioAOriginalValues(sourcedValues);
+  } else {
+    setScenarioBOriginalValues(sourcedValues);
+  }
+
+  setValue(
+    `${prefix}.name`,
+    `${housing.property_name} — ${housing.configuration}`,
+  );
+
+  if (housing.housing_cost !== null) {
+    setValue(`${prefix}.housing_cost`, housing.housing_cost);
+  }
+
+  if (housing.cost_period_months !== null) {
+    setValue(
+      `${prefix}.cost_period_months`,
+      housing.cost_period_months,
+    );
+  }
+
+  if (housing.contract_months !== null) {
+    setValue(
+      `${prefix}.contract_months`,
+      housing.contract_months,
+    );
+  }
+
+  setValue(`${prefix}.utilities`, housing.utilities);
+  setValue(`${prefix}.mandatory_fees`, housing.mandatory_fees);
+  setValue(`${prefix}.parking`, housing.parking);
+  setValue(`${prefix}.transportation`, housing.transportation);
+  setValue(`${prefix}.upfront_costs`, housing.upfront_costs);
+  setValue(`${prefix}.commute_minutes`, housing.commute_minutes);
+};
 
   // Re-hydrate drafts from Zustand
   useEffect(() => {
@@ -349,14 +411,34 @@ export default function CompareForm({
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
               <ScenarioForm
-                control={control}
-                prefix="scenario_a"
-                title="Option A"
-              />
+  control={control}
+  prefix="scenario_a"
+  title="Option A"
+  sourcedValues={scenarioAOriginalValues}
+  selector={
+    <SourcedHousingSelector
+      onSelect={(option) => {
+        if (option) {
+          populateScenario("scenario_a", option);
+        }
+      }}
+    />
+  }
+/>
               <ScenarioForm
                 control={control}
                 prefix="scenario_b"
                 title="Option B"
+                sourcedValues={scenarioBOriginalValues}
+                selector={
+                  <SourcedHousingSelector
+                    onSelect={(option) => {
+                      if (option) {
+                        populateScenario("scenario_b", option);
+                      }
+                    }}
+                  />
+                }
               />
             </div>
 
