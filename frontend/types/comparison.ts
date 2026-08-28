@@ -6,14 +6,10 @@ import { z } from "zod";
  * into a pure `null` before sending it to the Python API, which expects a Float or null.
  * It also coerces valid string numbers (e.g., "50") into actual Number types.
  */
-const emptyStringToNull = z
-  .union([
-    z.coerce.number().min(0, "Cannot be negative"),
-    z.literal(""),
-    z.null(),
-  ])
-  .optional()
-  .transform((e) => (e === "" ? null : e));
+const emptyStringToNull = z.preprocess(
+  (value) => (value === "" ? null : value),
+  z.coerce.number().min(0, "Cannot be negative").nullable().optional(),
+);
 
 export const ScenarioSchema = z.object({
   name: z.string().min(1, "Name is required"),

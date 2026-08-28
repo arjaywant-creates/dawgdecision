@@ -2,6 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { Alert, Spinner, Surface } from "@heroui/react";
+
+import {
+  HousingSourcesResponse,
+  SourcedHousingOption,
+} from "@/types/sourced-housing";
+
 function getPriceTypeLabel(priceType: string) {
   switch (priceType) {
     case "term_rate":
@@ -17,12 +24,6 @@ function getPriceTypeLabel(priceType: string) {
       return priceType;
   }
 }
-import { Alert, Button, Spinner, Surface } from "@heroui/react";
-
-import {
-  HousingSourcesResponse,
-  SourcedHousingOption,
-} from "@/types/sourced-housing";
 
 interface Props {
   label?: string;
@@ -43,8 +44,11 @@ export default function SourcedHousingSelector({
       try {
         setLoading(true);
 
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
         const response = await fetch(
-          "http://localhost:8000/api/housing-sources",
+          `${apiUrl}/api/housing-sources`,
         );
 
         if (!response.ok) {
@@ -103,7 +107,7 @@ export default function SourcedHousingSelector({
       </h4>
 
       <select
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-lg border px-3 py-2 dark:[color-scheme:dark]"
         value={selectedId}
         onChange={(e) => {
           const value = e.target.value;
@@ -122,21 +126,38 @@ export default function SourcedHousingSelector({
           onSelect(selected);
         }}
       >
-        <option value="">
+        <option
+          className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+          value=""
+        >
           Manual Entry (Ignore Sourced Data)
         </option>
 
-        <optgroup label="On-Campus">
+        <optgroup
+          className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+          label="On-Campus"
+        >
           {onCampus.map((option) => (
-            <option key={option.id} value={option.id}>
+            <option
+              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+              key={option.id}
+              value={option.id}
+            >
               {option.property_name} — {option.configuration}
             </option>
           ))}
         </optgroup>
 
-        <optgroup label="Off-Campus">
+        <optgroup
+          className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+          label="Off-Campus"
+        >
           {offCampus.map((option) => (
-            <option key={option.id} value={option.id}>
+            <option
+              className="bg-white text-black dark:bg-zinc-900 dark:text-white"
+              key={option.id}
+              value={option.id}
+            >
               {option.property_name} — {option.configuration}
             </option>
           ))}
@@ -157,18 +178,17 @@ export default function SourcedHousingSelector({
             </p>
 
             <p>
-                <strong>Pricing:</strong>{" "}
-                {getPriceTypeLabel(selectedOption.price_type)}
-
+              <strong>Pricing:</strong>{" "}
+              {getPriceTypeLabel(selectedOption.price_type)}
             </p>
 
             <a
-            href={selectedOption.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline"
+              className="text-primary underline"
+              href={selectedOption.source_url}
+              rel="noopener noreferrer"
+              target="_blank"
             >
-            View
+              View
             </a>
 
             {selectedOption.source_notes && (

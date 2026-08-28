@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -10,11 +11,11 @@ from app.decision_engine.comparison import compare_scenarios
 from app.decision_engine.impact import analyze_decision_impact
 
 app = FastAPI(title="DawgDecision Engine API")
-
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
 # Allow requests from the Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
