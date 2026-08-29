@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link, Button, Dropdown, Avatar, Label } from "@heroui/react";
-import { LogOut, Settings, LayoutDashboard } from "lucide-react";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
@@ -105,19 +105,19 @@ export const Navbar = () => {
                 </div>
                 <Dropdown.Menu
                   onAction={(key) => {
-                    if (key === "logout") handleSignOut();
+                    if (key === "dashboard") {
+                      window.location.href = "/";
+                    }
+
+                    if (key === "logout") {
+                      handleSignOut();
+                    }
                   }}
                 >
                   <Dropdown.Item id="dashboard" textValue="Dashboard">
                     <div className="flex w-full items-center justify-between gap-2">
                       <Label>Dashboard</Label>
                       <LayoutDashboard className="size-3.5 text-muted-foreground" />
-                    </div>
-                  </Dropdown.Item>
-                  <Dropdown.Item id="settings" textValue="Settings">
-                    <div className="flex w-full items-center justify-between gap-2">
-                      <Label>Settings</Label>
-                      <Settings className="size-3.5 text-muted-foreground" />
                     </div>
                   </Dropdown.Item>
                   <Dropdown.Item
