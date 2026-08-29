@@ -1,0 +1,32 @@
+[
+  {
+    "id": "FB-001",
+    "summary": "Comparison result prices should always show two decimal places and make monthly values explicit.",
+    "product_area": "Comparison Results",
+    "category": "Content Clarity"
+  },
+  {
+    "id": "FB-002",
+    "summary": "Dashboard and profile dropdown navigation should take users to working destinations.",
+    "product_area": "Navigation",
+    "category": "Bug"
+  },
+  {
+    "id": "FB-003",
+    "summary": "Housing source coverage should include more UGA dorm options.",
+    "product_area": "Housing Sources",
+    "category": "Data Gap"
+  },
+  {
+    "id": "FB-004",
+    "summary": "User is confused about the function of the Financial Plan button that appears after finishing a housing comparison",
+    "product_area": "Comparison Results",
+    "category": "Usability"
+  },
+  {
+    "id": "FB-005",
+    "summary": "User finds the Financial Plan useful overall but wants it to more clearly explain how the selected housing option impacts the overall financial plan.",
+    "product_area": "Financial Plan",
+    "category": "Content Clarity"
+  }
+]
