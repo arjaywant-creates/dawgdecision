@@ -7,8 +7,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 /**
- * Sets or updates the user's Financial Plan housing selection.
- * Ensures that only one housing selection is active per user via an upsert.
+ * Saves a new Financial Plan based on a housing selection.
+ * Allows users to maintain multiple saved plans.
  *
  * @param comparisonId The ID of the saved comparison being selected.
  * @param selectedScenario "A" or "B" depending on the user's choice.
@@ -44,6 +44,7 @@ export async function setFinancialPlanHousingAction(
   });
 
   revalidatePath("/plan");
+  revalidatePath("/dashboard");
   revalidatePath("/comparisons");
 
   return { success: true };
@@ -71,8 +72,8 @@ export async function deleteFinancialPlanAction(planId: string) {
   }
 
   revalidatePath("/plan");
+  revalidatePath("/dashboard");
   revalidatePath("/comparisons");
 
   return { success: true };
 }
-

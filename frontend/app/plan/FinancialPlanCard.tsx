@@ -21,7 +21,7 @@ interface FinancialPlanCardProps {
     impactSummary: string;
   };
 
-  onDelete: (planId: string) => Promise< { success: boolean }>;
+  onDelete: (planId: string) => Promise<{ success: boolean }>;
 }
 
 export default function FinancialPlanCard({
@@ -31,8 +31,8 @@ export default function FinancialPlanCard({
   return (
     <Card className="h-full transition-colors hover:border-primary/50">
       <Card.Header className="flex flex-col items-start gap-1">
-        <Card.Title className="line-clamp-2">
-            {plan.housingName}
+        <Card.Title className="line-clamp-2 text-xl font-bold">
+          {plan.housingName}
         </Card.Title>
 
         <Card.Description>
@@ -61,68 +61,65 @@ export default function FinancialPlanCard({
           </p>
         </div>
 
-        <div className="rounded-lg bg-content2 p-3">
-          <p className="text-sm">{plan.impactSummary}</p>
-        </div>
-
-        <div className="mt-auto flex flex-wrap gap-2">
-          <NextLink href={`/plan/${plan.id}`}>
-            <Button size="sm" variant="primary">
-              <Eye className="size-4" />
-              View Plan
-            </Button>
-          </NextLink>
-
-          <NextLink href={`/compare?id=${plan.comparisonId}`}>
-            <Button size="sm" variant="secondary">
-              <ExternalLink className="size-4" />
-              Comparison
-            </Button>
-          </NextLink>
-
-          <AlertDialog>
-            <Button
-              aria-label="Delete plan"
-              size="sm"
-              variant="danger"
-            >
-              <Trash className="size-4" />
-            </Button>
-
-            <AlertDialog.Backdrop>
-              <AlertDialog.Container>
-                <AlertDialog.Dialog>
-                  <AlertDialog.CloseTrigger />
-
-                  <AlertDialog.Header>
-                    <AlertDialog.Heading>
-                      Delete Financial Plan?
-                    </AlertDialog.Heading>
-                  </AlertDialog.Header>
-
-                  <AlertDialog.Body>
-                    This action cannot be undone.
-                  </AlertDialog.Body>
-
-                  <AlertDialog.Footer>
-                    <Button slot="close" variant="secondary">
-                      Cancel
-                    </Button>
-
-                    <Button
-                      slot="close"
-                      variant="danger"
-                      onPress={() => onDelete(plan.id)}
-                    >
-                      Delete
-                    </Button>
-                  </AlertDialog.Footer>
-                </AlertDialog.Dialog>
-              </AlertDialog.Container>
-            </AlertDialog.Backdrop>
-          </AlertDialog>
-        </div>
+        <p className="text-sm font-medium text-default-700 pt-1">
+          {plan.impactSummary}
+        </p>
       </Card.Content>
+
+      <Card.Footer className="mt-auto flex flex-wrap gap-2 pt-3">
+        <NextLink href={`/plan/${plan.id}`}>
+          <Button size="sm" variant="primary">
+            <Eye className="size-4" />
+            View Plan
+          </Button>
+        </NextLink>
+
+        <NextLink href={`/compare?id=${plan.comparisonId}`}>
+          <Button size="sm" variant="secondary">
+            <ExternalLink className="size-4" />
+            Comparison
+          </Button>
+        </NextLink>
+
+        <AlertDialog>
+          <Button aria-label="Delete plan" size="sm" variant="danger">
+            <Trash className="size-4" />
+            Delete
+          </Button>
+
+          <AlertDialog.Backdrop>
+            <AlertDialog.Container>
+              <AlertDialog.Dialog>
+                <AlertDialog.CloseTrigger />
+
+                <AlertDialog.Header>
+                  <AlertDialog.Heading>
+                    Delete Financial Plan?
+                  </AlertDialog.Heading>
+                </AlertDialog.Header>
+
+                <AlertDialog.Body>
+                  This action cannot be undone.
+                </AlertDialog.Body>
+
+                <AlertDialog.Footer>
+                  <Button slot="close" variant="secondary">
+                    Cancel
+                  </Button>
+
+                  <Button
+                    slot="close"
+                    variant="danger"
+                    onPress={() => onDelete(plan.id)}
+                  >
+                    Delete
+                  </Button>
+                </AlertDialog.Footer>
+              </AlertDialog.Dialog>
+            </AlertDialog.Container>
+          </AlertDialog.Backdrop>
+        </AlertDialog>
+      </Card.Footer>
     </Card>
   );
 }

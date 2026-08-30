@@ -131,7 +131,6 @@ export async function deleteComparisonAction(comparisonId: string) {
     revalidatePath("/comparisons");
     revalidatePath("/plan");
     revalidatePath("/dashboard");
-  
 
     return { success: true };
   } catch {
