@@ -13,7 +13,5 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  trustedOrigins: [
-    "https://dawgdecision-v2.vercel.app",
-  ],
+  trustedOrigins: ["https://dawgdecision-v2.vercel.app"],
 });

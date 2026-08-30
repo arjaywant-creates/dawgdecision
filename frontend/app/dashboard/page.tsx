@@ -43,13 +43,13 @@ export default async function Home() {
         where: { userId: session.user.id },
       })
     : 0;
-    const financialPlanCount = session?.user?.id
-  ? await prisma.plan.count({
-      where: {
-        userId: session.user.id,
-      },
-    })
-  : 0;
+  const financialPlanCount = session?.user?.id
+    ? await prisma.plan.count({
+        where: {
+          userId: session.user.id,
+        },
+      })
+    : 0;
 
   return (
     <div className="pb-12">
@@ -71,7 +71,10 @@ export default async function Home() {
 
       {/* Stats Grid Section */}
       <div className="grid gap-6 md:grid-cols-3">
-        <StatCard title="Financial Plans" value={financialPlanCount.toString()} />
+        <StatCard
+          title="Financial Plans"
+          value={financialPlanCount.toString()}
+        />
         <StatCard title="Comparisons" value={comparisonCount.toString()} />
         <StatCard title="Goals" value="0" />
       </div>
@@ -109,9 +112,7 @@ export default async function Home() {
               <ComparisonCard
                 key={comp.id}
                 comp={comp}
-                onDelete={async (id: string) => {
-                  return await deleteComparisonAction(id);
-                }}
+                onDelete={deleteComparisonAction}
               />
             ))}
           </div>

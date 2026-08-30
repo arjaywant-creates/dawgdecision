@@ -56,7 +56,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
 
   return (
     <Card className="transition-colors hover:border-primary/50 h-full flex flex-col">
-      <Card.Header className="gap-1 pb-0 pt-4 px-4">
+      <Card.Header className="gap-1">
         <Card.Title className="text-base truncate">
           {comp.firstScenario?.name || "Option A"}{" "}
           <span className="text-muted font-normal text-xs mx-1">vs</span>{" "}
@@ -67,8 +67,8 @@ export function ComparisonCard({ comp, onDelete }: Props) {
         </Card.Description>
       </Card.Header>
 
-      <Card.Content className="pt-2 px-4 pb-4 flex flex-col flex-1">
-        <div className="flex flex-col gap-1 mb-4 flex-1">
+      <Card.Content className="flex flex-col flex-1">
+        <div className="flex flex-col gap-1 flex-1">
           <div className="text-sm">
             <span className="text-muted-foreground">
               {comp.firstScenario?.name || "Option A"}: $
@@ -82,81 +82,82 @@ export function ComparisonCard({ comp, onDelete }: Props) {
             </span>
           </div>
         </div>
-
-        <div className="flex flex-wrap justify-end items-center gap-2 mt-auto">
-          <Dropdown>
-            <Button isPending={isAdding} size="sm" variant="secondary">
-              <Plus className="size-4" />
-              Add to Plan
-            </Button>
-            <Dropdown.Popover>
-              <Dropdown.Menu
-                onAction={(key) => handleAddToPlan(key as "A" | "B")}
-              >
-                <Dropdown.Item
-                  id="A"
-                  textValue={`Select ${comp.firstScenario?.name || "Option A"}`}
-                >
-                  Select {comp.firstScenario?.name || "Option A"}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  id="B"
-                  textValue={`Select ${comp.secondScenario?.name || "Option B"}`}
-                >
-                  Select {comp.secondScenario?.name || "Option B"}
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown.Popover>
-          </Dropdown>
-
-          <AlertDialog>
-            <Button aria-label="Delete comparison" size="sm" variant="danger">
-              <Trash className="size-4" />
-            </Button>
-            <AlertDialog.Backdrop>
-              <AlertDialog.Container>
-                <AlertDialog.Dialog className="sm:max-w-[400px]">
-                  <AlertDialog.CloseTrigger />
-                  <AlertDialog.Header>
-                    <AlertDialog.Icon status="danger" />
-                    <AlertDialog.Heading>
-                      Delete comparison permanently?
-                    </AlertDialog.Heading>
-                  </AlertDialog.Header>
-                  <AlertDialog.Body>
-                    <p>
-                      This will permanently delete the comparison between{" "}
-                      <strong>{comp.firstScenario?.name || "Option A"}</strong>{" "}
-                      and{" "}
-                      <strong>{comp.secondScenario?.name || "Option B"}</strong>
-                      . This action cannot be undone.
-                    </p>
-                  </AlertDialog.Body>
-                  <AlertDialog.Footer>
-                    <Button slot="close" variant="tertiary">
-                      Cancel
-                    </Button>
-                    <Button
-                      isPending={isDeleting}
-                      slot="close"
-                      variant="danger"
-                      onPress={handleDelete}
-                    >
-                      Delete
-                    </Button>
-                  </AlertDialog.Footer>
-                </AlertDialog.Dialog>
-              </AlertDialog.Container>
-            </AlertDialog.Backdrop>
-          </AlertDialog>
-
-          <NextLink href={`/compare?id=${comp.id}`}>
-            <Button aria-label="Open comparison" size="sm" variant="secondary">
-              <ExternalLink className="size-4" />
-            </Button>
-          </NextLink>
-        </div>
       </Card.Content>
+
+      <Card.Footer className="mt-auto flex flex-wrap items-center justify-end gap-2 pt-3">
+        <NextLink href={`/compare?id=${comp.id}`}>
+          <Button aria-label="Open comparison" size="sm" variant="primary">
+            <ExternalLink className="size-4" />
+            Open Comparison
+          </Button>
+        </NextLink>
+
+        <Dropdown>
+          <Button isPending={isAdding} size="sm" variant="secondary">
+            <Plus className="size-4" />
+            Add to Plan
+          </Button>
+          <Dropdown.Popover>
+            <Dropdown.Menu
+              onAction={(key) => handleAddToPlan(key as "A" | "B")}
+            >
+              <Dropdown.Item
+                id="A"
+                textValue={`Select ${comp.firstScenario?.name || "Option A"}`}
+              >
+                Select {comp.firstScenario?.name || "Option A"}
+              </Dropdown.Item>
+              <Dropdown.Item
+                id="B"
+                textValue={`Select ${comp.secondScenario?.name || "Option B"}`}
+              >
+                Select {comp.secondScenario?.name || "Option B"}
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
+        </Dropdown>
+
+        <AlertDialog>
+          <Button aria-label="Delete comparison" size="sm" variant="danger">
+            <Trash className="size-4" />
+          </Button>
+          <AlertDialog.Backdrop>
+            <AlertDialog.Container>
+              <AlertDialog.Dialog className="sm:max-w-[400px]">
+                <AlertDialog.CloseTrigger />
+                <AlertDialog.Header>
+                  <AlertDialog.Icon status="danger" />
+                  <AlertDialog.Heading>
+                    Delete comparison permanently?
+                  </AlertDialog.Heading>
+                </AlertDialog.Header>
+                <AlertDialog.Body>
+                  <p>
+                    This will permanently delete the comparison between{" "}
+                    <strong>{comp.firstScenario?.name || "Option A"}</strong>{" "}
+                    and{" "}
+                    <strong>{comp.secondScenario?.name || "Option B"}</strong>.
+                    This action cannot be undone.
+                  </p>
+                </AlertDialog.Body>
+                <AlertDialog.Footer>
+                  <Button slot="close" variant="tertiary">
+                    Cancel
+                  </Button>
+                  <Button
+                    isPending={isDeleting}
+                    slot="close"
+                    variant="danger"
+                    onPress={handleDelete}
+                  >
+                    Delete
+                  </Button>
+                </AlertDialog.Footer>
+              </AlertDialog.Dialog>
+            </AlertDialog.Container>
+          </AlertDialog.Backdrop>
+        </AlertDialog>
+      </Card.Footer>
     </Card>
   );
 }

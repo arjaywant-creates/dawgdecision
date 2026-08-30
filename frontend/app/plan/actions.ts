@@ -7,10 +7,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 /**
- * Creates a new Financial Plan from a saved comparison.
+ * Saves a new Financial Plan based on a housing selection.
+ * Allows users to maintain multiple saved plans.
  *
- * @param comparisonId The saved comparison.
- * @param selectedScenario The chosen scenario ("A" or "B").
+ * @param comparisonId The ID of the saved comparison being selected.
+ * @param selectedScenario "A" or "B" depending on the user's choice.
  */
 export async function setFinancialPlanHousingAction(
   comparisonId: string,
@@ -26,16 +27,14 @@ export async function setFinancialPlanHousingAction(
 
   // Verify ownership of the comparison
   const comparison = await prisma.comparison.findUnique({
-    where: {
-      id: comparisonId,
-    },
+    where: { id: comparisonId },
   });
 
   if (!comparison || comparison.userId !== session.user.id) {
     throw new Error("Comparison not found or unauthorized");
   }
 
-  // Create a new Financial Plan
+  // Create a new financial plan
   await prisma.plan.create({
     data: {
       userId: session.user.id,
@@ -52,35 +51,25 @@ export async function setFinancialPlanHousingAction(
 }
 
 /**
- * Deletes a saved Financial Plan.
- * The underlying comparison remains intact.
- *
- * @param planId The Financial Plan to delete.
+ * Removes a specific Financial Plan.
+ * The underlying saved comparison is not touched.
  */
-export async function removeFinancialPlanHousingAction(planId: string) {
+export async function deleteFinancialPlanAction(planId: string) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     throw new Error("Unauthorized");
   }
 
-  const plan = await prisma.plan.findUnique({
-    where: {
-      id: planId,
-    },
-  });
-
-  if (!plan || plan.userId !== session.user.id) {
-    throw new Error("Plan not found or unauthorized");
+  try {
+    await prisma.plan.delete({
+      where: { id: planId, userId: session.user.id },
+    });
+  } catch {
+    return { success: false, error: "Failed to delete plan." };
   }
-
-  await prisma.plan.delete({
-    where: {
-      id: planId,
-    },
-  });
 
   revalidatePath("/plan");
   revalidatePath("/dashboard");
