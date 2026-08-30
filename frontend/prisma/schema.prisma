@@ -24,7 +24,7 @@ model User {
   accounts      Account[]
   scenarios     Scenario[]
   comparisons   Comparison[]
-  plan          Plan?
+  plans          Plan[]
 
   @@unique([email])
   @@map("user")
@@ -130,18 +130,19 @@ model Comparison {
 }
 
 model Plan {
-  id              String      @id @default(uuid())
-  userId          String      @unique
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  comparisonId    String
-  comparison      Comparison  @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
-  
-  selectedScenario String     // "A" or "B"
-  
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id               String     @id @default(uuid())
+  userId           String
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  comparisonId     String
+  comparison       Comparison @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+
+  selectedScenario String
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([userId])
   @@map("plan")
 }
 

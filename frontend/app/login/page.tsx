@@ -56,7 +56,7 @@ export default function LoginPage() {
       if (signInError) {
         setError(signInError.message || "Failed to sign in. Please try again.");
       } else {
-        router.push("/");
+        router.push("/dashboard");
         router.refresh();
       }
     } catch {

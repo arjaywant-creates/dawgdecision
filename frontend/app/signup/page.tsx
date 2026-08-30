@@ -59,7 +59,7 @@ export default function SignupPage() {
           signUpError.message || "Failed to create account. Please try again.",
         );
       } else {
-        router.push("/");
+        router.push("/dashboard");
         router.refresh();
       }
     } catch {

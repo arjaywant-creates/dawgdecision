@@ -1,0 +1,128 @@
+"use client";
+
+import NextLink from "next/link";
+
+import { Card, Button, AlertDialog } from "@heroui/react";
+import { Trash, ExternalLink, Eye } from "lucide-react";
+
+interface FinancialPlanCardProps {
+  plan: {
+    id: string;
+    comparisonId: string;
+
+    housingName: string;
+
+    savedDate: string;
+
+    monthlyCost: number | null;
+    upfrontCost: number | null;
+    fullTermCost: number | null;
+
+    impactSummary: string;
+  };
+
+  onDelete: (planId: string) => Promise< { success: boolean }>;
+}
+
+export default function FinancialPlanCard({
+  plan,
+  onDelete,
+}: FinancialPlanCardProps) {
+  return (
+    <Card className="h-full transition-colors hover:border-primary/50">
+      <Card.Header className="flex flex-col items-start gap-1">
+        <Card.Title className="line-clamp-2">
+            {plan.housingName}
+        </Card.Title>
+
+        <Card.Description>
+          Saved {new Date(plan.savedDate).toLocaleDateString()}
+        </Card.Description>
+      </Card.Header>
+
+      <Card.Content className="flex flex-col gap-4">
+        <div className="space-y-1">
+          <p className="font-semibold">
+            {plan.monthlyCost !== null
+              ? `$${plan.monthlyCost.toLocaleString()}/month`
+              : "Unknown monthly cost"}
+          </p>
+
+          <p className="text-default-500 text-sm">
+            {plan.upfrontCost !== null
+              ? `$${plan.upfrontCost.toLocaleString()} upfront`
+              : "Unknown upfront cost"}
+          </p>
+
+          <p className="text-default-500 text-sm">
+            {plan.fullTermCost !== null
+              ? `$${plan.fullTermCost.toLocaleString()} full-term cost`
+              : "Unknown full-term cost"}
+          </p>
+        </div>
+
+        <div className="rounded-lg bg-content2 p-3">
+          <p className="text-sm">{plan.impactSummary}</p>
+        </div>
+
+        <div className="mt-auto flex flex-wrap gap-2">
+          <NextLink href={`/plan/${plan.id}`}>
+            <Button size="sm" variant="primary">
+              <Eye className="size-4" />
+              View Plan
+            </Button>
+          </NextLink>
+
+          <NextLink href={`/compare?id=${plan.comparisonId}`}>
+            <Button size="sm" variant="secondary">
+              <ExternalLink className="size-4" />
+              Comparison
+            </Button>
+          </NextLink>
+
+          <AlertDialog>
+            <Button
+              aria-label="Delete plan"
+              size="sm"
+              variant="danger"
+            >
+              <Trash className="size-4" />
+            </Button>
+
+            <AlertDialog.Backdrop>
+              <AlertDialog.Container>
+                <AlertDialog.Dialog>
+                  <AlertDialog.CloseTrigger />
+
+                  <AlertDialog.Header>
+                    <AlertDialog.Heading>
+                      Delete Financial Plan?
+                    </AlertDialog.Heading>
+                  </AlertDialog.Header>
+
+                  <AlertDialog.Body>
+                    This action cannot be undone.
+                  </AlertDialog.Body>
+
+                  <AlertDialog.Footer>
+                    <Button slot="close" variant="secondary">
+                      Cancel
+                    </Button>
+
+                    <Button
+                      slot="close"
+                      variant="danger"
+                      onPress={() => onDelete(plan.id)}
+                    >
+                      Delete
+                    </Button>
+                  </AlertDialog.Footer>
+                </AlertDialog.Dialog>
+              </AlertDialog.Container>
+            </AlertDialog.Backdrop>
+          </AlertDialog>
+        </div>
+      </Card.Content>
+    </Card>
+  );
+}

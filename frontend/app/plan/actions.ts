@@ -7,11 +7,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 /**
- * Sets or updates the user's Financial Plan housing selection.
- * Ensures that only one housing selection is active per user via an upsert.
+ * Creates a new Financial Plan from a saved comparison.
  *
- * @param comparisonId The ID of the saved comparison being selected.
- * @param selectedScenario "A" or "B" depending on the user's choice.
+ * @param comparisonId The saved comparison.
+ * @param selectedScenario The chosen scenario ("A" or "B").
  */
 export async function setFinancialPlanHousingAction(
   comparisonId: string,
@@ -34,48 +33,55 @@ export async function setFinancialPlanHousingAction(
     throw new Error("Comparison not found or unauthorized");
   }
 
-  // Upsert the financial plan housing selection
-  await prisma.plan.upsert({
-    where: { userId: session.user.id },
-    update: {
-      comparisonId,
-      selectedScenario,
-    },
-    create: {
-      userId: session.user.id,
-      comparisonId,
-      selectedScenario,
-    },
-  });
+  // Create a new Financial Plan
+ await prisma.plan.create({
+  data: {
+    userId: session.user.id,
+    comparisonId,
+    selectedScenario,
+  },
+});
 
   revalidatePath("/plan");
+  revalidatePath("/dashboard");
   revalidatePath("/comparisons");
 
   return { success: true };
 }
 
 /**
- * Removes the user's active Financial Plan housing selection.
- * The underlying saved comparison is not touched.
+ * Deletes a saved Financial Plan.
+ * The underlying comparison remains intact.
  */
-export async function removeFinancialPlanHousingAction() {
+export async function removeFinancialPlanHousingAction(
+  planId: string,
+) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     throw new Error("Unauthorized");
   }
 
-  try {
-    await prisma.plan.delete({
-      where: { userId: session.user.id },
-    });
-  } catch {
-    // Ignore if not found
+  const plan = await prisma.plan.findUnique({
+    where: {
+      id: planId,
+    },
+  });
+
+  if (!plan || plan.userId !== session.user.id) {
+    throw new Error("Plan not found or unauthorized");
   }
 
+  await prisma.plan.delete({
+    where: {
+      id: planId,
+    },
+  });
+
   revalidatePath("/plan");
+  revalidatePath("/dashboard");
   revalidatePath("/comparisons");
 
   return { success: true };
