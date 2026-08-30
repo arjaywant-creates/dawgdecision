@@ -5,6 +5,8 @@ import NextLink from "next/link";
 import { Card, Button, AlertDialog } from "@heroui/react";
 import { Trash, ExternalLink, Eye } from "lucide-react";
 
+import { deleteFinancialPlanAction } from "./actions";
+
 interface FinancialPlanCardProps {
   plan: {
     id: string;
@@ -20,13 +22,10 @@ interface FinancialPlanCardProps {
 
     impactSummary: string;
   };
-
-  onDelete: (planId: string) => Promise<{ success: boolean }>;
 }
 
 export default function FinancialPlanCard({
   plan,
-  onDelete,
 }: FinancialPlanCardProps) {
   return (
     <Card className="h-full transition-colors hover:border-primary/50">
@@ -82,7 +81,11 @@ export default function FinancialPlanCard({
         </NextLink>
 
         <AlertDialog>
-          <Button aria-label="Delete plan" size="sm" variant="danger">
+          <Button
+            aria-label="Delete plan"
+            size="sm"
+            variant="danger"
+          >
             <Trash className="size-4" />
             Delete
           </Button>
@@ -110,7 +113,9 @@ export default function FinancialPlanCard({
                   <Button
                     slot="close"
                     variant="danger"
-                    onPress={() => onDelete(plan.id)}
+                    onPress={() =>
+                      deleteFinancialPlanAction(plan.id)
+                    }
                   >
                     Delete
                   </Button>
