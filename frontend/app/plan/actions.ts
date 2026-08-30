@@ -26,7 +26,9 @@ export async function setFinancialPlanHousingAction(
 
   // Verify ownership of the comparison
   const comparison = await prisma.comparison.findUnique({
-    where: { id: comparisonId },
+    where: {
+      id: comparisonId,
+    },
   });
 
   if (!comparison || comparison.userId !== session.user.id) {
@@ -34,13 +36,13 @@ export async function setFinancialPlanHousingAction(
   }
 
   // Create a new Financial Plan
- await prisma.plan.create({
-  data: {
-    userId: session.user.id,
-    comparisonId,
-    selectedScenario,
-  },
-});
+  await prisma.plan.create({
+    data: {
+      userId: session.user.id,
+      comparisonId,
+      selectedScenario,
+    },
+  });
 
   revalidatePath("/plan");
   revalidatePath("/dashboard");
@@ -52,10 +54,10 @@ export async function setFinancialPlanHousingAction(
 /**
  * Deletes a saved Financial Plan.
  * The underlying comparison remains intact.
+ *
+ * @param planId The Financial Plan to delete.
  */
-export async function removeFinancialPlanHousingAction(
-  planId: string,
-) {
+export async function removeFinancialPlanHousingAction(planId: string) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });

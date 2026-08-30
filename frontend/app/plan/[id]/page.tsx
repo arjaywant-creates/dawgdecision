@@ -174,6 +174,7 @@ export default async function FinancialPlanDetailPage({
       </Card>
 
       <FinancialPlanActions
+        planId={plan.id}
         comparisonId={comparison.id}
         scenarioAName={scenarioA.name}
         scenarioBName={scenarioB.name}

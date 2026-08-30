@@ -15,6 +15,7 @@ import {
 } from "./actions";
 
 interface Props {
+  planId: string;
   comparisonId: string;
   scenarioAName: string;
   scenarioBName: string;
@@ -25,6 +26,7 @@ interface Props {
  * switching the selected option, viewing the comparison, and removing the plan.
  */
 export function FinancialPlanActions({
+  planId,
   comparisonId,
   scenarioAName,
   scenarioBName,
@@ -34,6 +36,7 @@ export function FinancialPlanActions({
 
   const handleSwitch = async (key: "A" | "B") => {
     setIsSwitching(true);
+
     try {
       await setFinancialPlanHousingAction(comparisonId, key);
       toast.success("Switched option successfully");
@@ -46,8 +49,9 @@ export function FinancialPlanActions({
 
   const handleRemove = async () => {
     setIsRemoving(true);
+
     try {
-      await removeFinancialPlanHousingAction();
+      await removeFinancialPlanHousingAction(planId);
       toast.success("Removed from Financial Plan");
     } catch (e: any) {
       toast.danger(e.message || "Failed to remove");
@@ -59,6 +63,7 @@ export function FinancialPlanActions({
   return (
     <>
       <Toast.Provider />
+
       <div className="flex gap-2 items-center flex-wrap mt-4">
         <NextLink href={`/compare?id=${comparisonId}`}>
           <Button size="sm" variant="secondary">
@@ -72,11 +77,13 @@ export function FinancialPlanActions({
             <RefreshCw className="size-4" />
             Switch Option
           </Button>
+
           <Dropdown.Popover>
             <Dropdown.Menu onAction={(key) => handleSwitch(key as "A" | "B")}>
               <Dropdown.Item id="A" textValue={scenarioAName}>
                 {scenarioAName}
               </Dropdown.Item>
+
               <Dropdown.Item id="B" textValue={scenarioBName}>
                 {scenarioBName}
               </Dropdown.Item>
@@ -89,26 +96,32 @@ export function FinancialPlanActions({
             <Trash className="size-4" />
             Remove
           </Button>
+
           <AlertDialog.Backdrop>
             <AlertDialog.Container>
               <AlertDialog.Dialog className="sm:max-w-[400px]">
                 <AlertDialog.CloseTrigger />
+
                 <AlertDialog.Header>
                   <AlertDialog.Icon status="danger" />
+
                   <AlertDialog.Heading>
                     Remove from Financial Plan?
                   </AlertDialog.Heading>
                 </AlertDialog.Header>
+
                 <AlertDialog.Body>
                   <p>
                     This will remove this housing selection from your Financial
                     Plan. Your saved comparison will not be deleted.
                   </p>
                 </AlertDialog.Body>
+
                 <AlertDialog.Footer>
                   <Button slot="close" variant="tertiary">
                     Cancel
                   </Button>
+
                   <Button
                     isPending={isRemoving}
                     slot="close"
