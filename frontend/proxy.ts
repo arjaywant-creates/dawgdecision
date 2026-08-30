@@ -22,9 +22,6 @@ export async function proxy(request: NextRequest) {
 
   // Not authenticated
   if (!session) {
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
     // Guard API routes (except /api/auth which is handled above)
     if (pathname.startsWith("/api")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -108,6 +108,7 @@ export const Navbar = () => {
                 <Dropdown.Menu
                   onAction={(key) => {
                     if (key === "logout") handleSignOut();
+                    if (key === "dashboard") router.push("/dashboard");
                   }}
                 >
                   <Dropdown.Item id="dashboard" textValue="Dashboard">
