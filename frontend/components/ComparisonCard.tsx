@@ -45,7 +45,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
     setIsAdding(true);
     try {
       await setFinancialPlanHousingAction(comp.id, scenarioKey);
-      toast.success("Added to Financial Plan!");
+      toast.success("Housing option saved to Financial Plans!");
       router.push("/plan");
     } catch (e: any) {
       toast.danger(e.message || "Failed to add to plan");
@@ -83,7 +83,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           </div>
         </div>
 
-        <div className="flex justify-end items-center gap-2 mt-auto">
+        <div className="flex flex-wrap justify-end items-center gap-2 mt-auto">
           <Dropdown>
             <Button isPending={isAdding} size="sm" variant="secondary">
               <Plus className="size-4" />

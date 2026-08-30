@@ -29,7 +29,7 @@ export const Navbar = () => {
         <div className="flex items-center gap-4">
           <NextLink className="flex items-center gap-1" href="/">
             <Logo />
-            <p className="font-bold text-inherit">DawgDecision</p>
+            <p className="font-bold whitespace-nowrap text-inherit">DawgDecision</p>
           </NextLink>
           <ul className="hidden lg:flex gap-4 ml-2">
             {siteConfig.navItems.map((item) => (
@@ -103,11 +103,17 @@ export const Navbar = () => {
                     </div>
                   </div>
                 </div>
-                <Dropdown.Menu
-                  onAction={(key) => {
-                    if (key === "logout") handleSignOut();
-                  }}
-                >
+               <Dropdown.Menu
+  onAction={(key) => {
+    if (key === "dashboard") {
+      router.push("/dashboard");
+    }
+
+    if (key === "logout") {
+      handleSignOut();
+    }
+  }}
+>
                   <Dropdown.Item id="dashboard" textValue="Dashboard">
                     <div className="flex w-full items-center justify-between gap-2">
                       <Label>Dashboard</Label>

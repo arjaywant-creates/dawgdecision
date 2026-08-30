@@ -92,6 +92,8 @@ export async function saveComparisonAction(
 
     revalidatePath("/");
     revalidatePath("/comparisons");
+    revalidatePath("/plan");
+    revalidatePath("/dashboard");
 
     return { success: true, data: savedComparison };
   } catch {
@@ -127,6 +129,9 @@ export async function deleteComparisonAction(comparisonId: string) {
 
     revalidatePath("/");
     revalidatePath("/comparisons");
+    revalidatePath("/plan");
+    revalidatePath("/dashboard");
+  
 
     return { success: true };
   } catch {

@@ -7,28 +7,28 @@ export const siteConfig = {
   navItems: [
     {
       label: "Dashboard",
-      href: "/",
+      href: "/dashboard",
     },
     {
       label: "Compare",
       href: "/compare",
     },
     {
-      label: "Financial Plan",
+      label: "Financial Plans",
       href: "/plan",
     },
   ],
   navMenuItems: [
     {
       label: "Dashboard",
-      href: "/",
+      href: "/dashboard",
     },
     {
       label: "Compare",
       href: "/compare",
     },
     {
-      label: "Financial Plan",
+      label: "Financial Plans",
       href: "/plan",
     },
   ],
