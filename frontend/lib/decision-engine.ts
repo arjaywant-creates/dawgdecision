@@ -2,7 +2,7 @@
  * Helper library to communicate with the Python FastAPI backend
  */
 
-const PYTHON_API_URL = process.env.PYTHON_API_URL || "http://127.0.0.1:8000";
+const PYTHON_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 import {
   Scenario,
