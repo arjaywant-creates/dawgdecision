@@ -76,7 +76,7 @@ export default async function Home() {
           value={financialPlanCount.toString()}
         />
         <StatCard title="Comparisons" value={comparisonCount.toString()} />
-        <StatCard title="Goals" value="0" />
+        <StatCard title="Decision Goals" value="Coming Soon" />
       </div>
 
       {/* Recent Comparisons Section */}
