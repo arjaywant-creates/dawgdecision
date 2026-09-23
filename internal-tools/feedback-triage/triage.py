@@ -8,11 +8,24 @@ from agents import (
     Runner,
     OpenAIChatCompletionsModel,
     set_tracing_disabled,
-    function_tool,
 )
 from pydantic import BaseModel, Field, ValidationError
 
+
+# ---------------------------------------------------------
+# CONFIG
+# ---------------------------------------------------------
+
+INPUT_FILE = "round1_feedback.json"
+OUTPUT_FILE = "triage_candidates.json"
+ERROR_FILE = "triage_errors.json"
+
 set_tracing_disabled(True)
+
+
+# ---------------------------------------------------------
+# MODEL
+# ---------------------------------------------------------
 
 openrouter_client = AsyncOpenAI(
     api_key=os.environ["OPENROUTER_API_KEY"],
@@ -25,14 +38,21 @@ model = OpenAIChatCompletionsModel(
 )
 
 
-class TriageResult(BaseModel):
+# ---------------------------------------------------------
+# DATA MODELS
+# ---------------------------------------------------------
+
+class TriageObservation(BaseModel):
+    source_feedback_id: str
+
     category: Literal[
         "Bug",
         "Usability",
         "Feature Request",
         "Data Gap",
         "Content Clarity",
-        "Performance",
+        "Positive Signal",
+        "Product Direction",
         "Other",
     ]
 
@@ -49,187 +69,327 @@ class TriageResult(BaseModel):
         "General",
     ]
 
-    duplicate_status: Literal[
-        "New",
-        "Related Theme",
-        "Likely Duplicate",
-    ]
-
-    related_feedback_ids: list[str]
-
+    evidence: str
     underlying_need: str
     summary: str
 
-    confidence: float = Field(ge=0, le=1)
 
-    jira_title: str
-    jira_description: str
+class TriageBatch(BaseModel):
+    items: list[TriageObservation] = Field(min_length=1)
 
 
-@function_tool
-def search_existing_feedback(query: str) -> str:
-    """Search previously recorded DawgDecision feedback for related issues."""
-    with open("feedback_store.json", "r", encoding="utf-8") as file:
-        feedback_items = json.load(file)
-
-    query_words = set(query.lower().split())
-
-    scored_items = []
-
-    for item in feedback_items:
-        searchable_text = (
-            f"{item['summary']} "
-            f"{item['product_area']} "
-            f"{item['category']}"
-        ).lower()
-
-        score = sum(
-            1
-            for word in query_words
-            if word in searchable_text
-        )
-
-        if score > 0:
-            scored_items.append((score, item))
-
-    scored_items.sort(key=lambda x: x[0], reverse=True)
-
-    matches = [item for _, item in scored_items[:3]]
-
-    return json.dumps(matches)
-
-def save_approved_feedback(triage: TriageResult) -> str:
-    """Save a human-approved non-duplicate feedback item."""
-    with open("feedback_store.json", "r", encoding="utf-8") as file:
-        feedback_items = json.load(file)
-
-    next_number = max(
-        (int(item["id"].split("-")[1]) for item in feedback_items),
-        default=0,
-    ) + 1
-
-    feedback_id = f"FB-{next_number:03d}"
-
-    new_item = {
-        "id": feedback_id,
-        "summary": triage.summary,
-        "product_area": triage.product_area,
-        "category": triage.category,
-    }
-
-    feedback_items.append(new_item)
-
-    with open("feedback_store.json", "w", encoding="utf-8") as file:
-        json.dump(feedback_items, file, indent=2)
-
-    return feedback_id
+# ---------------------------------------------------------
+# AGENT
+# ---------------------------------------------------------
 
 agent = Agent(
-    name="Feedback Triage Agent",
+    name="DawgDecision Feedback Triage",
+
     instructions=(
-        "You analyze feedback from users testing DawgDecision, "
-        "a student financial decision-support product currently focused on housing comparisons. "
+        "You analyze feedback from students testing DawgDecision, "
+        "a student decision-support product currently focused on housing. "
 
-        "Classify each piece of feedback using exactly one of these categories: "
-        "Bug, Usability, Feature Request, Data Gap, Content Clarity, Performance, Other. "
+        "Your only job is to turn raw tester feedback into a small number "
+        "of grounded product observations. "
 
-        "Map the feedback to exactly one of these product areas: "
+        "Prefer fewer, stronger observations over excessive fragmentation. "
+        "A typical feedback set should produce 1-4 observations. "
+        "Use more only when the tester clearly raises several independent issues. "
+
+        "Keep related statements together when they describe the same underlying issue. "
+
+        "Split statements only when they concern meaningfully different problems, "
+        "needs, product areas, positive signals, or product-direction opinions. "
+
+        "Stay close to what the tester actually said. "
+        "Do not invent strategy, motivations, business implications, "
+        "technical causes, or requirements. "
+
+        "If feedback is vague, keep the interpretation vague. "
+        "Do not turn vague feedback into a specific product requirement. "
+
+        "Do not preserve generic praise such as 'great idea' unless the tester "
+        "identifies something specific about the product that they value. "
+
+        "Use Positive Signal when the tester clearly identifies a specific "
+        "existing capability, experience, or design element as valuable or useful. "
+
+        "Use Product Direction for high-level opinions such as focusing on housing "
+        "before expanding into other decisions. "
+
+        "If the tester proposes a feature, identify the narrowest reasonable "
+        "underlying need supported by their words. "
+        "Do not assume their proposed feature is automatically the correct solution. "
+
+        "Use exactly one category per observation: "
+        "Bug, Usability, Feature Request, Data Gap, Content Clarity, "
+        "Positive Signal, Product Direction, Other. "
+
+        "Category guidance: "
+        "Bug means something appears to malfunction or render incorrectly. "
+        "Usability means the product works but is confusing, inconvenient, or difficult to use. "
+        "Data Gap means needed housing or decision data is absent or incomplete. "
+        "Content Clarity means information exists but is unclear or poorly presented. "
+        "Feature Request means the tester is asking for a new capability. "
+
+        "Use exactly one product area per observation: "
         "Landing Page, Authentication, Navigation, Dashboard, Housing Compare, "
-        "Housing Sources, Comparison Results, Financial Plan, Saved Financial Plans, General. "
+        "Housing Sources, Comparison Results, Financial Plan, "
+        "Saved Financial Plans, General. "
 
-        "Before producing the final triage result, use the search_existing_feedback tool "
-        "to check whether the new feedback appears related to previously recorded feedback. "
+        "Evidence must be a short verbatim excerpt from the tester. "
 
-        "Classify duplicate_status as exactly one of: New, Related Theme, Likely Duplicate. "
-        "Use Likely Duplicate only when the new feedback describes essentially the same issue "
-        "or requested improvement as an existing feedback item. "
-        "Use Related Theme when it overlaps with an existing issue but describes a meaningfully "
-        "different problem or request. "
-        "Use New when no meaningful overlap exists. "
+        "Underlying_need must be the narrowest defensible user need or value "
+        "supported by that evidence. "
 
-        "Populate related_feedback_ids with the IDs of relevant existing feedback items returned "
-        "by the search tool. Use an empty list if none are meaningfully related. "
+        "Summary must be short, factual, and neutral. "
 
-        "Use tool results only as supporting context. "
-        "Do not claim something is related or duplicated simply because a few words overlap. "
+        "Return ONLY valid JSON in this format: "
+        '{"items": [...]} '
 
-        "Identify the underlying user need rather than merely repeating the user's wording. "
+        "Every item must contain exactly these fields: "
+        "source_feedback_id, category, product_area, evidence, "
+        "underlying_need, summary. "
 
-        "Write a short factual summary of the feedback. "
-
-        "Assign confidence from 0 to 1 based on how clearly the feedback supports your interpretation. "
-
-        "Create a concise Jira title describing the issue or requested improvement. "
-
-        "Create a concise Jira description explaining what the user experienced or requested "
-        "and what outcome they need. Keep it to 2-3 sentences. "
-        "Do not prescribe an implementation unless the user explicitly requested one. "
-
-        "Never invent users, subscribers, product features, technical causes, "
-        "business requirements, or other context that is not supported by the feedback. "
-
-        "Return ONLY valid JSON with exactly these fields: "
-        "category, product_area, duplicate_status, related_feedback_ids, "
-        "underlying_need, summary, confidence, jira_title, jira_description. "
-
-        "Do not use markdown. Do not use code fences. Do not include text outside the JSON."
+        "Do not use markdown. "
+        "Do not use code fences. "
+        "Do not include commentary outside the JSON."
     ),
+
     model=model,
-    tools=[search_existing_feedback],
 )
 
 
-def triage_feedback(feedback: str, max_attempts: int = 3) -> TriageResult:
-    for attempt in range(max_attempts):
-        prompt = feedback
+# ---------------------------------------------------------
+# CLEAN MODEL OUTPUT
+# ---------------------------------------------------------
 
-        if attempt > 0:
+def clean_model_output(output: str) -> str:
+    cleaned = output.strip()
+
+    if cleaned.startswith("```json"):
+        cleaned = cleaned[len("```json"):].strip()
+    elif cleaned.startswith("```"):
+        cleaned = cleaned[len("```"):].strip()
+
+    if cleaned.endswith("```"):
+        cleaned = cleaned[:-3].strip()
+
+    return cleaned
+
+
+# ---------------------------------------------------------
+# TRIAGE ONE TESTER
+# ---------------------------------------------------------
+
+def triage_feedback(
+        source_feedback_id: str,
+        feedback: str,
+        max_attempts: int = 3,
+) -> TriageBatch:
+
+    base_prompt = (
+        f"source_feedback_id: {source_feedback_id}\n\n"
+        f"Tester feedback:\n{feedback}"
+    )
+
+    last_error = None
+
+    for attempt in range(max_attempts):
+
+        if attempt == 0:
+            prompt = base_prompt
+        else:
             prompt = (
-                "Return ONLY valid JSON following the required schema. "
-                "Use search_existing_feedback before producing the final result. "
-                "Do not include markdown or any additional text.\n\n"
-                f"User feedback:\n{feedback}"
+                "Your previous response was invalid. "
+                "Return ONLY valid JSON matching the required schema. "
+                "Keep the observations few, literal, and grounded. "
+                "Do not return an empty items array.\n\n"
+                f"{base_prompt}"
             )
 
-        result = Runner.run_sync(agent, prompt)
+        result = Runner.run_sync(
+            agent,
+            prompt,
+        )
+
+        cleaned_output = clean_model_output(
+            result.final_output
+        )
 
         try:
-            data = json.loads(result.final_output)
-            return TriageResult.model_validate(data)
+            data = json.loads(cleaned_output)
 
-        except (json.JSONDecodeError, ValidationError):
-            if attempt == max_attempts - 1:
-                raise
+            batch = TriageBatch.model_validate(data)
 
-    raise RuntimeError("Triage failed unexpectedly.")
+            # Guarantee the correct tester ID.
+            for item in batch.items:
+                item.source_feedback_id = source_feedback_id
+
+            return batch
+
+        except (
+                json.JSONDecodeError,
+                ValidationError,
+        ) as error:
+
+            last_error = error
+
+            print(
+                f"  Attempt {attempt + 1}/{max_attempts} "
+                "returned invalid output."
+            )
+
+    raise RuntimeError(
+        f"Triage failed for {source_feedback_id}: {last_error}"
+    )
 
 
-feedback = input("Paste tester feedback:\n\n")
+# ---------------------------------------------------------
+# SAVE PROGRESS
+# ---------------------------------------------------------
 
-triage = triage_feedback(feedback)
+def save_json(
+        filename: str,
+        data,
+) -> None:
 
-print("\nTriage result:\n")
+    with open(
+            filename,
+            "w",
+            encoding="utf-8",
+    ) as file:
 
-print(f"Category: {triage.category}")
-print(f"Product area: {triage.product_area}")
-print(f"Duplicate status: {triage.duplicate_status}")
-print(f"Related feedback IDs: {triage.related_feedback_ids}")
-print(f"Underlying need: {triage.underlying_need}")
-print(f"Summary: {triage.summary}")
-print(f"Confidence: {triage.confidence:.2f}")
-print(f"Jira title: {triage.jira_title}")
-print(f"Jira description: {triage.jira_description}")
-
-approval = input("\nApprove this triage result? (y/n): ").strip().lower()
-
-if approval == "y":
-    if triage.duplicate_status == "Likely Duplicate":
-        print(
-            "Approved as a likely duplicate. "
-            f"No new feedback item created. Related to: {triage.related_feedback_ids}"
+        json.dump(
+            data,
+            file,
+            indent=2,
+            ensure_ascii=False,
         )
-    else:
-        feedback_id = save_approved_feedback(triage)
-        print(f"Approved and saved as {feedback_id}.")
-else:
-    print("Not approved. No changes were saved.")
+
+
+# ---------------------------------------------------------
+# LOAD ROUND 1
+# ---------------------------------------------------------
+
+if not os.path.exists(INPUT_FILE):
+    raise FileNotFoundError(
+        f"{INPUT_FILE} was not found."
+    )
+
+
+with open(
+        INPUT_FILE,
+        "r",
+        encoding="utf-8",
+) as file:
+
+    feedback_sets = json.load(file)
+
+
+if not isinstance(feedback_sets, list):
+    raise ValueError(
+        f"{INPUT_FILE} must contain a JSON array."
+    )
+
+
+# ---------------------------------------------------------
+# PROCESS ALL TESTERS
+# ---------------------------------------------------------
+
+candidates = []
+errors = []
+
+total = len(feedback_sets)
+
+print()
+print("=" * 72)
+print("DAWGDECISION ROUND 1 — BATCH TRIAGE")
+print("=" * 72)
+print()
+
+
+for index, feedback_set in enumerate(
+        feedback_sets,
+        start=1,
+):
+
+    source_id = feedback_set["id"]
+    feedback = feedback_set["feedback"]
+
+    print(
+        f"[{index}/{total}] "
+        f"Triaging {source_id}..."
+    )
+
+    try:
+        batch = triage_feedback(
+            source_feedback_id=source_id,
+            feedback=feedback,
+        )
+
+        for observation in batch.items:
+            candidates.append(
+                observation.model_dump()
+            )
+
+        print(
+            f"  -> {len(batch.items)} "
+            "candidate observation(s)"
+        )
+
+    except Exception as error:
+
+        errors.append(
+            {
+                "source_feedback_id": source_id,
+                "error": str(error),
+            }
+        )
+
+        print(
+            f"  -> FAILED: {error}"
+        )
+
+    # Save after every tester so progress is never lost.
+    save_json(
+        OUTPUT_FILE,
+        candidates,
+    )
+
+    save_json(
+        ERROR_FILE,
+        errors,
+    )
+
+
+# ---------------------------------------------------------
+# FINAL SUMMARY
+# ---------------------------------------------------------
+
+print()
+print("=" * 72)
+print("BATCH TRIAGE COMPLETE")
+print("=" * 72)
+
+print(
+    f"Tester sets processed: {total}"
+)
+
+print(
+    f"Candidate observations: {len(candidates)}"
+)
+
+print(
+    f"Failed tester sets: {len(errors)}"
+)
+
+print()
+print(
+    f"Review candidates in: {OUTPUT_FILE}"
+)
+
+if errors:
+    print(
+        f"Review failures in: {ERROR_FILE}"
+    )
