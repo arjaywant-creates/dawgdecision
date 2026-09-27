@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
+import clsx from "clsx";
 
 /** UI Components (HeroUI) */
 import {
@@ -15,6 +16,7 @@ import {
   Toast,
   toast,
   Surface,
+  Tabs,
 } from "@heroui/react";
 
 /** Form Handling & Validation */
@@ -189,6 +191,7 @@ export default function CompareForm({
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<"A" | "B">("A");
 
   const {
     control,
@@ -228,6 +231,7 @@ export default function CompareForm({
 
     setValue(prefix, newScenarioData, {
       shouldDirty: true,
+      shouldValidate: true,
     });
   };
 
@@ -243,7 +247,12 @@ export default function CompareForm({
 
   // Sync form edits to Zustand drafts automatically
   useEffect(() => {
-    if (isEditing) return;
+    if (isEditing) {
+      // Clear store when entering edit mode
+      clearStore();
+
+      return;
+    }
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const subscription = watch((value) => {
@@ -251,7 +260,7 @@ export default function CompareForm({
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, setFormData, isEditing]);
+  }, [watch, setFormData, isEditing, clearStore]);
 
   // Sync results to Zustand
   useEffect(() => {
@@ -363,12 +372,11 @@ export default function CompareForm({
       <Toast.Provider />
 
       {/* Header Section */}
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-end gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-bold flex items-center gap-3">
             {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
           </h1>
-
           <p className="mt-2 text-default-500">
             {isEditing
               ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
@@ -399,57 +407,84 @@ export default function CompareForm({
       {/* Main Grid Layout */}
       <div className="grid gap-8 lg:grid-cols-12 items-start">
         {/* Left Column: Forms */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* Mobile Tab Selector */}
+            <div className="md:hidden mb-6 w-full">
+              <Tabs
+                className="w-full"
+                selectedKey={activeTab}
+                onSelectionChange={(k) => setActiveTab(k as "A" | "B")}
+              >
+                <Tabs.ListContainer>
+                  <Tabs.List aria-label="Options" className="w-full">
+                    <Tabs.Tab id="A">
+                      Option A
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab id="B">
+                      Option B
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  </Tabs.List>
+                </Tabs.ListContainer>
+              </Tabs>
+            </div>
+
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
-              <ScenarioForm
-                control={control}
-                prefix="scenario_a"
-                selector={
-                  <SourcedHousingSelector
-                    apiError={apiError}
-                    options={sourcedOptions}
-                    selectedId={selectedHousingIdA}
-                    onSelect={(option) => {
-                      setSelectedHousingIdA(option?.id || "");
-                      if (option) {
-                        populateScenario("scenario_a", option);
-                      }
-                    }}
-                  />
-                }
-                sourcedValues={scenarioAOriginalValues}
-                title="Option A"
-              />
-              <ScenarioForm
-                control={control}
-                prefix="scenario_b"
-                selector={
-                  <SourcedHousingSelector
-                    apiError={apiError}
-                    options={sourcedOptions}
-                    selectedId={selectedHousingIdB}
-                    onSelect={(option) => {
-                      setSelectedHousingIdB(option?.id || "");
-                      if (option) {
-                        populateScenario("scenario_b", option);
-                      }
-                    }}
-                  />
-                }
-                sourcedValues={scenarioBOriginalValues}
-                title="Option B"
-              />
+              <div className={activeTab === "A" ? "block" : "hidden md:block"}>
+                <ScenarioForm
+                  control={control}
+                  prefix="scenario_a"
+                  selector={
+                    <SourcedHousingSelector
+                      apiError={apiError}
+                      options={sourcedOptions}
+                      selectedId={selectedHousingIdA}
+                      onSelect={(option) => {
+                        setSelectedHousingIdA(option?.id || "");
+                        if (option) {
+                          populateScenario("scenario_a", option);
+                        }
+                      }}
+                    />
+                  }
+                  sourcedValues={scenarioAOriginalValues}
+                  title="Option A"
+                />
+              </div>
+
+              <div className={activeTab === "B" ? "block" : "hidden md:block"}>
+                <ScenarioForm
+                  control={control}
+                  prefix="scenario_b"
+                  selector={
+                    <SourcedHousingSelector
+                      apiError={apiError}
+                      options={sourcedOptions}
+                      selectedId={selectedHousingIdB}
+                      onSelect={(option) => {
+                        setSelectedHousingIdB(option?.id || "");
+                        if (option) {
+                          populateScenario("scenario_b", option);
+                        }
+                      }}
+                    />
+                  }
+                  sourcedValues={scenarioBOriginalValues}
+                  title="Option B"
+                />
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Button
-                className="font-semibold flex-1 md:flex-none shadow-sm"
+                className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
                 isPending={loading}
                 size="lg"
                 type="submit"
@@ -460,7 +495,7 @@ export default function CompareForm({
                     {isPending ? (
                       <Spinner color="current" size="sm" />
                     ) : (
-                      <Calculator className="w-5 h-5" />
+                      <Calculator className="w-5 h-5 mr-2" />
                     )}
                     {isPending
                       ? "Calculating..."
@@ -472,13 +507,13 @@ export default function CompareForm({
               </Button>
 
               <Button
-                className="font-semibold flex-1 md:flex-none shadow-sm"
+                className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
                 size="lg"
                 type="button"
                 variant="secondary"
                 onPress={handleClear}
               >
-                <Eraser className="w-5 h-5" />
+                <Eraser className="w-5 h-5 mr-2" />
                 Clear
               </Button>
             </div>
@@ -486,7 +521,12 @@ export default function CompareForm({
         </div>
 
         {/* Right Column: Sticky Results Container */}
-        <div className="col-span-12 lg:col-span-4 sticky top-24">
+        <div
+          className={clsx(
+            "lg:col-span-4 lg:sticky lg:top-24 min-w-0",
+            !results && "hidden lg:block",
+          )}
+        >
           <Surface
             className="w-full h-full min-h-[350px] flex flex-col rounded-2xl shadow-sm border border-separator/30 overflow-hidden p-0"
             variant="default"

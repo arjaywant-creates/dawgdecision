@@ -1,7 +1,10 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
+import NextLink from "next/link";
 
-import { Card } from "@heroui/react";
+import { ArrowLeft } from "lucide-react";
+
+import { Card, Button } from "@heroui/react";
 
 import { FinancialPlanActions } from "../FinancialPlanActions";
 
@@ -85,9 +88,17 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
   return (
     <div className="pb-12 space-y-8">
       <div>
+        <div className="mb-4">
+          <NextLink href="/plan">
+            <Button variant="tertiary">
+              <ArrowLeft className="size-4 mr-1" />
+              Back to Plans
+            </Button>
+          </NextLink>
+        </div>
         <h1 className="text-4xl font-bold">{selectedModel.name}</h1>
 
-        <p className="text-default-500">
+        <p className="text-default-500 mt-2">
           Saved on {new Date(plan.createdAt).toLocaleDateString()}
         </p>
       </div>

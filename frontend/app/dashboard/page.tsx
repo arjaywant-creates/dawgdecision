@@ -54,7 +54,7 @@ export default async function Home() {
   return (
     <div className="pb-12">
       {/* Header Section */}
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-end gap-4 mb-8">
         <div>
           <h1 className="mb-2 text-4xl font-bold">Dashboard</h1>
           <p className="text-default-500">
@@ -72,16 +72,21 @@ export default async function Home() {
       {/* Stats Grid Section */}
       <div className="grid gap-6 md:grid-cols-3">
         <StatCard
+          href="/plan"
           title="Financial Plans"
           value={financialPlanCount.toString()}
         />
-        <StatCard title="Comparisons" value={comparisonCount.toString()} />
+        <StatCard
+          href="/comparisons"
+          title="Comparisons"
+          value={comparisonCount.toString()}
+        />
         <StatCard title="Decision Goals" value="Coming Soon" />
       </div>
 
       {/* Recent Comparisons Section */}
       <div className="mt-12">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <h2 className="text-2xl font-bold">Recent Comparisons</h2>
           <NextLink href="/comparisons">
             <Button variant="tertiary">
