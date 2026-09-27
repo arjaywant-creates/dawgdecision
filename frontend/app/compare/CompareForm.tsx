@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 import clsx from "clsx";
+import posthog from "posthog-js";
 
 /** UI Components (HeroUI) */
 import {
@@ -277,6 +278,12 @@ export default function CompareForm({
     setResults(null);
     setSaveSuccess(false);
 
+    // Track comparison started event with PostHog
+    posthog.capture("comparison_started", {
+      scenario_a_name: data.scenario_a.name,
+      scenario_b_name: data.scenario_b.name,
+    });
+
     try {
       setLoading(true);
       const response = await compareScenariosAction(
@@ -285,6 +292,12 @@ export default function CompareForm({
       );
 
       if (response.success) {
+        // Track comparison completed event with PostHog
+        posthog.capture("comparison_completed", {
+          scenario_a_name: data.scenario_a.name,
+          scenario_b_name: data.scenario_b.name,
+          success: true,
+        });
         setResults(response.data as ComparisonResult);
         // Reset form with new data to clear the isDirty flag
         reset(data);
@@ -351,6 +364,12 @@ export default function CompareForm({
             );
 
       if (response.success) {
+        // Track comparison saved event with PostHog
+        posthog.capture("comparison_saved", {
+          scenario_a_name: formData.scenario_a.name,
+          scenario_b_name: formData.scenario_b.name,
+          is_editing: isEditing,
+        });
         setSaveSuccess(true);
         toast.success(
           isEditing
@@ -448,6 +467,11 @@ export default function CompareForm({
                       onSelect={(option) => {
                         setSelectedHousingIdA(option?.id || "");
                         if (option) {
+                          // Track housing option selection with PostHog
+                          posthog.capture("housing_option_selected", {
+                            property_name: option.property_name,
+                            category: option.category,
+                          });
                           populateScenario("scenario_a", option);
                         }
                       }}
@@ -470,6 +494,11 @@ export default function CompareForm({
                       onSelect={(option) => {
                         setSelectedHousingIdB(option?.id || "");
                         if (option) {
+                          // Track housing option selection with PostHog
+                          posthog.capture("housing_option_selected", {
+                            property_name: option.property_name,
+                            category: option.category,
+                          });
                           populateScenario("scenario_b", option);
                         }
                       }}

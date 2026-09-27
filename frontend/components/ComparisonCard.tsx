@@ -3,7 +3,10 @@
 import { useState } from "react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
+
 import { Card, Button, AlertDialog, toast, Dropdown } from "@heroui/react";
+
 import { Trash, ExternalLink, Plus } from "lucide-react";
 
 import { Prisma } from "@/generated/prisma/client";
@@ -44,6 +47,17 @@ export function ComparisonCard({ comp, onDelete }: Props) {
   const handleAddToPlan = async (scenarioKey: "A" | "B") => {
     setIsAdding(true);
     try {
+      const selectedName =
+        scenarioKey === "A"
+          ? comp.firstScenario?.name
+          : comp.secondScenario?.name;
+
+      // Track the event in PostHog when a comparison is added to the financial plan
+      posthog.capture("financial_plan_created", {
+        comparison_id: comp.id,
+        selected_scenario: scenarioKey,
+        property_name: selectedName,
+      });
       await setFinancialPlanHousingAction(comp.id, scenarioKey);
       router.push("/plan");
     } catch (e: any) {

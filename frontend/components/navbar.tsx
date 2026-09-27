@@ -7,6 +7,8 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
+import posthog from "posthog-js";
+
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/logo";
@@ -20,7 +22,11 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   const handleSignOut = async () => {
-    await signOut();
+    const { error } = await signOut();
+
+    if (error) return;
+
+    posthog.reset();
     router.push("/login");
     router.refresh();
   };
