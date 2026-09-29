@@ -12,6 +12,7 @@ export const SourcedHousingOptionSchema = z.object({
   category: z.enum(["on_campus", "off_campus"]),
   property_name: z.string(),
   configuration: z.string(),
+  property_style: z.string().optional(),
   housing_cost: z.number().nullable(),
   price_type: z.string(),
   cost_period_months: z.number().nullable(),
