@@ -7,10 +7,10 @@ import NextLink from "next/link";
 import { Card, Button } from "@heroui/react";
 import { Plus } from "lucide-react";
 
+import FinancialPlanCard from "./FinancialPlanCard";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-
-import FinancialPlanCard from "./FinancialPlanCard";
 
 /**
  * Displays all saved Financial Plans for the authenticated user.
@@ -44,18 +44,14 @@ export default async function PlanPage() {
   if (plans.length === 0) {
     return (
       <div className="pb-12">
-        <h1 className="mb-2 text-4xl font-bold">
-          Saved Financial Plans
-        </h1>
+        <h1 className="mb-2 text-4xl font-bold">Saved Financial Plans</h1>
 
         <p className="text-default-500">
           View and manage your saved financial plans.
         </p>
 
         <Card className="mt-8 p-6 text-center py-12 flex flex-col items-center justify-center space-y-4">
-          <h3 className="text-xl font-semibold">
-            No Saved Financial Plans
-          </h3>
+          <h3 className="text-xl font-semibold">No Saved Financial Plans</h3>
 
           <p className="text-default-500 max-w-md">
             You haven&apos;t saved any Financial Plans yet.
@@ -90,14 +86,11 @@ export default async function PlanPage() {
         ? snapshot?.second_result
         : snapshot?.first_result;
 
-    const monthlyCost =
-      selectedResult?.monthly_recurring_cost ?? null;
+    const monthlyCost = selectedResult?.monthly_recurring_cost ?? null;
 
-    const upfrontCost =
-      selectedResult?.upfront_costs ?? null;
+    const upfrontCost = selectedResult?.upfront_costs ?? null;
 
-    const fullTermCost =
-      selectedResult?.term_cost ?? null;
+    const fullTermCost = selectedResult?.term_cost ?? null;
 
     let impactSummary = "Impact summary unavailable.";
 
@@ -107,18 +100,15 @@ export default async function PlanPage() {
         alternativeResult.monthly_recurring_cost;
 
       if (diff === 0) {
-        impactSummary =
-          "Same true monthly cost as the alternative.";
+        impactSummary = "Same true monthly cost as the alternative.";
       } else if (diff < 0) {
-        impactSummary =
-          `Saves $${Math.abs(diff).toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })}/mo in true costs compared to the alternative.`;
+        impactSummary = `Saves $${Math.abs(diff).toLocaleString(undefined, {
+          maximumFractionDigits: 0,
+        })}/mo in true costs compared to the alternative.`;
       } else {
-        impactSummary =
-          `Costs $${diff.toLocaleString(undefined, {
-            maximumFractionDigits: 0,
-          })}/mo more in true costs than the alternative.`;
+        impactSummary = `Costs $${diff.toLocaleString(undefined, {
+          maximumFractionDigits: 0,
+        })}/mo more in true costs than the alternative.`;
       }
     }
 
@@ -136,20 +126,15 @@ export default async function PlanPage() {
 
   return (
     <div className="pb-12">
-      <h1 className="mb-2 text-4xl font-bold">
-        Saved Financial Plans
-      </h1>
+      <h1 className="mb-2 text-4xl font-bold">Saved Financial Plans</h1>
 
       <p className="text-default-500">
         View and manage your saved financial plans.
       </p>
 
-      <div className="mt-8 grid gap-4">
+      <div className="mt-8 grid gap-6 md:grid-cols-2">
         {planCards.map((card) => (
-          <FinancialPlanCard
-            key={card.id}
-            plan={card}
-          />
+          <FinancialPlanCard key={card.id} plan={card} />
         ))}
       </div>
     </div>

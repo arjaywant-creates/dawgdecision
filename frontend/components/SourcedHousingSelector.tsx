@@ -62,7 +62,7 @@ export default function SourcedHousingSelector({
       )}
 
       <select
-        className="w-full rounded-lg border px-3 py-2 dark:[color-scheme:dark]"
+        className="w-full max-w-full rounded-lg border px-3 py-2 dark:[color-scheme:dark] overflow-hidden text-ellipsis"
         value={selectedId}
         onChange={(e) => {
           const value = e.target.value;

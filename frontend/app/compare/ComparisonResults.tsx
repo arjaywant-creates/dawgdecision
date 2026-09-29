@@ -34,11 +34,11 @@ const MetricRow = ({
 }: MetricRowProps) => (
   <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
     <span className="text-sm text-default-600 font-semibold mb-1">{label}</span>
-    <div className="flex justify-between items-center text-sm">
-      <span className={`font-medium`}>
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm gap-1 min-w-0">
+      <span className="font-medium min-w-0 flex-1">
         {nameA}: {aNull ? "Unknown" : `$${a?.toLocaleString()}`}
       </span>
-      <span className={`font-medium`}>
+      <span className="font-medium min-w-0 flex-1 sm:text-right">
         {nameB}: {bNull ? "Unknown" : `$${b?.toLocaleString()}`}
       </span>
     </div>
@@ -75,7 +75,7 @@ export default function ComparisonResults({
     val === null ? "Unknown" : `$${val.toLocaleString()}`;
 
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-5 w-full min-w-0">
       {/* Overview */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
@@ -227,7 +227,7 @@ export default function ComparisonResults({
             {results.tradeoffs.map((t, idx) => (
               <div
                 key={idx}
-                className="bg-content2/50 p-3 rounded-lg border border-separator/30 text-sm"
+                className="bg-content2/50 p-3 rounded-lg border border-separator/30 text-sm min-w-0"
               >
                 {t.favored_scenario ? (
                   <div>
