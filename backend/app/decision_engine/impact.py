@@ -100,24 +100,26 @@ def analyze_decision_impact(
             and alternative.commute_minutes is not None
     )
 
-    monthly_commitment_delta = None
     if monthly_comparison_complete:
         monthly_commitment_delta = (
                 selected_result.monthly_recurring_cost
                 - alternative_result.monthly_recurring_cost
         )
-
-    if selected.upfront_costs is None or alternative.upfront_costs is None:
-        upfront_commitment_delta = None
     else:
-        upfront_commitment_delta = selected.upfront_costs - alternative.upfront_costs
+        monthly_commitment_delta = None
 
-    term_commitment_delta = None
+    upfront_commitment_delta = _difference_if_known(
+        selected.upfront_costs,
+        alternative.upfront_costs,
+    )
+
     if term_comparison_complete:
         term_commitment_delta = (
                 selected_result.term_cost
                 - alternative_result.term_cost
         )
+    else:
+        term_commitment_delta = None
 
     if commute_comparison_complete:
         commute_delta = (
