@@ -487,9 +487,9 @@ export default function CompareForm({
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid min-w-0 items-start">
+      <div className="grid grid-cols-12 gap-6 min-w-0 items-start">
         {/* Left Column: Forms */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}

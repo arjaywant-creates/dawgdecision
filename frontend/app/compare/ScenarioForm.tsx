@@ -24,7 +24,6 @@ interface Props {
   prefix: "scenario_a" | "scenario_b";
   control: Control<CompareRequest>;
   selector?: React.ReactNode;
-
   sourcedValues?: Partial<Scenario> | null;
 }
 
@@ -61,10 +60,17 @@ function FieldController({
       control={control}
       name={name}
       render={({ field, fieldState }) => {
+        const normalizeValue = (value: unknown) => {
+          if (value === null || value === undefined || value === "") {
+            return null;
+          }
+
+          return value;
+        };
+
         const edited =
           sourcedValue !== undefined &&
-          sourcedValue !== null &&
-          field.value !== sourcedValue;
+          normalizeValue(field.value) !== normalizeValue(sourcedValue);
 
         return (
           <TextField
@@ -86,6 +92,7 @@ function FieldController({
                 else if (typeof val === "number") strVal = val.toString();
                 else if (val?.target?.value !== undefined)
                   strVal = val.target.value;
+
                 field.onChange(strVal === "" ? "" : Number(strVal));
               } else {
                 field.onChange(val);
@@ -110,15 +117,18 @@ function FieldController({
             }}
           >
             <Label>{label}</Label>
+
             <Input
               min={min}
               placeholder={placeholder}
               step={type === "number" ? "any" : undefined}
               variant="secondary"
             />
+
             {fieldState.error && (
               <FieldError>{fieldState.error.message}</FieldError>
             )}
+
             {edited && (
               <Description className="text-warning-500 text-xs">
                 Edited by you
@@ -142,8 +152,17 @@ export default memo(function ScenarioForm({
   sourcedValues,
 }: Props) {
   const requiredFields: FieldConfig[] = [
-    { name: "name", label: "Housing Name", placeholder: title, type: "text" },
-    { name: "housing_cost", label: "Housing Cost (Your Share)", min: "0" },
+    {
+      name: "name",
+      label: "Housing Name",
+      placeholder: title,
+      type: "text",
+    },
+    {
+      name: "housing_cost",
+      label: "Housing Cost (Your Share)",
+      min: "0",
+    },
     {
       name: "cost_period_months",
       label: "Cost Period (Months)",
@@ -158,14 +177,24 @@ export default memo(function ScenarioForm({
   ];
 
   const optionalFields: FieldConfig[] = [
-    { name: "utilities", label: "Utilities", min: "0", placeholder: "Unknown" },
+    {
+      name: "utilities",
+      label: "Utilities",
+      min: "0",
+      placeholder: "Unknown",
+    },
     {
       name: "mandatory_fees",
       label: "Mandatory Recurring Fees",
       min: "0",
       placeholder: "Unknown",
     },
-    { name: "parking", label: "Parking", min: "0", placeholder: "Unknown" },
+    {
+      name: "parking",
+      label: "Parking",
+      min: "0",
+      placeholder: "Unknown",
+    },
     {
       name: "transportation",
       label: "Transportation",
@@ -183,7 +212,7 @@ export default memo(function ScenarioForm({
       label: "Commute Time in Minutes (Optional)",
       min: "0",
       placeholder: "Unknown",
-  },
+    },
   ];
 
   return (
@@ -192,6 +221,7 @@ export default memo(function ScenarioForm({
         <Fieldset.Legend className="text-2xl font-bold">
           {title}
         </Fieldset.Legend>
+
         <Description className="mb-4 block text-default-500">
           Enter the financial details for {title.toLowerCase()}.
         </Description>
@@ -204,6 +234,7 @@ export default memo(function ScenarioForm({
             <h4 className="font-semibold text-sm uppercase tracking-wide text-primary mb-3">
               Required
             </h4>
+
             <FieldGroup>
               {requiredFields.map((field) => (
                 <FieldController
@@ -225,19 +256,20 @@ export default memo(function ScenarioForm({
             <h4 className="font-semibold text-sm uppercase tracking-wide text-default-400 mb-3">
               Optional
             </h4>
+
             <FieldGroup>
               {optionalFields.map((field) => (
                 <FieldController
-                key={field.name}
-                control={control}
-                label={field.label}
-                min={field.min}
-                name={`${prefix}.${field.name}` as Path<CompareRequest>}
-                placeholder={field.placeholder}
-                sourcedValue={sourcedValues?.[field.name]}
-                type={field.type}
-              />
-          ))}
+                  key={field.name}
+                  control={control}
+                  label={field.label}
+                  min={field.min}
+                  name={`${prefix}.${field.name}` as Path<CompareRequest>}
+                  placeholder={field.placeholder}
+                  sourcedValue={sourcedValues?.[field.name]}
+                  type={field.type}
+                />
+              ))}
             </FieldGroup>
           </div>
         </div>
