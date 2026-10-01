@@ -1,7 +1,10 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
+import NextLink from "next/link";
 
-import { Card } from "@heroui/react";
+import { ArrowLeft } from "lucide-react";
+
+import { Card, Button } from "@heroui/react";
 
 import { FinancialPlanActions } from "../FinancialPlanActions";
 
@@ -85,9 +88,17 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
   return (
     <div className="pb-12 space-y-8">
       <div>
+        <div className="mb-4">
+          <NextLink href="/plan">
+            <Button variant="tertiary">
+              <ArrowLeft className="size-4 mr-1" />
+              Back to Plans
+            </Button>
+          </NextLink>
+        </div>
         <h1 className="text-4xl font-bold">{selectedModel.name}</h1>
 
-        <p className="text-default-500">
+        <p className="text-default-500 mt-2">
           Saved on {new Date(plan.createdAt).toLocaleDateString()}
         </p>
       </div>
@@ -125,28 +136,41 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
       <Card className="p-6">
         <h2 className="text-2xl font-bold mb-4">Decision Impact</h2>
 
-        <ul className="list-disc pl-5 space-y-2">
-          {impactResult.monthly_commitment_delta !== null && (
-            <li>
-              Monthly difference: $
-              {Math.abs(impactResult.monthly_commitment_delta).toLocaleString()}
-            </li>
-          )}
+        {impactResult.monthly_commitment_delta === null &&
+        impactResult.upfront_commitment_delta === null &&
+        impactResult.term_commitment_delta === null ? (
+          <p className="text-default-500">
+            Not enough data to calculate decision impact. Please complete the
+            financial details for both scenarios.
+          </p>
+        ) : (
+          <ul className="list-disc pl-5 space-y-2">
+            {impactResult.monthly_commitment_delta !== null && (
+              <li>
+                Monthly difference: $
+                {Math.abs(
+                  impactResult.monthly_commitment_delta,
+                ).toLocaleString()}
+              </li>
+            )}
 
-          {impactResult.upfront_commitment_delta !== null && (
-            <li>
-              Upfront difference: $
-              {Math.abs(impactResult.upfront_commitment_delta).toLocaleString()}
-            </li>
-          )}
+            {impactResult.upfront_commitment_delta !== null && (
+              <li>
+                Upfront difference: $
+                {Math.abs(
+                  impactResult.upfront_commitment_delta,
+                ).toLocaleString()}
+              </li>
+            )}
 
-          {impactResult.term_commitment_delta !== null && (
-            <li>
-              Full-term difference: $
-              {Math.abs(impactResult.term_commitment_delta).toLocaleString()}
-            </li>
-          )}
-        </ul>
+            {impactResult.term_commitment_delta !== null && (
+              <li>
+                Full-term difference: $
+                {Math.abs(impactResult.term_commitment_delta).toLocaleString()}
+              </li>
+            )}
+          </ul>
+        )}
       </Card>
 
       <FinancialPlanActions

@@ -4,6 +4,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
+import clsx from "clsx";
+
+// Analytics is optional in this form; keep tracking calls safe when the
+// PostHog client is not installed or configured.
+const captureAnalyticsEvent = (
+  _event: string,
+  _properties: Record<string, unknown>,
+) => {};
 
 /** UI Components (HeroUI) */
 import {
@@ -15,6 +23,7 @@ import {
   Toast,
   toast,
   Surface,
+  Tabs,
 } from "@heroui/react";
 
 /** Form Handling & Validation */
@@ -189,6 +198,7 @@ export default function CompareForm({
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<"A" | "B">("A");
 
   const {
     control,
@@ -228,6 +238,7 @@ export default function CompareForm({
 
     setValue(prefix, newScenarioData, {
       shouldDirty: true,
+      shouldValidate: true,
     });
   };
 
@@ -243,7 +254,12 @@ export default function CompareForm({
 
   // Sync form edits to Zustand drafts automatically
   useEffect(() => {
-    if (isEditing) return;
+    if (isEditing) {
+      // Clear store when entering edit mode
+      clearStore();
+
+      return;
+    }
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const subscription = watch((value) => {
@@ -251,7 +267,7 @@ export default function CompareForm({
     });
 
     return () => subscription.unsubscribe();
-  }, [watch, setFormData, isEditing]);
+  }, [watch, setFormData, isEditing, clearStore]);
 
   // Sync results to Zustand
   useEffect(() => {
@@ -268,6 +284,12 @@ export default function CompareForm({
     setResults(null);
     setSaveSuccess(false);
 
+    // Track comparison started event with PostHog
+    captureAnalyticsEvent("comparison_started", {
+      scenario_a_name: data.scenario_a.name,
+      scenario_b_name: data.scenario_b.name,
+    });
+
     try {
       setLoading(true);
       const response = await compareScenariosAction(
@@ -276,6 +298,12 @@ export default function CompareForm({
       );
 
       if (response.success) {
+        // Track comparison completed event with PostHog
+        captureAnalyticsEvent("comparison_completed", {
+          scenario_a_name: data.scenario_a.name,
+          scenario_b_name: data.scenario_b.name,
+          success: true,
+        });
         setResults(response.data as ComparisonResult);
         // Reset form with new data to clear the isDirty flag
         reset(data);
@@ -342,6 +370,12 @@ export default function CompareForm({
             );
 
       if (response.success) {
+        // Track comparison saved event with PostHog
+        captureAnalyticsEvent("comparison_saved", {
+          scenario_a_name: formData.scenario_a.name,
+          scenario_b_name: formData.scenario_b.name,
+          is_editing: isEditing,
+        });
         setSaveSuccess(true);
         toast.success(
           isEditing
@@ -363,34 +397,25 @@ export default function CompareForm({
       <Toast.Provider />
 
       {/* Header Section */}
-<div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-  <div>
-    <h1 className="text-4xl font-bold">
-      {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
-    </h1>
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h1 className="text-4xl font-bold flex items-center gap-3">
+            {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
+          </h1>
 
-    <p className="mt-2 text-default-500">
-      {isEditing
-        ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
-        : "Compare two housing options side-by-side to understand the financial tradeoffs."}
-    </p>
-  </div>
-
-  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-    <NextLink href="/dashboard">
-      <Button className="w-full sm:w-auto" variant="secondary">
-        Back to Dashboard
-      </Button>
-    </NextLink>
-
-    <NextLink href="/comparisons">
-      <Button className="w-full sm:w-auto" variant="tertiary">
-        View Saved
-        <ArrowRight className="size-4" />
-      </Button>
-    </NextLink>
-  </div>
-</div>
+          <p className="mt-2 text-default-500">
+            {isEditing
+              ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
+              : "Compare two housing options side-by-side to understand the financial tradeoffs."}
+          </p>
+        </div>
+        <NextLink href="/comparisons">
+          <Button variant="tertiary">
+            View Saved
+            <ArrowRight className="size-4" />
+          </Button>
+        </NextLink>
+      </div>
 
       {/* Error Alert Section */}
       <div className="mb-6">
@@ -408,73 +433,72 @@ export default function CompareForm({
       {/* Main Grid Layout */}
       <div className="grid min-w-0 items-start">
         {/* Left Column: Forms */}
-        <div className="flex min-w-0 flex-col gap-6 lg:col-span-8">
+        <div className="lg:col-span-8 flex flex-col gap-6">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Alert className="mb-6 w-full" status="accent">
-              <Alert.Indicator />
-
-              <Alert.Content>
-                <Alert.Title>
-                  Optional details can improve your comparison
-                </Alert.Title>
-
-                <Alert.Description>
-                  Adding information such as upfront costs and commute time
-                  provides more complete financial and convenience tradeoffs,
-                  but these fields are not required.
-                </Alert.Description>
-              </Alert.Content>
-            </Alert>
-
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
-              <ScenarioForm
-                control={control}
-                prefix="scenario_a"
-                selector={
-                  <SourcedHousingSelector
-                    apiError={apiError}
-                    options={sourcedOptions}
-                    selectedId={selectedHousingIdA}
-                    onSelect={(option) => {
-                      setSelectedHousingIdA(option?.id || "");
-                      if (option) {
-                        populateScenario("scenario_a", option);
-                      }
-                    }}
-                  />
-                }
-                sourcedValues={scenarioAOriginalValues}
-                title="Option A"
-              />
-              <ScenarioForm
-                control={control}
-                prefix="scenario_b"
-                selector={
-                  <SourcedHousingSelector
-                    apiError={apiError}
-                    options={sourcedOptions}
-                    selectedId={selectedHousingIdB}
-                    onSelect={(option) => {
-                      setSelectedHousingIdB(option?.id || "");
-                      if (option) {
-                        populateScenario("scenario_b", option);
-                      }
-                    }}
-                  />
-                }
-                sourcedValues={scenarioBOriginalValues}
-                title="Option B"
-              />
+              <div className={activeTab === "A" ? "block" : "hidden md:block"}>
+                <ScenarioForm
+                  control={control}
+                  prefix="scenario_a"
+                  selector={
+                    <SourcedHousingSelector
+                      apiError={apiError}
+                      options={sourcedOptions}
+                      selectedId={selectedHousingIdA}
+                      onSelect={(option) => {
+                        setSelectedHousingIdA(option?.id || "");
+                        if (option) {
+                          // Track housing option selection with PostHog
+                          captureAnalyticsEvent("housing_option_selected", {
+                            property_name: option.property_name,
+                            category: option.category,
+                          });
+                          populateScenario("scenario_a", option);
+                        }
+                      }}
+                    />
+                  }
+                  sourcedValues={scenarioAOriginalValues}
+                  title="Option A"
+                />
+              </div>
+
+              <div className={activeTab === "B" ? "block" : "hidden md:block"}>
+                <ScenarioForm
+                  control={control}
+                  prefix="scenario_b"
+                  selector={
+                    <SourcedHousingSelector
+                      apiError={apiError}
+                      options={sourcedOptions}
+                      selectedId={selectedHousingIdB}
+                      onSelect={(option) => {
+                        setSelectedHousingIdB(option?.id || "");
+                        if (option) {
+                          // Track housing option selection with PostHog
+                          captureAnalyticsEvent("housing_option_selected", {
+                            property_name: option.property_name,
+                            category: option.category,
+                          });
+                          populateScenario("scenario_b", option);
+                        }
+                      }}
+                    />
+                  }
+                  sourcedValues={scenarioBOriginalValues}
+                  title="Option B"
+                />
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            <div className="mt-8 flex gap-4">
               <Button
-                className="font-semibold flex-1 md:flex-none shadow-sm"
+                className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
                 isPending={loading}
                 size="lg"
                 type="submit"
@@ -485,7 +509,7 @@ export default function CompareForm({
                     {isPending ? (
                       <Spinner color="current" size="sm" />
                     ) : (
-                      <Calculator className="w-5 h-5" />
+                      <Calculator className="w-5 h-5 mr-2" />
                     )}
                     {isPending
                       ? "Calculating..."
@@ -497,13 +521,13 @@ export default function CompareForm({
               </Button>
 
               <Button
-                className="font-semibold flex-1 md:flex-none shadow-sm"
+                className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
                 size="lg"
                 type="button"
                 variant="secondary"
                 onPress={handleClear}
               >
-                <Eraser className="w-5 h-5" />
+                <Eraser className="w-5 h-5 mr-2" />
                 Clear
               </Button>
             </div>
@@ -511,7 +535,7 @@ export default function CompareForm({
         </div>
 
         {/* Right Column: Sticky Results Container */}
-        <div className="col-span-12 min-w-0 lg:sticky lg:top-24 lg:col-span-4">
+        <div className="col-span-12 lg:col-span-4 sticky top-24">
           <Surface
             className="flex min-h-[350px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-separator/30 p-0"
           >

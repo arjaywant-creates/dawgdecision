@@ -3,6 +3,7 @@
 /** React & Next.js */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 
 /** UI Components (HeroUI) */
 import {
@@ -48,7 +49,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error: signInError } = await signIn.email({
+      const { data: sessionData, error: signInError } = await signIn.email({
         email: data.email,
         password: data.password,
       });
@@ -56,6 +57,10 @@ export default function LoginPage() {
       if (signInError) {
         setError(signInError.message || "Failed to sign in. Please try again.");
       } else {
+        // Identify the user in PostHog if the session data contains a user ID
+        if (sessionData?.user?.id) {
+          posthog.identify(sessionData.user.id);
+        }
         router.push("/dashboard");
         router.refresh();
       }

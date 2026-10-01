@@ -24,13 +24,11 @@ interface FinancialPlanCardProps {
   };
 }
 
-export default function FinancialPlanCard({
-  plan,
-}: FinancialPlanCardProps) {
+export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
   return (
-    <Card className="h-full transition-colors hover:border-primary/50">
+    <Card className="h-full transition-colors hover:border-primary/50 flex flex-col min-w-0">
       <Card.Header className="flex flex-col items-start gap-1">
-        <Card.Title className="line-clamp-2 text-xl font-bold">
+        <Card.Title className="text-xl font-bold w-full">
           {plan.housingName}
         </Card.Title>
 
@@ -81,11 +79,7 @@ export default function FinancialPlanCard({
         </NextLink>
 
         <AlertDialog>
-          <Button
-            aria-label="Delete plan"
-            size="sm"
-            variant="danger"
-          >
+          <Button aria-label="Delete plan" size="sm" variant="danger">
             <Trash className="size-4" />
             Delete
           </Button>
@@ -113,9 +107,7 @@ export default function FinancialPlanCard({
                   <Button
                     slot="close"
                     variant="danger"
-                    onPress={() =>
-                      deleteFinancialPlanAction(plan.id)
-                    }
+                    onPress={() => deleteFinancialPlanAction(plan.id)}
                   >
                     Delete
                   </Button>

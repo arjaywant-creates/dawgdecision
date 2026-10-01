@@ -151,3 +151,11 @@ __pycache__/
 venv/
 .vercel
 .env*
+
+# Feedback research data / generated outputs
+internal-tools/feedback-triage/round1_feedback.json
+internal-tools/feedback-triage/feedback_store_pre_round1.json
+internal-tools/feedback-triage/triage_candidates.json
+internal-tools/feedback-triage/triage_errors.json
+internal-tools/feedback-triage/round1_synthesis.json
+internal-tools/feedback-triage/feedback_store.json

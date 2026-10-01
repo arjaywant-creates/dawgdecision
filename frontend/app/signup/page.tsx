@@ -3,6 +3,7 @@
 /** React & Next.js */
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 
 /** UI Components (HeroUI) */
 import {
@@ -48,7 +49,7 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const { error: signUpError } = await signUp.email({
+      const { data: sessionData, error: signUpError } = await signUp.email({
         email: data.email,
         password: data.password,
         name: data.name,
@@ -59,6 +60,10 @@ export default function SignupPage() {
           signUpError.message || "Failed to create account. Please try again.",
         );
       } else {
+        // Identify the user in PostHog if the session data contains a user ID
+        if (sessionData?.user?.id) {
+          posthog.identify(sessionData.user.id);
+        }
         router.push("/dashboard");
         router.refresh();
       }
