@@ -174,16 +174,16 @@ export default memo(function ScenarioForm({
     },
     {
       name: "upfront_costs",
-      label: "Upfront/Move-in Costs",
+      label: "Upfront/Move-in Costs (Optional)",
       min: "0",
       placeholder: "Unknown",
     },
     {
       name: "commute_minutes",
-      label: "Commute Time (Minutes)",
+      label: "Commute Time in Minutes (Optional)",
       min: "0",
       placeholder: "Unknown",
-    },
+  },
   ];
 
   return (
@@ -228,14 +228,16 @@ export default memo(function ScenarioForm({
             <FieldGroup>
               {optionalFields.map((field) => (
                 <FieldController
-                  key={field.name}
-                  control={control}
-                  label={field.label}
-                  min={field.min}
-                  name={`${prefix}.${field.name}` as Path<CompareRequest>}
-                  placeholder={field.placeholder}
-                />
-              ))}
+                key={field.name}
+                control={control}
+                label={field.label}
+                min={field.min}
+                name={`${prefix}.${field.name}` as Path<CompareRequest>}
+                placeholder={field.placeholder}
+                sourcedValue={sourcedValues?.[field.name]}
+                type={field.type}
+              />
+          ))}
             </FieldGroup>
           </div>
         </div>

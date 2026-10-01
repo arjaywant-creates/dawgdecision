@@ -18,8 +18,14 @@ interface MetricRowProps {
   nameB: string;
   aNull?: boolean;
   bNull?: boolean;
+  suffix?: string;
 }
 
+const formatCurrency = (value: number) =>
+  value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 /**
  * Reusable row component for displaying a specific financial metric comparison
  */
@@ -31,20 +37,20 @@ const MetricRow = ({
   nameB,
   aNull,
   bNull,
+  suffix = "",
 }: MetricRowProps) => (
   <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
     <span className="text-sm text-default-600 font-semibold mb-1">{label}</span>
-    <div className="flex justify-between items-center text-sm">
-      <span className={`font-medium`}>
-        {nameA}: {aNull ? "Unknown" : `$${a?.toLocaleString()}`}
+    <div className="flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
+      <span className="min-w-0 break-words font-medium">
+        {nameA}: {aNull ? "Unknown" : `$${formatCurrency(a)}${suffix}`}
       </span>
-      <span className={`font-medium`}>
-        {nameB}: {bNull ? "Unknown" : `$${b?.toLocaleString()}`}
+      <span className="min-w-0 break-words font-medium">
+        {nameB}: {bNull ? "Unknown" : `$${formatCurrency(b)}${suffix}`}
       </span>
     </div>
   </div>
 );
-
 /**
  * Component to display the calculated comparison results
  */
@@ -71,11 +77,11 @@ export default function ComparisonResults({
   const isCommuteTradeoff = (type: string) =>
     type === "shorter_commute" || type === "Shorter Commute";
 
-  const diffStr = (val: number | null) =>
-    val === null ? "Unknown" : `$${val.toLocaleString()}`;
+  const diffStr = (val: number | null, suffix = "") =>
+  val === null ? "Unknown" : `$${formatCurrency(val)}${suffix}`;
 
   return (
-    <div className="flex flex-col gap-5 w-full">
+    <div className="flex min-w-0 w-full flex-col gap-5 overflow-hidden">
       {/* Overview */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
@@ -91,6 +97,7 @@ export default function ComparisonResults({
             label="Monthly Recurring Subtotal"
             nameA={nameA}
             nameB={nameB}
+            suffix="/month"
           />
           {!results.first_result.recurring_costs_complete ||
           !results.second_result.recurring_costs_complete ? (
@@ -147,6 +154,35 @@ export default function ComparisonResults({
         </div>
       </div>
 
+      {/* Fees and Upfront Costs */}
+      <div className="flex flex-col gap-1">
+        <div className="mb-1 flex items-center gap-2 border-b border-separator/50 pb-1.5">
+          <Info className="size-4 shrink-0 text-warning-500" />
+          <h4 className="text-sm font-bold">Fees & Upfront Costs</h4>
+        </div>
+        <div className="flex flex-col">
+          <MetricRow
+            a={results.first_result.mandatory_fees ?? 0}
+            aNull={results.first_result.mandatory_fees === null}
+            b={results.second_result.mandatory_fees ?? 0}
+            bNull={results.second_result.mandatory_fees === null}
+            label="Mandatory Recurring Fees"
+            nameA={nameA}
+            nameB={nameB}
+            suffix="/month"
+            />
+          <MetricRow
+            a={results.first_result.upfront_costs ?? 0}
+            aNull={results.first_result.upfront_costs === null}
+            b={results.second_result.upfront_costs ?? 0}
+            bNull={results.second_result.upfront_costs === null}
+            label="Upfront/Move-in Costs"
+            nameA={nameA}
+            nameB={nameB}
+          />
+        </div>
+      </div>
+
       {/* Differences */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
@@ -154,59 +190,59 @@ export default function ComparisonResults({
           <h4 className="text-sm font-bold">Category Differences</h4>
         </div>
         <div className="flex flex-col text-sm space-y-2 py-2">
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Monthly Cost</span>
-            <span className="font-semibold">
-              {diffStr(results.monthly_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.monthly_difference, "/month")}
             </span>
           </div>
           {results.term_difference !== null && (
-            <div className="flex justify-between border-b border-separator/10 pb-1">
+            <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="text-default-600">Full-Term Cost</span>
-              <span className="font-semibold">
+              <span className="break-words font-semibold sm:text-right">
                 {diffStr(results.term_difference)}
               </span>
             </div>
           )}
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Housing</span>
-            <span className="font-semibold">
-              {diffStr(results.housing_cost_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.housing_cost_difference, "/month")}
             </span>
           </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Utilities</span>
-            <span className="font-semibold">
-              {diffStr(results.utilities_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.utilities_difference, "/month")}
             </span>
           </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Mandatory Fees</span>
-            <span className="font-semibold">
-              {diffStr(results.mandatory_fees_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.mandatory_fees_difference, "/month")}
             </span>
           </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Parking</span>
-            <span className="font-semibold">
-              {diffStr(results.parking_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.parking_difference, "/month")}
             </span>
           </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Transportation</span>
-            <span className="font-semibold">
-              {diffStr(results.transportation_difference)}
+            <span className="break-words font-semibold sm:text-right">
+              {diffStr(results.transportation_difference, "/month")}
             </span>
           </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Upfront Costs</span>
-            <span className="font-semibold">
+            <span className="break-words font-semibold sm:text-right">
               {diffStr(results.upfront_cost_difference)}
             </span>
           </div>
-          <div className="flex justify-between pb-1">
+          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-default-600">Commute Time</span>
-            <span className="font-semibold">
+            <span className="break-words font-semibold sm:text-right">
               {results.commute_difference !== null
                 ? `${results.commute_difference} min`
                 : "Unknown"}
@@ -243,7 +279,7 @@ export default function ComparisonResults({
                       Difference:{" "}
                       {isCommuteTradeoff(t.type)
                         ? `${t.difference} min`
-                        : `$${t.difference.toLocaleString()}`}
+                        : `$${formatCurrency(t.difference)}`}
                     </p>
                   </div>
                 ) : (

@@ -363,25 +363,34 @@ export default function CompareForm({
       <Toast.Provider />
 
       {/* Header Section */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h1 className="text-4xl font-bold flex items-center gap-3">
-            {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
-          </h1>
+<div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+  <div>
+    <h1 className="text-4xl font-bold">
+      {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
+    </h1>
 
-          <p className="mt-2 text-default-500">
-            {isEditing
-              ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
-              : "Compare two housing options side-by-side to understand the financial tradeoffs."}
-          </p>
-        </div>
-        <NextLink href="/comparisons">
-          <Button variant="tertiary">
-            View Saved
-            <ArrowRight className="size-4" />
-          </Button>
-        </NextLink>
-      </div>
+    <p className="mt-2 text-default-500">
+      {isEditing
+        ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
+        : "Compare two housing options side-by-side to understand the financial tradeoffs."}
+    </p>
+  </div>
+
+  <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+    <NextLink href="/dashboard">
+      <Button className="w-full sm:w-auto" variant="secondary">
+        Back to Dashboard
+      </Button>
+    </NextLink>
+
+    <NextLink href="/comparisons">
+      <Button className="w-full sm:w-auto" variant="tertiary">
+        View Saved
+        <ArrowRight className="size-4" />
+      </Button>
+    </NextLink>
+  </div>
+</div>
 
       {/* Error Alert Section */}
       <div className="mb-6">
@@ -397,13 +406,29 @@ export default function CompareForm({
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid gap-8 lg:grid-cols-12 items-start">
+      <div className="grid min-w-0 items-start">
         {/* Left Column: Forms */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-8">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
+            <Alert className="mb-6 w-full" status="accent">
+              <Alert.Indicator />
+
+              <Alert.Content>
+                <Alert.Title>
+                  Optional details can improve your comparison
+                </Alert.Title>
+
+                <Alert.Description>
+                  Adding information such as upfront costs and commute time
+                  provides more complete financial and convenience tradeoffs,
+                  but these fields are not required.
+                </Alert.Description>
+              </Alert.Content>
+            </Alert>
+
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
               <ScenarioForm
@@ -447,7 +472,7 @@ export default function CompareForm({
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
               <Button
                 className="font-semibold flex-1 md:flex-none shadow-sm"
                 isPending={loading}
@@ -486,10 +511,9 @@ export default function CompareForm({
         </div>
 
         {/* Right Column: Sticky Results Container */}
-        <div className="col-span-12 lg:col-span-4 sticky top-24">
+        <div className="col-span-12 min-w-0 lg:sticky lg:top-24 lg:col-span-4">
           <Surface
-            className="w-full h-full min-h-[350px] flex flex-col rounded-2xl shadow-sm border border-separator/30 overflow-hidden p-0"
-            variant="default"
+            className="flex min-h-[350px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-separator/30 p-0"
           >
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">

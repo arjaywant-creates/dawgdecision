@@ -41,7 +41,15 @@ export default async function SavedComparisonsPage() {
     <div className="pb-12">
       <ToastProvider />
       {/* Header Section */}
-      <h1 className="mb-8 text-4xl font-bold">Saved Comparisons</h1>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-4xl font-bold">Saved Comparisons</h1>
+
+        <NextLink href="/dashboard">
+          <Button className="w-full sm:w-auto" variant="secondary">
+            Back to Dashboard
+          </Button>
+        </NextLink>
+      </div>
 
       {comparisons.length === 0 ? (
         <Card className="p-6">
