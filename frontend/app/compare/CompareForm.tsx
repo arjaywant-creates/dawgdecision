@@ -4,7 +4,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
-import clsx from "clsx";
 
 // Analytics is optional in this form; keep tracking calls safe when the
 // PostHog client is not installed or configured.
@@ -23,7 +22,6 @@ import {
   Toast,
   toast,
   Surface,
-  Tabs,
 } from "@heroui/react";
 
 /** Form Handling & Validation */
@@ -268,6 +266,64 @@ export default function CompareForm({
 
     return () => subscription.unsubscribe();
   }, [watch, setFormData, isEditing, clearStore]);
+
+  // Restore sourced housing selections when editing a saved comparison.
+  // Saved scenarios persist their populated values, but not the Zustand selector IDs,
+  // so match the saved scenario name back to the current sourced option list.
+  useEffect(() => {
+    if (!isEditing || !initialComparison) return;
+
+    const scenarioAName = initialComparison.firstScenario.name;
+    const scenarioBName = initialComparison.secondScenario.name;
+
+    const matchingOptionA = sourcedOptions.find(
+      (option) =>
+        `${option.property_name} - ${option.configuration}` === scenarioAName,
+    );
+
+    const matchingOptionB = sourcedOptions.find(
+      (option) =>
+        `${option.property_name} - ${option.configuration}` === scenarioBName,
+    );
+
+    if (matchingOptionA) {
+      setSelectedHousingIdA(matchingOptionA.id);
+      setScenarioAOriginalValues({
+        name: `${matchingOptionA.property_name} - ${matchingOptionA.configuration}`,
+        housing_cost: matchingOptionA.housing_cost ?? ("" as any),
+        cost_period_months: matchingOptionA.cost_period_months ?? ("" as any),
+        contract_months: matchingOptionA.contract_months ?? ("" as any),
+        utilities: matchingOptionA.utilities ?? ("" as any),
+        mandatory_fees: matchingOptionA.mandatory_fees ?? ("" as any),
+        parking: matchingOptionA.parking ?? ("" as any),
+        transportation: matchingOptionA.transportation ?? ("" as any),
+        upfront_costs: matchingOptionA.upfront_costs ?? ("" as any),
+        commute_minutes: matchingOptionA.commute_minutes ?? ("" as any),
+      });
+    }
+
+    if (matchingOptionB) {
+      setSelectedHousingIdB(matchingOptionB.id);
+      setScenarioBOriginalValues({
+        name: `${matchingOptionB.property_name} - ${matchingOptionB.configuration}`,
+        housing_cost: matchingOptionB.housing_cost ?? ("" as any),
+        cost_period_months: matchingOptionB.cost_period_months ?? ("" as any),
+        contract_months: matchingOptionB.contract_months ?? ("" as any),
+        utilities: matchingOptionB.utilities ?? ("" as any),
+        mandatory_fees: matchingOptionB.mandatory_fees ?? ("" as any),
+        parking: matchingOptionB.parking ?? ("" as any),
+        transportation: matchingOptionB.transportation ?? ("" as any),
+        upfront_costs: matchingOptionB.upfront_costs ?? ("" as any),
+        commute_minutes: matchingOptionB.commute_minutes ?? ("" as any),
+      });
+    }
+  }, [
+    isEditing,
+    initialComparison,
+    sourcedOptions,
+    setSelectedHousingIdA,
+    setSelectedHousingIdB,
+  ]);
 
   // Sync results to Zustand
   useEffect(() => {
@@ -536,9 +592,7 @@ export default function CompareForm({
 
         {/* Right Column: Sticky Results Container */}
         <div className="col-span-12 lg:col-span-4 sticky top-24">
-          <Surface
-            className="flex min-h-[350px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-separator/30 p-0"
-          >
+          <Surface className="flex min-h-[350px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-separator/30 p-0">
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
               {results ? (

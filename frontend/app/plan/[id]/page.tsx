@@ -1,12 +1,7 @@
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
-import NextLink from "next/link";
 
-import { ArrowLeft } from "lucide-react";
-
-import { Card, Button } from "@heroui/react";
-
-import { FinancialPlanActions } from "../FinancialPlanActions";
+import { FinancialPlanDetailClient } from "../FinancialPlanDetailClient";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -75,110 +70,43 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
     contract_months: comparison.secondScenario.contractMonths,
   };
 
-  const selectedModel = selectedScenario === "A" ? scenarioA : scenarioB;
-
-  const selectedResult = await analyzeScenario(selectedModel);
-
-  const impactResult = await analyzeDecisionImpact(
-    scenarioA,
-    scenarioB,
-    selectedScenario,
-  );
+  // Calculate both options up front so switching in the UI
+  // requires no database mutation or server call.
+  const [resultA, resultB, impactA, impactB] = await Promise.all([
+    analyzeScenario(scenarioA),
+    analyzeScenario(scenarioB),
+    analyzeDecisionImpact(scenarioA, scenarioB, "A"),
+    analyzeDecisionImpact(scenarioA, scenarioB, "B"),
+  ]);
 
   return (
-    <div className="pb-12 space-y-8">
-      <div>
-        <div className="mb-4">
-          <NextLink href="/plan">
-            <Button variant="tertiary">
-              <ArrowLeft className="size-4 mr-1" />
-              Back to Plans
-            </Button>
-          </NextLink>
-        </div>
-        <h1 className="text-4xl font-bold">{selectedModel.name}</h1>
-
-        <p className="text-default-500 mt-2">
-          Saved on {new Date(plan.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Housing Summary</h2>
-
-        <div className="space-y-2">
-          <p>
-            <strong>Monthly Cost:</strong> $
-            {selectedResult.monthly_recurring_cost.toLocaleString()}
-          </p>
-
-          <p>
-            <strong>Upfront Cost:</strong>{" "}
-            {selectedResult.upfront_costs !== null
-              ? `$${selectedResult.upfront_costs.toLocaleString()}`
-              : "Unknown"}
-          </p>
-
-          <p>
-            <strong>Full-Term Cost:</strong>{" "}
-            {selectedResult.term_cost_complete
-              ? `$${selectedResult.term_cost.toLocaleString()}`
-              : "Unknown"}
-          </p>
-
-          <p>
-            <strong>Contract Length:</strong> {selectedModel.contract_months}{" "}
-            months
-          </p>
-        </div>
-      </Card>
-
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Decision Impact</h2>
-
-        {impactResult.monthly_commitment_delta === null &&
-        impactResult.upfront_commitment_delta === null &&
-        impactResult.term_commitment_delta === null ? (
-          <p className="text-default-500">
-            Not enough data to calculate decision impact. Please complete the
-            financial details for both scenarios.
-          </p>
-        ) : (
-          <ul className="list-disc pl-5 space-y-2">
-            {impactResult.monthly_commitment_delta !== null && (
-              <li>
-                Monthly difference: $
-                {Math.abs(
-                  impactResult.monthly_commitment_delta,
-                ).toLocaleString()}
-              </li>
-            )}
-
-            {impactResult.upfront_commitment_delta !== null && (
-              <li>
-                Upfront difference: $
-                {Math.abs(
-                  impactResult.upfront_commitment_delta,
-                ).toLocaleString()}
-              </li>
-            )}
-
-            {impactResult.term_commitment_delta !== null && (
-              <li>
-                Full-term difference: $
-                {Math.abs(impactResult.term_commitment_delta).toLocaleString()}
-              </li>
-            )}
-          </ul>
-        )}
-      </Card>
-
-      <FinancialPlanActions
-        comparisonId={comparison.id}
-        planId={plan.id}
-        scenarioAName={scenarioA.name}
-        scenarioBName={scenarioB.name}
-      />
-    </div>
+    <FinancialPlanDetailClient
+      comparisonId={comparison.id}
+      planId={plan.id}
+      savedAt={plan.createdAt.toISOString()}
+      savedScenario={selectedScenario as "A" | "B"}
+      scenarioA={{
+        name: scenarioA.name,
+        contractMonths: scenarioA.contract_months,
+        monthlyCost: resultA.monthly_recurring_cost,
+        upfrontCost: resultA.upfront_costs,
+        termCost: resultA.term_cost,
+        termCostComplete: resultA.term_cost_complete,
+        monthlyDelta: impactA.monthly_commitment_delta,
+        upfrontDelta: impactA.upfront_commitment_delta,
+        termDelta: impactA.term_commitment_delta,
+      }}
+      scenarioB={{
+        name: scenarioB.name,
+        contractMonths: scenarioB.contract_months,
+        monthlyCost: resultB.monthly_recurring_cost,
+        upfrontCost: resultB.upfront_costs,
+        termCost: resultB.term_cost,
+        termCostComplete: resultB.term_cost_complete,
+        monthlyDelta: impactB.monthly_commitment_delta,
+        upfrontDelta: impactB.upfront_commitment_delta,
+        termDelta: impactB.term_commitment_delta,
+      }}
+    />
   );
 }
