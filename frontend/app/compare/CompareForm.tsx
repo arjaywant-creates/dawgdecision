@@ -211,22 +211,24 @@ export default function CompareForm({
     defaultValues: getInitialFormValues(isEditing ? initialComparison : null),
   });
 
+  const mapSourcedHousingToScenario = (housing: SourcedHousingOption) => ({
+    name: `${housing.property_name} - ${housing.configuration}`,
+    housing_cost: housing.housing_cost ?? ("" as any),
+    cost_period_months: housing.cost_period_months ?? ("" as any),
+    contract_months: housing.contract_months ?? ("" as any),
+    utilities: housing.utilities ?? ("" as any),
+    mandatory_fees: housing.mandatory_fees ?? ("" as any),
+    parking: housing.parking ?? ("" as any),
+    transportation: housing.transportation ?? ("" as any),
+    upfront_costs: housing.upfront_costs ?? ("" as any),
+    commute_minutes: housing.commute_minutes ?? ("" as any),
+  });
+
   const populateScenario = (
     prefix: "scenario_a" | "scenario_b",
     housing: SourcedHousingOption,
   ) => {
-    const newScenarioData = {
-      name: `${housing.property_name} - ${housing.configuration}`,
-      housing_cost: housing.housing_cost ?? ("" as any),
-      cost_period_months: housing.cost_period_months ?? ("" as any),
-      contract_months: housing.contract_months ?? ("" as any),
-      utilities: housing.utilities ?? ("" as any),
-      mandatory_fees: housing.mandatory_fees ?? ("" as any),
-      parking: housing.parking ?? ("" as any),
-      transportation: housing.transportation ?? ("" as any),
-      upfront_costs: housing.upfront_costs ?? ("" as any),
-      commute_minutes: housing.commute_minutes ?? ("" as any),
-    };
+    const newScenarioData = mapSourcedHousingToScenario(housing);
 
     if (prefix === "scenario_a") {
       setScenarioAOriginalValues(newScenarioData);
@@ -288,34 +290,12 @@ export default function CompareForm({
 
     if (matchingOptionA) {
       setSelectedHousingIdA(matchingOptionA.id);
-      setScenarioAOriginalValues({
-        name: `${matchingOptionA.property_name} - ${matchingOptionA.configuration}`,
-        housing_cost: matchingOptionA.housing_cost ?? ("" as any),
-        cost_period_months: matchingOptionA.cost_period_months ?? ("" as any),
-        contract_months: matchingOptionA.contract_months ?? ("" as any),
-        utilities: matchingOptionA.utilities ?? ("" as any),
-        mandatory_fees: matchingOptionA.mandatory_fees ?? ("" as any),
-        parking: matchingOptionA.parking ?? ("" as any),
-        transportation: matchingOptionA.transportation ?? ("" as any),
-        upfront_costs: matchingOptionA.upfront_costs ?? ("" as any),
-        commute_minutes: matchingOptionA.commute_minutes ?? ("" as any),
-      });
+      setScenarioAOriginalValues(mapSourcedHousingToScenario(matchingOptionA));
     }
 
     if (matchingOptionB) {
       setSelectedHousingIdB(matchingOptionB.id);
-      setScenarioBOriginalValues({
-        name: `${matchingOptionB.property_name} - ${matchingOptionB.configuration}`,
-        housing_cost: matchingOptionB.housing_cost ?? ("" as any),
-        cost_period_months: matchingOptionB.cost_period_months ?? ("" as any),
-        contract_months: matchingOptionB.contract_months ?? ("" as any),
-        utilities: matchingOptionB.utilities ?? ("" as any),
-        mandatory_fees: matchingOptionB.mandatory_fees ?? ("" as any),
-        parking: matchingOptionB.parking ?? ("" as any),
-        transportation: matchingOptionB.transportation ?? ("" as any),
-        upfront_costs: matchingOptionB.upfront_costs ?? ("" as any),
-        commute_minutes: matchingOptionB.commute_minutes ?? ("" as any),
-      });
+      setScenarioBOriginalValues(mapSourcedHousingToScenario(matchingOptionB));
     }
   }, [
     isEditing,
