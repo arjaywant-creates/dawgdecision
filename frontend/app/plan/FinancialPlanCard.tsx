@@ -61,26 +61,20 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
       </Card.Content>
 
       <Card.Footer className="flex flex-wrap gap-2 pt-4">
-        <NextLink href={`/plan/${plan.id}`}>
-          <Button
-            className="border-default-200 font-medium"
-            size="sm"
-            variant="outline"
-          >
-            <Eye className="size-3.5" />
-            View Plan
-          </Button>
+        <NextLink
+          className="button button--outline button--sm border-default-200 font-medium"
+          href={`/plan/${plan.id}`}
+        >
+          <Eye className="size-3.5" />
+          View Plan
         </NextLink>
 
-        <NextLink href={`/compare?id=${plan.comparisonId}`}>
-          <Button
-            className="border-default-200 font-medium"
-            size="sm"
-            variant="outline"
-          >
-            <ExternalLink className="size-3.5" />
-            Comparison
-          </Button>
+        <NextLink
+          className="button button--outline button--sm border-default-200 font-medium"
+          href={`/compare?id=${plan.comparisonId}`}
+        >
+          <ExternalLink className="size-3.5" />
+          Comparison
         </NextLink>
 
         <AlertDialog>

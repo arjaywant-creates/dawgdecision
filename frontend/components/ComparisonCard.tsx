@@ -111,16 +111,13 @@ export function ComparisonCard({ comp, onDelete }: Props) {
       </Card.Content>
 
       <Card.Footer className="flex flex-wrap items-center justify-end gap-2 pt-4">
-        <NextLink href={`/compare?id=${comp.id}`}>
-          <Button
-            aria-label="Open comparison"
-            className="border-default-200 font-medium"
-            size="sm"
-            variant="outline"
-          >
-            <ExternalLink className="size-3.5" />
-            Open
-          </Button>
+        <NextLink
+          aria-label="Open comparison"
+          className="button button--outline button--sm border-default-200 font-medium"
+          href={`/compare?id=${comp.id}`}
+        >
+          <ExternalLink className="size-3.5" />
+          Open
         </NextLink>
 
         <div className="flex gap-2">

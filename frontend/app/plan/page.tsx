@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import NextLink from "next/link";
 
 /** UI Components */
-import { Card, Button, Breadcrumbs } from "@heroui/react";
+import { Card, Breadcrumbs } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 import FinancialPlanCard from "./FinancialPlanCard";
@@ -61,11 +61,9 @@ export default async function PlanPage() {
             You haven&apos;t saved any Financial Plans yet.
           </p>
 
-          <NextLink href="/comparisons">
-            <Button variant="primary">
-              <Plus className="size-4" />
-              Go to Saved Comparisons
-            </Button>
+          <NextLink className="button button--primary" href="/comparisons">
+            <Plus className="size-4" />
+            Go to Saved Comparisons
           </NextLink>
         </Card>
       </div>

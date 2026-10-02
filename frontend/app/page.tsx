@@ -1,6 +1,5 @@
 import NextLink from "next/link";
 import { headers } from "next/headers";
-import { Button } from "@heroui/react";
 
 import { auth } from "@/lib/auth";
 
@@ -22,16 +21,16 @@ export default async function LandingPage() {
 
       <div className="mt-8 flex flex-wrap justify-center gap-4">
         {session ? (
-          <NextLink href="/dashboard">
-            <Button variant="primary">Go to Dashboard</Button>
+          <NextLink className="button button--primary" href="/dashboard">
+            Go to Dashboard
           </NextLink>
         ) : (
           <>
-            <NextLink href="/login">
-              <Button variant="primary">Start Comparing Housing</Button>
+            <NextLink className="button button--primary" href="/login">
+              Start Comparing Housing
             </NextLink>
-            <NextLink href="/signup">
-              <Button variant="secondary">Sign Up</Button>
+            <NextLink className="button button--secondary" href="/signup">
+              Sign Up
             </NextLink>
           </>
         )}

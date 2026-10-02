@@ -3,7 +3,7 @@ import NextLink from "next/link";
 import { headers } from "next/headers";
 
 /** UI Components (HeroUI) */
-import { Card, Button } from "@heroui/react";
+import { Card } from "@heroui/react";
 
 /** Icons */
 import { ArrowRight, Plus } from "lucide-react";
@@ -61,11 +61,9 @@ export default async function Home() {
             Welcome back, {session?.user?.name || "Guest"}.
           </p>
         </div>
-        <NextLink href="/compare">
-          <Button variant="tertiary">
-            <Plus className="size-4" />
-            New Comparison
-          </Button>
+        <NextLink className="button button--tertiary" href="/compare">
+          <Plus className="size-4" />
+          New Comparison
         </NextLink>
       </div>
 
@@ -88,11 +86,9 @@ export default async function Home() {
       <div className="mt-12">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <h2 className="text-2xl font-bold">Recent Comparisons</h2>
-          <NextLink href="/comparisons">
-            <Button variant="tertiary">
-              View All
-              <ArrowRight className="size-4" />
-            </Button>
+          <NextLink className="button button--tertiary" href="/comparisons">
+            View All
+            <ArrowRight className="size-4" />
           </NextLink>
         </div>
 
@@ -103,11 +99,9 @@ export default async function Home() {
               <p className="text-default-500 max-w-md">
                 Start comparing housing options to see them here.
               </p>
-              <NextLink href="/compare">
-                <Button variant="primary">
-                  <Plus className="size-4" />
-                  Create Comparison
-                </Button>
+              <NextLink className="button button--primary" href="/compare">
+                <Plus className="size-4" />
+                Create Comparison
               </NextLink>
             </div>
           </Card>

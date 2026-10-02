@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import NextLink from "next/link";
 
 /** UI Components (HeroUI) */
-import { Button, Card, ToastProvider, Breadcrumbs } from "@heroui/react";
+import { Card, ToastProvider, Breadcrumbs } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 /** Auth & Database */
@@ -58,11 +58,9 @@ export default async function SavedComparisonsPage() {
               Start comparing housing options to save them here for later
               reference.
             </p>
-            <NextLink href="/compare">
-              <Button variant="primary">
-                <Plus className="size-4" />
-                Create Your First Comparison
-              </Button>
+            <NextLink className="button button--primary" href="/compare">
+              <Plus className="size-4" />
+              Create Your First Comparison
             </NextLink>
           </div>
         </Card>

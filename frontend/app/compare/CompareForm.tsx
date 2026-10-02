@@ -56,6 +56,7 @@ import {
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
+
 import posthog from "posthog-js";
 
 const initialScenario = {
@@ -468,11 +469,9 @@ export default function CompareForm({
               : "Compare two housing options side-by-side to understand the financial tradeoffs."}
           </p>
         </div>
-        <NextLink href="/comparisons">
-          <Button variant="tertiary">
-            View Saved
-            <ArrowRight className="size-4" />
-          </Button>
+        <NextLink className="button button--tertiary" href="/comparisons">
+          View Saved
+          <ArrowRight className="size-4" />
         </NextLink>
       </div>
 
@@ -684,17 +683,14 @@ export default function CompareForm({
                             Sign in to save this comparison.
                           </span>
                         </div>
-                        <NextLink className="w-full sm:w-auto" href="/login">
-                          <Button
-                            className="w-full sm:w-auto border-default-200"
-                            size="sm"
-                            variant="outline"
-                            onPress={() =>
-                              posthog.capture("compare_login_prompt_clicked")
-                            }
-                          >
-                            Log In
-                          </Button>
+                        <NextLink
+                          className="button button--outline button--sm w-full sm:w-auto border-default-200"
+                          href="/login"
+                          onClick={() =>
+                            posthog.capture("compare_login_prompt_clicked")
+                          }
+                        >
+                          Log In
                         </NextLink>
                       </OutlineSurface>
                     )}
