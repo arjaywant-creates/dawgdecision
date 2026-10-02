@@ -97,7 +97,7 @@ export default async function Home() {
         </div>
 
         {comparisons.length === 0 ? (
-          <Card className="p-6">
+          <Card className="p-8 text-center flex flex-col items-center">
             <div className="flex flex-col items-center justify-center text-center space-y-4 py-6">
               <h3 className="text-xl font-semibold">No Comparisons Yet</h3>
               <p className="text-default-500 max-w-md">

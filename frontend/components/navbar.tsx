@@ -35,30 +35,38 @@ export const Navbar = () => {
     <>
       <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
         <header className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
-          <div className="flex items-center gap-4">
+          <div className="flex h-full items-center gap-4">
             <NextLink className="flex items-center gap-1" href="/">
               <Logo />
               <p className="font-bold whitespace-nowrap text-inherit">
                 DawgDecision
               </p>
             </NextLink>
-            <ul className="hidden sm:flex gap-4 ml-2">
+            <ul className="hidden sm:flex h-full gap-5 ml-6">
               {siteConfig.navItems.map((item) => {
                 const isActive =
                   pathname === item.href ||
                   pathname?.startsWith(item.href + "/");
 
                 return (
-                  <li key={item.href}>
+                  <li
+                    key={item.href}
+                    className="h-full relative flex items-center"
+                  >
                     <NextLink
                       className={clsx(
-                        "text-foreground hover:text-accent transition-colors",
-                        isActive ? "text-accent font-medium" : "",
+                        "text-sm font-medium transition-colors",
+                        isActive
+                          ? "text-foreground"
+                          : "text-default-500 hover:text-foreground",
                       )}
                       href={item.href}
                     >
                       {item.label}
                     </NextLink>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-foreground rounded-t-full" />
+                    )}
                   </li>
                 );
               })}
@@ -68,7 +76,11 @@ export const Navbar = () => {
           <div className="flex items-center gap-2">
             <ThemeSwitch />
 
-            {!isPending && !session ? (
+            {isPending ? (
+              <div className="flex gap-2 items-center ml-2">
+                <div className="w-8 h-8 rounded-full bg-default-200 animate-pulse" />
+              </div>
+            ) : !session ? (
               <div className="flex gap-2 items-center ml-2">
                 <Button
                   className="hidden sm:flex"

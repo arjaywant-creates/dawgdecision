@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import NextLink from "next/link";
 
 /** UI Components (HeroUI) */
-import { Button, Card, ToastProvider } from "@heroui/react";
+import { Button, Card, ToastProvider, Breadcrumbs } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 /** Auth & Database */
@@ -40,19 +40,18 @@ export default async function SavedComparisonsPage() {
   return (
     <div className="pb-12">
       <ToastProvider />
+      <Breadcrumbs className="mb-4">
+        <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
+        <Breadcrumbs.Item>Saved Comparisons</Breadcrumbs.Item>
+      </Breadcrumbs>
+
       {/* Header Section */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-4xl font-bold">Saved Comparisons</h1>
-
-        <NextLink href="/dashboard">
-          <Button className="w-full sm:w-auto" variant="secondary">
-            Back to Dashboard
-          </Button>
-        </NextLink>
       </div>
 
       {comparisons.length === 0 ? (
-        <Card className="p-6">
+        <Card className="p-8">
           <div className="flex flex-col items-center justify-center text-center space-y-4 py-12">
             <h3 className="text-xl font-semibold">No Comparisons Yet</h3>
             <p className="text-default-500 max-w-md">

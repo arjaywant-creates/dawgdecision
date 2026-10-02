@@ -5,7 +5,14 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 
-import { Card, Button, AlertDialog, toast, Dropdown } from "@heroui/react";
+import {
+  Card,
+  Button,
+  AlertDialog,
+  toast,
+  Dropdown,
+  Tooltip,
+} from "@heroui/react";
 
 import { Trash, ExternalLink, Plus } from "lucide-react";
 
@@ -68,31 +75,33 @@ export function ComparisonCard({ comp, onDelete }: Props) {
   };
 
   return (
-    <Card className="transition-colors hover:border-primary/50 h-full flex flex-col min-w-0">
-      <Card.Header className="gap-1">
+    <Card className="transition-colors hover:border-primary/50 h-full min-w-0">
+      <Card.Header className="flex flex-col items-start gap-1">
         <Card.Title className="text-base">
           {comp.firstScenario?.name || "Option A"}{" "}
-          <span className="text-muted font-normal text-xs mx-1">vs</span>{" "}
+          <span className="text-default-400 font-normal text-xs mx-1.5">
+            vs
+          </span>{" "}
           {comp.secondScenario?.name || "Option B"}
         </Card.Title>
-        <Card.Description className="text-xs">
+        <Card.Description className="text-xs font-medium text-default-500">
           Saved on {new Date(comp.createdAt).toLocaleDateString()}
         </Card.Description>
       </Card.Header>
 
       <Card.Content className="flex flex-col flex-1">
-        <div className="flex flex-col gap-2 flex-1">
-          <div className="text-sm flex flex-col sm:flex-row sm:items-start sm:gap-1">
-            <span className="text-muted-foreground font-medium">
-              {comp.firstScenario?.name || "Option A"}:
+        <div className="flex flex-col gap-2.5">
+          <div className="text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-default-600 font-medium">
+              {comp.firstScenario?.name || "Option A"}
             </span>
             <span className="font-semibold text-foreground">
               ${comp.firstScenario?.housingCost?.toLocaleString()}
             </span>
           </div>
-          <div className="text-sm flex flex-col sm:flex-row sm:items-start sm:gap-1">
-            <span className="text-muted-foreground font-medium">
-              {comp.secondScenario?.name || "Option B"}:
+          <div className="text-sm flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-default-600 font-medium">
+              {comp.secondScenario?.name || "Option B"}
             </span>
             <span className="font-semibold text-foreground">
               ${comp.secondScenario?.housingCost?.toLocaleString()}
@@ -101,28 +110,28 @@ export function ComparisonCard({ comp, onDelete }: Props) {
         </div>
       </Card.Content>
 
-      <Card.Footer className="mt-auto flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-end gap-2 pt-3">
-        <NextLink className="w-full sm:w-auto" href={`/compare?id=${comp.id}`}>
+      <Card.Footer className="flex flex-wrap items-center justify-end gap-2 pt-4">
+        <NextLink href={`/compare?id=${comp.id}`}>
           <Button
             aria-label="Open comparison"
-            className="w-full"
+            className="border-default-200 font-medium"
             size="sm"
-            variant="primary"
+            variant="outline"
           >
-            <ExternalLink className="size-4" />
-            Open Comparison
+            <ExternalLink className="size-3.5" />
+            Open
           </Button>
         </NextLink>
 
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Dropdown className="flex-1">
+        <div className="flex gap-2">
+          <Dropdown>
             <Button
-              className="w-full"
+              className="border-default-200 font-medium"
               isPending={isAdding}
               size="sm"
-              variant="secondary"
+              variant="outline"
             >
-              <Plus className="size-4" />
+              <Plus className="size-3.5" />
               Add to Plan
             </Button>
             <Dropdown.Popover>
@@ -146,9 +155,19 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           </Dropdown>
 
           <AlertDialog>
-            <Button aria-label="Delete comparison" size="sm" variant="danger">
-              <Trash className="size-4" />
-            </Button>
+            <Tooltip delay={0}>
+              <Tooltip.Trigger>
+                <Button
+                  aria-label="Delete comparison"
+                  className="min-w-0 px-2.5"
+                  size="sm"
+                  variant="danger"
+                >
+                  <Trash className="size-4" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Content>Delete</Tooltip.Content>
+            </Tooltip>
             <AlertDialog.Backdrop>
               <AlertDialog.Container>
                 <AlertDialog.Dialog className="sm:max-w-[400px]">

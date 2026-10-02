@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import NextLink from "next/link";
 
 /** UI Components */
-import { Card, Button } from "@heroui/react";
+import { Card, Button, Breadcrumbs } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 import FinancialPlanCard from "./FinancialPlanCard";
@@ -44,6 +44,10 @@ export default async function PlanPage() {
   if (plans.length === 0) {
     return (
       <div className="pb-12">
+        <Breadcrumbs className="mb-4">
+          <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
+          <Breadcrumbs.Item>Saved Plans</Breadcrumbs.Item>
+        </Breadcrumbs>
         <h1 className="mb-2 text-4xl font-bold">Saved Financial Plans</h1>
 
         <p className="text-default-500">
@@ -126,6 +130,10 @@ export default async function PlanPage() {
 
   return (
     <div className="pb-12">
+      <Breadcrumbs className="mb-4">
+        <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
+        <Breadcrumbs.Item>Saved Plans</Breadcrumbs.Item>
+      </Breadcrumbs>
       <h1 className="mb-2 text-4xl font-bold">Saved Financial Plans</h1>
 
       <p className="text-default-500">
