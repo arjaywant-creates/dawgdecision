@@ -238,7 +238,6 @@ export default function CompareForm({
 
     setValue(prefix, newScenarioData, {
       shouldDirty: true,
-      shouldValidate: true,
     });
   };
 
