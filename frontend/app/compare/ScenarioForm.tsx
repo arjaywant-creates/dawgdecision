@@ -148,7 +148,11 @@ export default memo(function ScenarioForm({
       min: "0",
       placeholder: "Unknown",
     },
-    { name: "parking", label: "Parking", min: "0", placeholder: "Unknown" },
+    { name: "parking",
+      label: "Parking Cost",
+      min: "0",
+      placeholder: "Unknowwn",
+    },
     {
       name: "transportation",
       label: "Transportation",

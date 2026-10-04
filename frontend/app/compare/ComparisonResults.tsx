@@ -187,7 +187,7 @@ export default function ComparisonResults({
             </span>
           </div>
           <div className="flex justify-between border-b border-separator/10 pb-1">
-            <span className="text-default-600">Parking</span>
+            <span className="text-default-600">Parking Cost</span>
             <span className="font-semibold">
               {diffStr(results.parking_difference)}
             </span>
