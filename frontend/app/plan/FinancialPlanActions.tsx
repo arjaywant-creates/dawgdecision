@@ -73,11 +73,12 @@ export function FinancialPlanActions({
       <Toast.Provider />
 
       <div className="flex gap-2 items-center flex-wrap mt-4">
-        <NextLink href={`/compare?id=${comparisonId}`}>
-          <Button size="sm" variant="secondary">
-            <ExternalLink className="size-4" />
-            View Comparison
-          </Button>
+        <NextLink
+          className="button button--secondary button--sm"
+          href={`/compare?id=${comparisonId}`}
+        >
+          <ExternalLink className="size-4" />
+          View Comparison
         </NextLink>
 
         <Dropdown>

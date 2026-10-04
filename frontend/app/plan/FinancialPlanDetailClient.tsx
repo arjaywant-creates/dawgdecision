@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import NextLink from "next/link";
 
-import { ArrowLeft } from "lucide-react";
-import { Button, Card } from "@heroui/react";
+import { Home, TrendingUp } from "lucide-react";
+import { Breadcrumbs, Card } from "@heroui/react";
 
 import { FinancialPlanActions } from "./FinancialPlanActions";
+
+import { diffStr, formatCurrency } from "@/lib/formatters";
 
 interface ScenarioView {
   name: string;
@@ -55,53 +56,71 @@ export function FinancialPlanDetailClient({
   return (
     <div className="pb-12 space-y-8">
       <div>
-        <div className="mb-4">
-          <NextLink href="/plan">
-            <Button variant="tertiary">
-              <ArrowLeft className="size-4 mr-1" />
-              Back to Plans
-            </Button>
-          </NextLink>
+        <div className="w-full overflow-x-auto whitespace-nowrap pb-1 -mb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Breadcrumbs className="mb-4">
+            <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
+            <Breadcrumbs.Item href="/plan">Saved Plans</Breadcrumbs.Item>
+            <Breadcrumbs.Item>{selected.name}</Breadcrumbs.Item>
+          </Breadcrumbs>
         </div>
 
         <h1 className="text-4xl font-bold">{selected.name}</h1>
 
-        <p className="text-default-500 mt-2">
+        <p className="text-default-500 mt-2 font-medium text-sm">
           Saved on {new Date(savedAt).toLocaleDateString()}
         </p>
       </div>
 
       <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Housing Summary</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <Home className="size-5 text-primary" />
+          <h2 className="text-xl font-bold">Housing Summary</h2>
+        </div>
 
-        <div className="space-y-2">
-          <p>
-            <strong>Monthly Cost:</strong> $
-            {selected.monthlyCost.toLocaleString()}
-          </p>
+        <div className="space-y-3 text-default-700">
+          <div className="flex items-center gap-2">
+            <strong className="text-foreground font-semibold w-32">
+              Monthly Cost:
+            </strong>
+            <span>${formatCurrency(selected.monthlyCost)}</span>
+          </div>
 
-          <p>
-            <strong>Upfront Cost:</strong>{" "}
-            {selected.upfrontCost !== null
-              ? `$${selected.upfrontCost.toLocaleString()}`
-              : "Unknown"}
-          </p>
+          <div className="flex items-center gap-2">
+            <strong className="text-foreground font-semibold w-32">
+              Upfront Cost:
+            </strong>
+            <span>
+              {selected.upfrontCost !== null
+                ? `$${formatCurrency(selected.upfrontCost)}`
+                : "Unknown"}
+            </span>
+          </div>
 
-          <p>
-            <strong>Full-Term Cost:</strong>{" "}
-            {selected.termCostComplete
-              ? `$${selected.termCost.toLocaleString()}`
-              : "Unknown"}
-          </p>
+          <div className="flex items-center gap-2">
+            <strong className="text-foreground font-semibold w-32">
+              Full-Term Cost:
+            </strong>
+            <span>
+              {selected.termCostComplete
+                ? `$${formatCurrency(selected.termCost)}`
+                : "Unknown"}
+            </span>
+          </div>
 
-          <p>
-            <strong>Contract Length:</strong> {selected.contractMonths} months
-          </p>
+          <div className="flex items-center gap-2">
+            <strong className="text-foreground font-semibold w-32">
+              Contract Length:
+            </strong>
+            <span>{selected.contractMonths} months</span>
+          </div>
         </div>
       </Card>
 
       <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Decision Impact</h2>
+        <div className="flex items-center gap-2 mb-4">
+          <TrendingUp className="size-5 text-primary" />
+          <h2 className="text-xl font-bold">Decision Impact</h2>
+        </div>
 
         {hasNoImpactData ? (
           <p className="text-default-500">
@@ -109,25 +128,31 @@ export function FinancialPlanDetailClient({
             financial details for both scenarios.
           </p>
         ) : (
-          <ul className="list-disc pl-5 space-y-2">
+          <ul className="list-disc pl-5 space-y-2 text-default-700">
             {selected.monthlyDelta !== null && (
               <li>
-                Monthly difference: $
-                {Math.abs(selected.monthlyDelta).toLocaleString()}
+                <strong className="text-foreground font-medium">
+                  Monthly difference:
+                </strong>{" "}
+                {diffStr(selected.monthlyDelta, "/month")}
               </li>
             )}
 
             {selected.upfrontDelta !== null && (
               <li>
-                Upfront difference: $
-                {Math.abs(selected.upfrontDelta).toLocaleString()}
+                <strong className="text-foreground font-medium">
+                  Upfront difference:
+                </strong>{" "}
+                {diffStr(selected.upfrontDelta)}
               </li>
             )}
 
             {selected.termDelta !== null && (
               <li>
-                Full-term difference: $
-                {Math.abs(selected.termDelta).toLocaleString()}
+                <strong className="text-foreground font-medium">
+                  Full-term difference:
+                </strong>{" "}
+                {diffStr(selected.termDelta)}
               </li>
             )}
           </ul>

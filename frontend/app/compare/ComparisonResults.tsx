@@ -1,8 +1,22 @@
+/* React and HeroUI */
+import { Accordion, Surface, Table, Tooltip } from "@heroui/react";
+import { OutlineSurface } from "@/components/OutlineSurface";
+
 /** Icons */
-import { Info, TrendingDown, Scale, CircleDollarSign } from "lucide-react";
+import {
+  Info,
+  TrendingDown,
+  Scale,
+  CircleDollarSign,
+  ChevronDown,
+  Clock,
+  Wallet,
+} from "lucide-react";
 
 /** Types */
 import { ComparisonResult, Scenario } from "@/types/comparison";
+
+import { formatCurrency, diffStr } from "@/lib/formatters";
 
 interface Props {
   results: ComparisonResult;
@@ -19,13 +33,9 @@ interface MetricRowProps {
   aNull?: boolean;
   bNull?: boolean;
   suffix?: string;
+  tooltip?: string;
 }
 
-const formatCurrency = (value: number) =>
-  value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 /**
  * Reusable row component for displaying a specific financial metric comparison
  */
@@ -38,22 +48,48 @@ const MetricRow = ({
   aNull,
   bNull,
   suffix = "",
-}: MetricRowProps) => (
-  <div className="flex flex-col py-3 border-b border-separator/30 last:border-0">
-    <span className="text-sm text-default-600 font-semibold mb-1">{label}</span>
-    <div className="flex justify-between items-center text-sm">
-      <span className={`font-medium`}>
-        {nameA}: {aNull ? "Unknown" : `$${a?.toLocaleString()}`}
-      </span>
-      <span className={`font-medium`}>
-        {nameB}: {bNull ? "Unknown" : `$${b?.toLocaleString()}`}
-      </span>
+  tooltip,
+}: MetricRowProps) => {
+  return (
+    <div className="flex flex-col gap-3 border-b border-separator/10 py-3">
+      <div className="flex items-center gap-1.5">
+        <span className="text-sm font-bold text-foreground">{label}</span>
+        {tooltip && (
+          <Tooltip delay={0}>
+            <Tooltip.Trigger aria-label="More information">
+              <span className="cursor-help text-default-400 hover:text-default-600 flex items-center justify-center">
+                <Info className="size-3.5" />
+              </span>
+            </Tooltip.Trigger>
+            <Tooltip.Content className="text-xs p-2 max-w-xs">
+              <Tooltip.Arrow />
+              {tooltip}
+            </Tooltip.Content>
+          </Tooltip>
+        )}
+      </div>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-default-500 mb-0.5">
+            {nameA}
+          </span>
+          <span className="text-sm font-semibold text-foreground">
+            {aNull ? "Unknown" : `$${formatCurrency(a)}${suffix}`}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-default-500 mb-0.5">
+            {nameB}
+          </span>
+          <span className="text-sm font-semibold text-foreground">
+            {bNull ? "Unknown" : `$${formatCurrency(b)}${suffix}`}
+          </span>
+        </div>
+      </div>
     </div>
-  </div>
-);
-/**
- * Component to display the calculated comparison results
- */
+  );
+};
+
 export default function ComparisonResults({
   results,
   scenarioA,
@@ -75,18 +111,15 @@ export default function ComparisonResults({
   };
 
   const isCommuteTradeoff = (type: string) =>
-    type === "shorter_commute" || type === "Shorter Commute";
-
-  const diffStr = (val: number | null, suffix = "") =>
-  val === null ? "Unknown" : `$${formatCurrency(val)}${suffix}`;
+    type === "commute" || type === "shorter_commute";
 
   return (
-    <div className="flex flex-col gap-5 w-full">
-      {/* Overview */}
+    <div className="flex flex-col gap-6">
+      {/* Totals Section */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
           <CircleDollarSign className="text-primary size-4 shrink-0" />
-          <h4 className="text-sm font-bold">Totals</h4>
+          <h4 className="text-sm font-bold text-foreground">Totals</h4>
         </div>
         <div className="flex flex-col">
           <MetricRow
@@ -98,43 +131,58 @@ export default function ComparisonResults({
             nameA={nameA}
             nameB={nameB}
             suffix="/month"
+            tooltip="Combined cost of housing base rent and mandatory recurring fees."
           />
-          {!results.first_result.recurring_costs_complete ||
-          !results.second_result.recurring_costs_complete ? (
-            <div className="mb-3 rounded-lg border border-warning-200 bg-warning-50/50 p-3 text-xs">
-              <p className="font-semibold text-warning-600">
-                Monthly subtotal is incomplete.
-              </p>
-
-              {results.first_result.missing_recurring_costs.length > 0 && (
-                <div className="mt-2">
-                  <p className="font-medium">{nameA} missing:</p>
-
-                  <ul className="list-disc pl-4">
-                    {results.first_result.missing_recurring_costs.map(
-                      (item) => (
-                        <li key={`a-${item}`}>{item}</li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-              )}
-
-              {results.second_result.missing_recurring_costs.length > 0 && (
-                <div className="mt-2">
-                  <p className="font-medium">{nameB} missing:</p>
-
-                  <ul className="list-disc pl-4">
-                    {results.second_result.missing_recurring_costs.map(
-                      (item) => (
-                        <li key={`b-${item}`}>{item}</li>
-                      ),
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          ) : null}
+          {(!results.first_result.recurring_costs_complete ||
+            !results.second_result.recurring_costs_complete) && (
+            <Accordion
+              className="mb-2 w-full bg-warning-50/50 border border-warning-200/50 rounded-xl"
+              variant="default"
+            >
+              <Accordion.Item>
+                <Accordion.Heading>
+                  <Accordion.Trigger className="py-2 px-3 group flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <Info className="size-4 shrink-0 text-warning-600" />
+                      <span className="text-xs font-semibold text-warning-900">
+                        Monthly cost is incomplete.
+                      </span>
+                    </div>
+                    <Accordion.Indicator className="text-warning-600/50 group-data-[expanded=true]:rotate-180 transition-transform">
+                      <ChevronDown className="size-4" />
+                    </Accordion.Indicator>
+                  </Accordion.Trigger>
+                </Accordion.Heading>
+                <Accordion.Panel>
+                  <Accordion.Body className="px-3 pb-3 pt-0">
+                    <div className="text-[11px] text-warning-800/90 leading-tight pl-6">
+                      <p className="mb-1 font-medium">Missing values:</p>
+                      <ul className="list-disc pl-3 flex flex-col gap-0.5">
+                        {results.first_result.missing_recurring_costs.length >
+                          0 && (
+                          <li>
+                            <strong className="font-semibold">{nameA}:</strong>{" "}
+                            {results.first_result.missing_recurring_costs.join(
+                              ", ",
+                            )}
+                          </li>
+                        )}
+                        {results.second_result.missing_recurring_costs.length >
+                          0 && (
+                          <li>
+                            <strong className="font-semibold">{nameB}:</strong>{" "}
+                            {results.second_result.missing_recurring_costs.join(
+                              ", ",
+                            )}
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </Accordion.Body>
+                </Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          )}
 
           <MetricRow
             a={results.first_result.term_cost}
@@ -144,21 +192,30 @@ export default function ComparisonResults({
             label="Full-Term Cost"
             nameA={nameA}
             nameB={nameB}
+            tooltip="Total estimated cost over the entire contract length, including all monthly and upfront costs."
           />
-          {!results.first_result.term_cost_complete ||
-          !results.second_result.term_cost_complete ? (
-            <p className="text-[10px] text-warning-500 mb-2">
-              Note: Full-term cost is incomplete.
-            </p>
-          ) : null}
+          {(!results.first_result.term_cost_complete ||
+            !results.second_result.term_cost_complete) && (
+            <Surface
+              className="mb-2 py-2 px-3 flex items-center gap-2 rounded-xl border border-warning-200/50 bg-warning-50/50"
+              variant="transparent"
+            >
+              <Info className="size-4 shrink-0 text-warning-600" />
+              <p className="text-xs font-semibold text-warning-900">
+                Full-term cost is incomplete.
+              </p>
+            </Surface>
+          )}
         </div>
       </div>
 
       {/* Fees and Upfront Costs */}
       <div className="flex flex-col gap-1">
-        <div className="mb-1 flex items-center gap-2 border-b border-separator/50 pb-1.5">
-          <Info className="size-4 shrink-0 text-warning-500" />
-          <h4 className="text-sm font-bold">Fees & Upfront Costs</h4>
+        <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
+          <Info className="size-4 shrink-0 text-primary" />
+          <h4 className="text-sm font-bold text-foreground">
+            Fees & Upfront Costs
+          </h4>
         </div>
         <div className="flex flex-col">
           <MetricRow
@@ -170,7 +227,8 @@ export default function ComparisonResults({
             nameA={nameA}
             nameB={nameB}
             suffix="/month"
-            />
+            tooltip="Fixed monthly fees required by the property (e.g., amenity fees, trash service)."
+          />
           <MetricRow
             a={results.first_result.upfront_costs ?? 0}
             aNull={results.first_result.upfront_costs === null}
@@ -179,128 +237,154 @@ export default function ComparisonResults({
             label="Upfront/Move-in Costs"
             nameA={nameA}
             nameB={nameB}
+            tooltip="One-time fees due at signing or move-in (e.g., security deposits, admin fees)."
           />
         </div>
       </div>
 
-      {/* Differences */}
+      {/* Category Differences (Table) */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
           <Scale className="text-primary size-4 shrink-0" />
           <h4 className="text-sm font-bold">Category Differences</h4>
         </div>
-        <div className="flex flex-col text-sm space-y-2 py-2">
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Monthly Cost</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.monthly_difference, "/month")}
-            </span>
-          </div>
-          {results.term_difference !== null && (
-            <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-              <span className="text-default-600">Full-Term Cost</span>
-              <span className="break-words font-semibold sm:text-right">
-                {diffStr(results.term_difference)}
-              </span>
-            </div>
-          )}
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Housing</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.housing_cost_difference, "/month")}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Utilities</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.utilities_difference, "/month")}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Mandatory Fees</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.mandatory_fees_difference, "/month")}
-            </span>
-          </div>
-          <div className="flex justify-between border-b border-separator/10 pb-1">
-            <span className="text-default-600">Parking</span>
-            <span className="font-semibold">
-              {diffStr(results.parking_difference)}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Transportation</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.transportation_difference, "/month")}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Upfront Costs</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.upfront_cost_difference)}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-default-600">Commute Time</span>
-            <span className="break-words font-semibold sm:text-right">
-              {results.commute_difference !== null
-                ? `${results.commute_difference} min`
-                : "Unknown"}
-            </span>
-          </div>
+        <div className="mt-2">
+          <Table className="shadow-none">
+            <Table.ScrollContainer>
+              <Table.Content aria-label="Category Differences">
+                <Table.Header>
+                  <Table.Column isRowHeader>Category</Table.Column>
+                  <Table.Column>Difference</Table.Column>
+                </Table.Header>
+                <Table.Body className="[&_tr:nth-child(even)]:bg-default-100/50">
+                  <Table.Row>
+                    <Table.Cell>Monthly Cost</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.monthly_difference, "/month")}
+                    </Table.Cell>
+                  </Table.Row>
+                  {results.term_difference !== null ? (
+                    <Table.Row>
+                      <Table.Cell>Full-Term Cost</Table.Cell>
+                      <Table.Cell className="font-semibold text-right">
+                        {diffStr(results.term_difference)}
+                      </Table.Cell>
+                    </Table.Row>
+                  ) : (
+                    <Table.Row className="hidden">
+                      <Table.Cell />
+                      <Table.Cell />
+                    </Table.Row>
+                  )}
+                  <Table.Row>
+                    <Table.Cell>Housing</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.housing_cost_difference, "/month")}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Utilities</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.utilities_difference, "/month")}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Mandatory Fees</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.mandatory_fees_difference, "/month")}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Parking Cost</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.parking_difference)}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Transportation</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.transportation_difference, "/month")}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Upfront Costs</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {diffStr(results.upfront_cost_difference)}
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Commute Time</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {results.commute_difference !== null
+                        ? `${results.commute_difference} min`
+                        : "Unknown"}
+                    </Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table.Content>
+            </Table.ScrollContainer>
+          </Table>
         </div>
       </div>
 
       {/* Tradeoffs */}
       {results.tradeoffs && results.tradeoffs.length > 0 && (
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-2">
-            <TrendingDown className="text-success size-4 shrink-0" />
+          <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
+            <TrendingDown className="text-primary size-4 shrink-0" />
             <h4 className="text-sm font-bold">Key Tradeoffs</h4>
           </div>
 
-          <div className="flex flex-col gap-2">
-            {results.tradeoffs.map((t, idx) => (
-              <div
-                key={idx}
-                className="bg-content2/50 p-3 rounded-lg border border-separator/30 text-sm min-w-0"
-              >
-                {t.favored_scenario ? (
-                  <div>
-                    <p>
-                      <strong>{tradeoffLabels[t.type] ?? t.type}</strong>
-                    </p>
+          <div className="flex flex-col gap-3 mt-1.5">
+            {results.tradeoffs.map((t, idx) => {
+              let TradeoffIcon = CircleDollarSign;
 
-                    <p className="text-success font-medium">
-                      {t.favored_scenario}
-                    </p>
+              if (t.type.includes("commute")) TradeoffIcon = Clock;
+              else if (t.type.includes("upfront")) TradeoffIcon = Wallet;
 
-                    <p className="text-default-500 text-sm">
-                      Difference:{" "}
-                      {isCommuteTradeoff(t.type)
-                        ? `${t.difference} min`
-                        : `$${formatCurrency(t.difference)}`}
-                    </p>
+              return (
+                <OutlineSurface key={idx}>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <TradeoffIcon className="size-4 text-default-500 shrink-0" />
+                      <span className="text-sm font-semibold text-foreground">
+                        {tradeoffLabels[t.type] ?? t.type}
+                      </span>
+                    </div>
+
+                    {t.favored_scenario ? (
+                      <div className="flex flex-col ml-6">
+                        <span className="text-sm font-semibold text-success">
+                          {t.favored_scenario}
+                        </span>
+                        <span className="text-sm text-default-600">
+                          Wins by{" "}
+                          {isCommuteTradeoff(t.type)
+                            ? `${t.difference} min`
+                            : `$${formatCurrency(t.difference)}`}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm font-medium text-default-500 ml-6">
+                        Tie
+                      </span>
+                    )}
                   </div>
-                ) : (
-                  <p>
-                    Tie on <strong>{tradeoffLabels[t.type] ?? t.type}</strong>
-                  </p>
-                )}
-              </div>
-            ))}
+                </OutlineSurface>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Note Section */}
-      <div className="flex items-start gap-2 bg-content2/50 p-3 rounded-lg border border-separator/30">
-        <Info className="size-4 text-default-500 shrink-0" />
-        <p className="text-xs text-default-500 leading-relaxed font-medium">
+      <OutlineSurface className="flex gap-3 p-3">
+        <Info className="size-4 text-default-500 shrink-0 mt-0.5" />
+        <p className="text-xs font-medium text-default-600 leading-relaxed">
           This presents financial tradeoffs only and should not be interpreted
           as a firm financial recommendation.
         </p>
-      </div>
+      </OutlineSurface>
     </div>
   );
 }

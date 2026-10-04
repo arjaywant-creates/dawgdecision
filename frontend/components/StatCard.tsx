@@ -11,14 +11,18 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, href }: StatCardProps) {
   const content = (
-    <Card className="p-6 min-w-0 flex flex-col">
+    <Card
+      className={`p-6 min-w-0 flex flex-col transition-colors ${href ? "hover:border-primary/50" : ""}`}
+    >
       <div className="flex justify-between items-start gap-2">
-        <p className="text-default-500">{title}</p>
+        <p className="text-sm font-medium text-default-600">{title}</p>
         {href && (
-          <ArrowRight className="size-4 text-default-400 shrink-0 mt-1" />
+          <ArrowRight className="size-4 text-default-400 shrink-0 mt-0.5" />
         )}
       </div>
-      <h2 className="mt-2 text-3xl font-bold truncate">{value}</h2>
+      <h2 className="mt-2 text-3xl font-bold text-foreground truncate">
+        {value}
+      </h2>
     </Card>
   );
 

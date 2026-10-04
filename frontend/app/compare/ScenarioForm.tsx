@@ -189,7 +189,12 @@ export default memo(function ScenarioForm({
       min: "0",
       placeholder: "Unknown",
     },
-    { name: "parking", label: "Parking", min: "0", placeholder: "Unknown" },
+    {
+      name: "parking",
+      label: "Parking Cost",
+      min: "0",
+      placeholder: "Unknown",
+    },
     {
       name: "transportation",
       label: "Transportation",
@@ -248,9 +253,13 @@ export default memo(function ScenarioForm({
 
           {/* Optional Fields */}
           <div>
-            <h4 className="font-semibold text-sm uppercase tracking-wide text-default-400 mb-3">
+            <h4 className="font-semibold text-sm uppercase tracking-wide text-default-400 mb-1">
               Optional
             </h4>
+            <p className="text-xs text-default-500 mb-4">
+              Note: These fields are not required, but they help provide a more
+              complete comparison.
+            </p>
 
             <FieldGroup>
               {optionalFields.map((field) => (

@@ -2,7 +2,7 @@
 
 import NextLink from "next/link";
 
-import { Card, Button, AlertDialog } from "@heroui/react";
+import { Card, Button, AlertDialog, Tooltip } from "@heroui/react";
 import { Trash, ExternalLink, Eye } from "lucide-react";
 
 import { deleteFinancialPlanAction } from "./actions";
@@ -26,20 +26,17 @@ interface FinancialPlanCardProps {
 
 export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
   return (
-    <Card className="h-full transition-colors hover:border-primary/50 flex flex-col min-w-0">
+    <Card className="h-full transition-colors hover:border-primary/50 min-w-0">
       <Card.Header className="flex flex-col items-start gap-1">
-        <Card.Title className="text-xl font-bold w-full">
-          {plan.housingName}
-        </Card.Title>
-
-        <Card.Description>
+        <Card.Title className="text-lg">{plan.housingName}</Card.Title>
+        <Card.Description className="text-xs font-medium text-default-500">
           Saved {new Date(plan.savedDate).toLocaleDateString()}
         </Card.Description>
       </Card.Header>
 
-      <Card.Content className="flex flex-col gap-4">
+      <Card.Content className="flex flex-col gap-4 flex-1">
         <div className="space-y-1">
-          <p className="font-semibold">
+          <p className="font-semibold text-foreground">
             {plan.monthlyCost !== null
               ? `$${plan.monthlyCost.toLocaleString()}/month`
               : "Unknown monthly cost"}
@@ -58,31 +55,42 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
           </p>
         </div>
 
-        <p className="text-sm font-medium text-default-700 pt-1">
+        <p className="text-sm font-medium text-default-700">
           {plan.impactSummary}
         </p>
       </Card.Content>
 
-      <Card.Footer className="mt-auto flex flex-wrap gap-2 pt-3">
-        <NextLink href={`/plan/${plan.id}`}>
-          <Button size="sm" variant="primary">
-            <Eye className="size-4" />
-            View Plan
-          </Button>
+      <Card.Footer className="flex flex-wrap gap-2 pt-4">
+        <NextLink
+          className="button button--outline button--sm border-default-200 font-medium"
+          href={`/plan/${plan.id}`}
+        >
+          <Eye className="size-3.5" />
+          View Plan
         </NextLink>
 
-        <NextLink href={`/compare?id=${plan.comparisonId}`}>
-          <Button size="sm" variant="secondary">
-            <ExternalLink className="size-4" />
-            Comparison
-          </Button>
+        <NextLink
+          className="button button--outline button--sm border-default-200 font-medium"
+          href={`/compare?id=${plan.comparisonId}`}
+        >
+          <ExternalLink className="size-3.5" />
+          Comparison
         </NextLink>
 
         <AlertDialog>
-          <Button aria-label="Delete plan" size="sm" variant="danger">
-            <Trash className="size-4" />
-            Delete
-          </Button>
+          <Tooltip delay={0}>
+            <Tooltip.Trigger>
+              <Button
+                aria-label="Delete plan"
+                className="min-w-0 px-2.5"
+                size="sm"
+                variant="danger"
+              >
+                <Trash className="size-4" />
+              </Button>
+            </Tooltip.Trigger>
+            <Tooltip.Content>Delete</Tooltip.Content>
+          </Tooltip>
 
           <AlertDialog.Backdrop>
             <AlertDialog.Container>
@@ -100,7 +108,7 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
                 </AlertDialog.Body>
 
                 <AlertDialog.Footer>
-                  <Button slot="close" variant="secondary">
+                  <Button slot="close" variant="tertiary">
                     Cancel
                   </Button>
 

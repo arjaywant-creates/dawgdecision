@@ -5,13 +5,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 
-// Analytics is optional in this form; keep tracking calls safe when the
-// PostHog client is not installed or configured.
-const captureAnalyticsEvent = (
-  _event: string,
-  _properties: Record<string, unknown>,
-) => {};
-
 /** UI Components (HeroUI) */
 import {
   Button,
@@ -20,9 +13,13 @@ import {
   Alert,
   CloseButton,
   Toast,
+  Breadcrumbs,
   toast,
   Surface,
+  Tabs,
 } from "@heroui/react";
+import { OutlineSurface } from "@/components/OutlineSurface";
+import { clsx } from "clsx";
 
 /** Form Handling & Validation */
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -35,6 +32,7 @@ import {
   Save,
   ArrowRight,
   CheckCircle2,
+  Info,
 } from "lucide-react";
 
 /** Local Actions & Components */
@@ -60,6 +58,8 @@ import {
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
+
+import posthog from "posthog-js";
 
 const initialScenario = {
   name: "",
@@ -211,22 +211,24 @@ export default function CompareForm({
     defaultValues: getInitialFormValues(isEditing ? initialComparison : null),
   });
 
+  const mapSourcedHousingToScenario = (housing: SourcedHousingOption) => ({
+    name: `${housing.property_name} - ${housing.configuration}`,
+    housing_cost: housing.housing_cost ?? ("" as any),
+    cost_period_months: housing.cost_period_months ?? ("" as any),
+    contract_months: housing.contract_months ?? ("" as any),
+    utilities: housing.utilities ?? ("" as any),
+    mandatory_fees: housing.mandatory_fees ?? ("" as any),
+    parking: housing.parking ?? ("" as any),
+    transportation: housing.transportation ?? ("" as any),
+    upfront_costs: housing.upfront_costs ?? ("" as any),
+    commute_minutes: housing.commute_minutes ?? ("" as any),
+  });
+
   const populateScenario = (
     prefix: "scenario_a" | "scenario_b",
     housing: SourcedHousingOption,
   ) => {
-    const newScenarioData = {
-      name: `${housing.property_name} - ${housing.configuration}`,
-      housing_cost: housing.housing_cost ?? ("" as any),
-      cost_period_months: housing.cost_period_months ?? ("" as any),
-      contract_months: housing.contract_months ?? ("" as any),
-      utilities: housing.utilities ?? ("" as any),
-      mandatory_fees: housing.mandatory_fees ?? ("" as any),
-      parking: housing.parking ?? ("" as any),
-      transportation: housing.transportation ?? ("" as any),
-      upfront_costs: housing.upfront_costs ?? ("" as any),
-      commute_minutes: housing.commute_minutes ?? ("" as any),
-    };
+    const newScenarioData = mapSourcedHousingToScenario(housing);
 
     if (prefix === "scenario_a") {
       setScenarioAOriginalValues(newScenarioData);
@@ -236,7 +238,6 @@ export default function CompareForm({
 
     setValue(prefix, newScenarioData, {
       shouldDirty: true,
-      shouldValidate: true,
     });
   };
 
@@ -288,34 +289,12 @@ export default function CompareForm({
 
     if (matchingOptionA) {
       setSelectedHousingIdA(matchingOptionA.id);
-      setScenarioAOriginalValues({
-        name: `${matchingOptionA.property_name} - ${matchingOptionA.configuration}`,
-        housing_cost: matchingOptionA.housing_cost ?? ("" as any),
-        cost_period_months: matchingOptionA.cost_period_months ?? ("" as any),
-        contract_months: matchingOptionA.contract_months ?? ("" as any),
-        utilities: matchingOptionA.utilities ?? ("" as any),
-        mandatory_fees: matchingOptionA.mandatory_fees ?? ("" as any),
-        parking: matchingOptionA.parking ?? ("" as any),
-        transportation: matchingOptionA.transportation ?? ("" as any),
-        upfront_costs: matchingOptionA.upfront_costs ?? ("" as any),
-        commute_minutes: matchingOptionA.commute_minutes ?? ("" as any),
-      });
+      setScenarioAOriginalValues(mapSourcedHousingToScenario(matchingOptionA));
     }
 
     if (matchingOptionB) {
       setSelectedHousingIdB(matchingOptionB.id);
-      setScenarioBOriginalValues({
-        name: `${matchingOptionB.property_name} - ${matchingOptionB.configuration}`,
-        housing_cost: matchingOptionB.housing_cost ?? ("" as any),
-        cost_period_months: matchingOptionB.cost_period_months ?? ("" as any),
-        contract_months: matchingOptionB.contract_months ?? ("" as any),
-        utilities: matchingOptionB.utilities ?? ("" as any),
-        mandatory_fees: matchingOptionB.mandatory_fees ?? ("" as any),
-        parking: matchingOptionB.parking ?? ("" as any),
-        transportation: matchingOptionB.transportation ?? ("" as any),
-        upfront_costs: matchingOptionB.upfront_costs ?? ("" as any),
-        commute_minutes: matchingOptionB.commute_minutes ?? ("" as any),
-      });
+      setScenarioBOriginalValues(mapSourcedHousingToScenario(matchingOptionB));
     }
   }, [
     isEditing,
@@ -341,7 +320,7 @@ export default function CompareForm({
     setSaveSuccess(false);
 
     // Track comparison started event with PostHog
-    captureAnalyticsEvent("comparison_started", {
+    posthog.capture("comparison_started", {
       scenario_a_name: data.scenario_a.name,
       scenario_b_name: data.scenario_b.name,
     });
@@ -355,7 +334,7 @@ export default function CompareForm({
 
       if (response.success) {
         // Track comparison completed event with PostHog
-        captureAnalyticsEvent("comparison_completed", {
+        posthog.capture("comparison_completed", {
           scenario_a_name: data.scenario_a.name,
           scenario_b_name: data.scenario_b.name,
           success: true,
@@ -427,7 +406,7 @@ export default function CompareForm({
 
       if (response.success) {
         // Track comparison saved event with PostHog
-        captureAnalyticsEvent("comparison_saved", {
+        posthog.capture("comparison_saved", {
           scenario_a_name: formData.scenario_a.name,
           scenario_b_name: formData.scenario_b.name,
           is_editing: isEditing,
@@ -452,24 +431,28 @@ export default function CompareForm({
     <div className="pb-12">
       <Toast.Provider />
 
+      <Breadcrumbs className="mb-4">
+        <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
+        <Breadcrumbs.Item>
+          {isEditing ? "Edit Comparison" : "New Comparison"}
+        </Breadcrumbs.Item>
+      </Breadcrumbs>
+
       {/* Header Section */}
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-end gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-bold flex items-center gap-3">
             {isEditing ? "Editing Saved Comparison" : "Housing Comparison"}
           </h1>
-
           <p className="mt-2 text-default-500">
             {isEditing
               ? `Currently editing your comparison between ${scenarioA?.name || "Option A"} and ${scenarioB?.name || "Option B"}.`
               : "Compare two housing options side-by-side to understand the financial tradeoffs."}
           </p>
         </div>
-        <NextLink href="/comparisons">
-          <Button variant="tertiary">
-            View Saved
-            <ArrowRight className="size-4" />
-          </Button>
+        <NextLink className="button button--tertiary" href="/comparisons">
+          View Saved
+          <ArrowRight className="size-4" />
         </NextLink>
       </div>
 
@@ -487,13 +470,35 @@ export default function CompareForm({
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-12 gap-6 min-w-0 items-start">
+      <div className="grid gap-8 lg:grid-cols-12 items-start">
         {/* Left Column: Forms */}
-        <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
+        <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
           <Form
             className="w-full flex flex-col"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* Mobile Tab Selector */}
+            <div className="md:hidden mb-6 w-full">
+              <Tabs
+                className="w-full"
+                selectedKey={activeTab}
+                onSelectionChange={(k) => setActiveTab(k as "A" | "B")}
+              >
+                <Tabs.ListContainer>
+                  <Tabs.List aria-label="Options" className="w-full">
+                    <Tabs.Tab id="A">
+                      Option A
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                    <Tabs.Tab id="B">
+                      Option B
+                      <Tabs.Indicator />
+                    </Tabs.Tab>
+                  </Tabs.List>
+                </Tabs.ListContainer>
+              </Tabs>
+            </div>
+
             {/* Scenario Forms Container */}
             <div className="grid gap-6 md:grid-cols-2 w-full">
               <div className={activeTab === "A" ? "block" : "hidden md:block"}>
@@ -509,7 +514,7 @@ export default function CompareForm({
                         setSelectedHousingIdA(option?.id || "");
                         if (option) {
                           // Track housing option selection with PostHog
-                          captureAnalyticsEvent("housing_option_selected", {
+                          posthog.capture("housing_option_selected", {
                             property_name: option.property_name,
                             category: option.category,
                           });
@@ -536,7 +541,7 @@ export default function CompareForm({
                         setSelectedHousingIdB(option?.id || "");
                         if (option) {
                           // Track housing option selection with PostHog
-                          captureAnalyticsEvent("housing_option_selected", {
+                          posthog.capture("housing_option_selected", {
                             property_name: option.property_name,
                             category: option.category,
                           });
@@ -552,7 +557,7 @@ export default function CompareForm({
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <Button
                 className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
                 isPending={loading}
@@ -565,7 +570,7 @@ export default function CompareForm({
                     {isPending ? (
                       <Spinner color="current" size="sm" />
                     ) : (
-                      <Calculator className="w-5 h-5 mr-2" />
+                      <Calculator className="w-5 h-5" />
                     )}
                     {isPending
                       ? "Calculating..."
@@ -583,16 +588,24 @@ export default function CompareForm({
                 variant="secondary"
                 onPress={handleClear}
               >
-                <Eraser className="w-5 h-5 mr-2" />
+                <Eraser className="w-5 h-5" />
                 Clear
               </Button>
             </div>
           </Form>
         </div>
 
-        {/* Right Column: Sticky Results Container */}
-        <div className="col-span-12 lg:col-span-4 sticky top-24">
-          <Surface className="flex min-h-[350px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-separator/30 p-0">
+        {/* Right Column: Results Container */}
+        <div
+          className={clsx(
+            "lg:col-span-4 min-w-0",
+            !results && "hidden lg:block",
+          )}
+        >
+          <Surface
+            className="w-full h-full min-h-[350px] flex flex-col rounded-2xl shadow-sm border border-separator/30 overflow-hidden p-0"
+            variant="default"
+          >
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
               {results ? (
@@ -644,9 +657,23 @@ export default function CompareForm({
                         </Button>
                       </div>
                     ) : (
-                      <Alert className="w-full" status="warning">
-                        Sign in to save this comparison.
-                      </Alert>
+                      <OutlineSurface className="w-full flex flex-col sm:flex-row items-center justify-between gap-3 p-4">
+                        <div className="flex items-center gap-2">
+                          <Info className="size-4 text-default-500 shrink-0" />
+                          <span className="text-sm font-medium text-default-700">
+                            Sign in to save this comparison.
+                          </span>
+                        </div>
+                        <NextLink
+                          className="button button--outline button--sm w-full sm:w-auto border-default-200"
+                          href="/login"
+                          onClick={() =>
+                            posthog.capture("compare_login_prompt_clicked")
+                          }
+                        >
+                          Log In
+                        </NextLink>
+                      </OutlineSurface>
                     )}
                   </div>
                 </>

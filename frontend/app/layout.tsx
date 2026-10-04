@@ -53,10 +53,16 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex min-h-screen flex-col">
+        <Providers
+          themeProps={{
+            attribute: "class",
+            defaultTheme: "light",
+            enableSystem: false,
+          }}
+        >
+          <div className="relative flex flex-col min-h-screen">
             <Navbar />
-            <main className="container mx-auto max-w-7xl pt-16 pb-24 sm:pb-0 px-6 flex-grow flex flex-col">
+            <main className="container mx-auto max-w-7xl pt-8 pb-24 sm:pb-0 px-6 flex-grow flex flex-col">
               {children}
             </main>
           </div>
