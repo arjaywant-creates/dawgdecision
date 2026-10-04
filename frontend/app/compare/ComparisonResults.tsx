@@ -222,10 +222,10 @@ export default function ComparisonResults({
               {diffStr(results.mandatory_fees_difference, "/month")}
             </span>
           </div>
-          <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex justify-between border-b border-separator/10 pb-1">
             <span className="text-default-600">Parking</span>
-            <span className="break-words font-semibold sm:text-right">
-              {diffStr(results.parking_difference, "/month")}
+            <span className="font-semibold">
+              {diffStr(results.parking_difference)}
             </span>
           </div>
           <div className="flex flex-col gap-1 border-b border-separator/10 pb-2 sm:flex-row sm:items-center sm:justify-between">
