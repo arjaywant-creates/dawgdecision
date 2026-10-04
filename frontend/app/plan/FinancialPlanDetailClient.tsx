@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import NextLink from "next/link";
 
 import { Home, TrendingUp } from "lucide-react";
 import { Breadcrumbs, Card } from "@heroui/react";
