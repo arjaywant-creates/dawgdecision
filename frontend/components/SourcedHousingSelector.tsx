@@ -151,7 +151,7 @@ export default function SourcedHousingSelector({
 
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
         <Button
-          className="w-full justify-between bg-surface-secondary px-4 min-h-11 h-auto py-2 border border-separator/30 min-w-0 rounded-field"
+          className="w-full justify-between bg-surface-secondary px-4 min-h-11 h-auto py-2 border border-separator/30 min-w-0"
           variant="outline"
           onPress={() => setIsOpen(true)}
         >

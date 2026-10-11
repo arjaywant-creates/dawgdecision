@@ -21,7 +21,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "315 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.950596,
+        "lng": -83.379677
+      }
     },
     {
       "id": "black_diallo_miller_hall_double_with_bath",
@@ -44,7 +49,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "315 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.950596,
+        "lng": -83.379677
+      }
     },
     {
       "id": "boggs_hall_double_with_community_bath",
@@ -67,7 +77,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "900 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.948587,
+        "lng": -83.378363
+      }
     },
     {
       "id": "brumby_hall_double_with_community_bath",
@@ -90,7 +105,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "615 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.949711,
+        "lng": -83.382979
+      }
     },
     {
       "id": "brumby_hall_double_with_bath",
@@ -113,7 +133,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "615 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.949711,
+        "lng": -83.382979
+      }
     },
     {
       "id": "building_1516_double_with_bath",
@@ -136,7 +161,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "395 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.936768,
+        "lng": -83.366945
+      }
     },
     {
       "id": "building_1516_single_with_bath",
@@ -159,7 +189,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "395 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.936768,
+        "lng": -83.366945
+      }
     },
     {
       "id": "building_2266_double_with_community_bath",
@@ -182,7 +217,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "360 S Lumpkin St, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.954694,
+        "lng": -83.377165
+      }
     },
     {
       "id": "building_2266_double_with_bath",
@@ -205,7 +245,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "360 S Lumpkin St, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.954694,
+        "lng": -83.377165
+      }
     },
     {
       "id": "church_hall_double_with_community_bath",
@@ -228,7 +273,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "880 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.948967,
+        "lng": -83.378287
+      }
     },
     {
       "id": "church_hall_single_with_bath",
@@ -251,7 +301,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "880 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.948967,
+        "lng": -83.378287
+      }
     },
     {
       "id": "creswell_hall_double_with_community_bath",
@@ -274,7 +329,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "415 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.95,
+        "lng": -83.380038
+      }
     },
     {
       "id": "creswell_hall_double_with_bath",
@@ -297,7 +357,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "415 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.95,
+        "lng": -83.380038
+      }
     },
     {
       "id": "hill_hall_double_with_community_bath",
@@ -320,7 +385,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "810 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.949431,
+        "lng": -83.37809
+      }
     },
     {
       "id": "lipscomb_hall_double_with_community_bath",
@@ -343,7 +413,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "205 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.950952,
+        "lng": -83.378293
+      }
     },
     {
       "id": "lipscomb_hall_single_with_bath",
@@ -366,7 +441,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "205 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.950952,
+        "lng": -83.378293
+      }
     },
     {
       "id": "mell_hall_double_with_community_bath",
@@ -389,7 +469,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "215 Baxter St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.950837,
+        "lng": -83.37875
+      }
     },
     {
       "id": "morris_hall_double_with_community_bath",
@@ -412,7 +497,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "380 S Lumpkin St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.953789,
+        "lng": -83.376828
+      }
     },
     {
       "id": "payne_hall_double_with_community_bath",
@@ -435,7 +525,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "101 Hooper St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.951714,
+        "lng": -83.371775
+      }
     },
     {
       "id": "payne_hall_single_with_community_bath",
@@ -458,7 +553,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "101 Hooper St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.951714,
+        "lng": -83.371775
+      }
     },
     {
       "id": "russell_hall_double_with_community_bath",
@@ -481,7 +581,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "515 Baxter St, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.950005,
+        "lng": -83.381406
+      }
     },
     {
       "id": "russell_hall_double_with_bath",
@@ -504,7 +609,12 @@
         "last_checked": "2026-09-29",
         "notes": "Traditional UGA residence hall. 2026-27 rate per resident per term."
       },
-      "property_style": "Traditional Dorm"
+      "property_style": "Traditional Dorm",
+      "address": "515 Baxter St, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.950005,
+        "lng": -83.381406
+      }
     },
     {
       "id": "brown_hall_double_in_suite_with_bath",
@@ -527,7 +637,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "100 Fox Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.964534,
+        "lng": -83.405031
+      }
     },
     {
       "id": "brown_hall_double_with_bath",
@@ -550,7 +665,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "100 Fox Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.964534,
+        "lng": -83.405031
+      }
     },
     {
       "id": "brown_hall_single_with_bath",
@@ -573,7 +693,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "100 Fox Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.964534,
+        "lng": -83.405031
+      }
     },
     {
       "id": "mary_lyndon_hall_double_with_community_bath",
@@ -596,7 +721,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "310 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.945992,
+        "lng": -83.37703
+      }
     },
     {
       "id": "mary_lyndon_hall_double_in_suite_with_bath",
@@ -619,7 +749,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "310 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.945992,
+        "lng": -83.37703
+      }
     },
     {
       "id": "mary_lyndon_hall_single_with_community_bath",
@@ -642,7 +777,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "310 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.945992,
+        "lng": -83.37703
+      }
     },
     {
       "id": "mary_lyndon_hall_double_with_bath",
@@ -665,7 +805,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "310 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.945992,
+        "lng": -83.37703
+      }
     },
     {
       "id": "mary_lyndon_hall_single_with_bath",
@@ -688,7 +833,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "310 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.945992,
+        "lng": -83.37703
+      }
     },
     {
       "id": "myers_hall_double_with_community_bath",
@@ -711,7 +861,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_double_in_suite_with_bath",
@@ -734,7 +889,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_single_with_community_bath",
@@ -757,7 +917,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_double_in_super_suite_with_bath",
@@ -780,7 +945,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_double_in_quad_with_bath",
@@ -803,7 +973,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_double_with_bath",
@@ -826,7 +1001,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_single_in_super_suite_with_bath",
@@ -849,7 +1029,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "myers_hall_single_in_suite_with_bath",
@@ -872,7 +1057,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "1055 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946646,
+        "lng": -83.377813
+      }
     },
     {
       "id": "oglethorpe_house_double_in_suite_with_bath",
@@ -895,7 +1085,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "998 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.947727,
+        "lng": -83.379317
+      }
     },
     {
       "id": "oglethorpe_house_single_in_suite_with_bath",
@@ -918,7 +1113,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "998 S Lumpkin St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.947727,
+        "lng": -83.379317
+      }
     },
     {
       "id": "reed_hall_double_in_suite_with_bath",
@@ -941,7 +1141,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "105 Hooper St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.951048,
+        "lng": -83.372869
+      }
     },
     {
       "id": "reed_hall_double_in_super_suite_with_bath",
@@ -964,7 +1169,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "105 Hooper St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.951048,
+        "lng": -83.372869
+      }
     },
     {
       "id": "reed_hall_double_with_bath",
@@ -987,7 +1197,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "105 Hooper St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.951048,
+        "lng": -83.372869
+      }
     },
     {
       "id": "reed_hall_single_in_suite_with_bath",
@@ -1010,7 +1225,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "105 Hooper St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.951048,
+        "lng": -83.372869
+      }
     },
     {
       "id": "rutherford_hall_double_with_bath",
@@ -1033,7 +1253,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "305 Cedar St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946973,
+        "lng": -83.376672
+      }
     },
     {
       "id": "rutherford_hall_single_with_bath",
@@ -1056,7 +1281,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "305 Cedar St, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.946973,
+        "lng": -83.376672
+      }
     },
     {
       "id": "soule_hall_double_with_shared_bath",
@@ -1079,7 +1309,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "315 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.946222,
+        "lng": -83.376012
+      }
     },
     {
       "id": "soule_hall_double_in_super_suite_with_bath",
@@ -1102,7 +1337,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "315 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.946222,
+        "lng": -83.376012
+      }
     },
     {
       "id": "soule_hall_single_in_super_suite_with_bath",
@@ -1125,7 +1365,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "315 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.946222,
+        "lng": -83.376012
+      }
     },
     {
       "id": "soule_hall_single_with_shared_bath",
@@ -1148,7 +1393,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned suite-style residence. 2026-27 rate per resident per term."
       },
-      "property_style": "Suite Style Dorm"
+      "property_style": "Suite Style Dorm",
+      "address": "315 Sanford Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.946222,
+        "lng": -83.376012
+      }
     },
     {
       "id": "busbee_hall_4_bedrooms_2_baths",
@@ -1171,7 +1421,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "365 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.93804,
+        "lng": -83.368092
+      }
     },
     {
       "id": "busbee_hall_2_bedrooms_1_bath",
@@ -1194,7 +1449,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "365 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.93804,
+        "lng": -83.368092
+      }
     },
     {
       "id": "busbee_hall_3_bedrooms_2_baths_shared_bath",
@@ -1217,7 +1477,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "365 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.93804,
+        "lng": -83.368092
+      }
     },
     {
       "id": "busbee_hall_3_bedrooms_2_baths_private_bath",
@@ -1240,7 +1505,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "365 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.93804,
+        "lng": -83.368092
+      }
     },
     {
       "id": "busbee_hall_2_bedrooms_2_baths",
@@ -1263,7 +1533,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "365 River Rd, Athens, GA 30609",
+      "coordinates": {
+        "lat": 33.93804,
+        "lng": -83.368092
+      }
     },
     {
       "id": "mcwhorter_hall_4_bedrooms_2_baths",
@@ -1286,7 +1561,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "335 River Rd, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.938228,
+        "lng": -83.367224
+      }
     },
     {
       "id": "mcwhorter_hall_2_bedrooms_1_bath",
@@ -1309,7 +1589,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "335 River Rd, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.938228,
+        "lng": -83.367224
+      }
     },
     {
       "id": "mcwhorter_hall_3_bedrooms_2_baths_shared_bath",
@@ -1332,7 +1617,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "335 River Rd, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.938228,
+        "lng": -83.367224
+      }
     },
     {
       "id": "mcwhorter_hall_3_bedrooms_2_baths_private_bath",
@@ -1355,7 +1645,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "335 River Rd, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.938228,
+        "lng": -83.367224
+      }
     },
     {
       "id": "mcwhorter_hall_2_bedrooms_2_baths",
@@ -1378,7 +1673,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "335 River Rd, Athens, GA 30602",
+      "coordinates": {
+        "lat": 33.938228,
+        "lng": -83.367224
+      }
     },
     {
       "id": "rooker_hall_4_bedrooms_2_baths",
@@ -1401,7 +1701,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "385 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.937055,
+        "lng": -83.368175
+      }
     },
     {
       "id": "rooker_hall_3_bedrooms_2_baths_shared_bath",
@@ -1424,7 +1729,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "385 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.937055,
+        "lng": -83.368175
+      }
     },
     {
       "id": "rooker_hall_2_bedrooms_1_bath",
@@ -1447,7 +1757,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "385 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.937055,
+        "lng": -83.368175
+      }
     },
     {
       "id": "rooker_hall_2_bedrooms_2_baths",
@@ -1470,7 +1785,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "385 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.937055,
+        "lng": -83.368175
+      }
     },
     {
       "id": "rooker_hall_3_bedrooms_2_baths_private_bath",
@@ -1493,7 +1813,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "385 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.937055,
+        "lng": -83.368175
+      }
     },
     {
       "id": "vandiver_hall_4_bedrooms_2_baths",
@@ -1516,7 +1841,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "375 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.93756,
+        "lng": -83.366998
+      }
     },
     {
       "id": "vandiver_hall_2_bedrooms_1_bath",
@@ -1539,7 +1869,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "375 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.93756,
+        "lng": -83.366998
+      }
     },
     {
       "id": "vandiver_hall_3_bedrooms_2_baths_shared_bath",
@@ -1562,7 +1897,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "375 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.93756,
+        "lng": -83.366998
+      }
     },
     {
       "id": "vandiver_hall_2_bedrooms_2_baths",
@@ -1585,7 +1925,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "375 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.93756,
+        "lng": -83.366998
+      }
     },
     {
       "id": "vandiver_hall_3_bedrooms_2_baths_private_bath",
@@ -1608,7 +1953,12 @@
         "last_checked": "2026-09-29",
         "notes": "UGA-owned apartment-style living. 2026-27 rate per resident per term."
       },
-      "property_style": "Campus Apartment"
+      "property_style": "Campus Apartment",
+      "address": "375 River Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.93756,
+        "lng": -83.366998
+      }
     },
     {
       "id": "farmers_exchange_3_bedroom",
@@ -1631,7 +1981,12 @@
         "last_checked": "2026-09-29",
         "notes": "Classic downtown lofts. Upfront includes $75 app fee (excludes deposit). Monthly includes $30 flat fee for water/trash."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "580 E Broad St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.958258,
+        "lng": -83.371837
+      }
     },
     {
       "id": "georgia_heights_2_bedroom",
@@ -1654,7 +2009,12 @@
         "last_checked": "2026-09-29",
         "notes": "Luxury downtown high-rise above Target. Upfront includes $35 app and $150 admin fee. Base rent includes furnishings and internet."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "150 W Broad St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.957438,
+        "lng": -83.37724
+      }
     },
     {
       "id": "hub_athens_5x4",
@@ -1677,7 +2037,12 @@
         "last_checked": "2026-08-25",
         "notes": "Luxury high-rise located downtown. Extremely walkable but high parking premiums. Starting monthly price is $1,099 plus fees. $5 monthly tech fee is represented in mandatory fees. $50 application fee and $150 administrative fee are represented in upfront costs. A required $68.40 annual Conservice fee is published. Parking starts at $175/month and is optional."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "155 Mitchell St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.955126,
+        "lng": -83.370365
+      }
     },
     {
       "id": "rambler_athens_the_finley_2_bed_2_bath",
@@ -1700,7 +2065,12 @@
         "last_checked": "2026-09-29",
         "notes": "Fees updated. Upfront includes $200 admin, $50 app, $79.20 utility setup (excludes $100 refundable deposit). Monthly includes $5 trash fee."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "558 W Broad St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.957017,
+        "lng": -83.382209
+      }
     },
     {
       "id": "the_mark_athens_davis_i_4x4",
@@ -1723,7 +2093,12 @@
         "last_checked": "2026-08-25",
         "notes": "Luxury high-rise located downtown. Extremely walkable but high parking premiums. Starting inclusive monthly installment per person/per bed. Base price is $999/month. Inclusive installment includes mandatory monthly fees. Optional premiums and one-time charges are excluded."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "130 Hickory St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.957022,
+        "lng": -83.368825
+      }
     },
     {
       "id": "the_standard_at_athens_4_bed_4_bath",
@@ -1746,7 +2121,12 @@
         "last_checked": "2026-08-26",
         "notes": "Luxury high-rise located downtown. Extremely walkable but high parking premiums. Base rate shown. Mandatory fees include internet/trash. Parking is optional."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "600 N Thomas St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.963306,
+        "lng": -83.37353
+      }
     },
     {
       "id": "uncommon_athens_4_bedroom",
@@ -1769,7 +2149,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes $50 app and $150 admin fee. Secure parking available for roughly $65/mo."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "165 E Dougherty St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.961099,
+        "lng": -83.377604
+      }
     },
     {
       "id": "uncommon_athens_2_bedroom",
@@ -1792,7 +2177,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes $50 app and $150 admin fee."
       },
-      "property_style": "Downtown High-Rise"
+      "property_style": "Downtown High-Rise",
+      "address": "165 E Dougherty St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.961099,
+        "lng": -83.377604
+      }
     },
     {
       "id": "1785_club_studio_a",
@@ -1815,7 +2205,12 @@
         "last_checked": "2026-09-29",
         "notes": "Fees updated. Upfront includes $200 admin, $100 app, $110 tech fee. Monthly includes $6 billing, $16 insurance."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "220 Williams St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.953723,
+        "lng": -83.370322
+      }
     },
     {
       "id": "accolade_athens_d3_4_bed_3_bath",
@@ -1838,7 +2233,12 @@
         "last_checked": "2026-09-29",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Base rent. Upfront costs include $150 admin and $50 application fee. No mandatory monthly fees listed."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "600 N Thomas St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.962488,
+        "lng": -83.374113
+      }
     },
     {
       "id": "athens_ridge_4_bedroom_townhouse",
@@ -1861,7 +2261,12 @@
         "last_checked": "2026-09-29",
         "notes": "Famous for lazy river. Upfront and mandatory fees not explicitly listed, typically requires utilities and insurance."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "1000 Redwood Ln, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.907663,
+        "lng": -83.396901
+      }
     },
     {
       "id": "bulldog_crossing_apartment_3_3_flat",
@@ -1884,7 +2289,12 @@
         "last_checked": "2026-09-29",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Upfront includes $250 admin fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "148 Old Will Hunter Rd, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.918608,
+        "lng": -83.388997
+      }
     },
     {
       "id": "cambridge_apartments_the_milton_2_bed_2_bath",
@@ -1907,7 +2317,12 @@
         "last_checked": "2026-09-29",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "360 Piccadilly Square, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.926717,
+        "lng": -83.343919
+      }
     },
     {
       "id": "campus_crossings_abbey_west_4_bed_4_bath",
@@ -1930,7 +2345,12 @@
         "last_checked": "2026-09-29",
         "notes": "Fees updated. Monthly includes $18 landlord required insurance. Upfront fees unknown. Upfront includes $50 app fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "250 Epps Bridge Pkwy, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.942084,
+        "lng": -83.433082
+      }
     },
     {
       "id": "enclave_425_d1_4_bed_2_bath",
@@ -1953,7 +2373,12 @@
         "last_checked": "2026-09-29",
         "notes": "Fees updated. Upfront includes $150 admin, $60 app. Monthly includes $15.75 damage waiver."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "425 Riverbend Pkwy, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.921608,
+        "lng": -83.366697
+      }
     },
     {
       "id": "flats_at_carrs_hill_3x3",
@@ -1976,7 +2401,12 @@
         "last_checked": "2026-09-29",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Surface lot parking is $45/mo."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "592 Oconee St, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.953019,
+        "lng": -83.366456
+      }
     },
     {
       "id": "ikon_at_athens_4_bedroom",
@@ -1999,7 +2429,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes ~$16 app, ~$33 admin, and $150 signing fee (often waived with specials)."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "314 S Barnett Shoals Rd, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.942518,
+        "lng": -83.354814
+      }
     },
     {
       "id": "lark_athens_4_bed_4_bath",
@@ -2022,7 +2457,12 @@
         "last_checked": "2026-08-26",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Typical base rate for 4x4. Utilities billed via conservice."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "909 E Broad St, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.95951,
+        "lng": -83.368552
+      }
     },
     {
       "id": "polo_club_athens_4_4f",
@@ -2045,7 +2485,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes $50 app fee and $150 lease fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "110 International Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.924104,
+        "lng": -83.345028
+      }
     },
     {
       "id": "polo_club_athens_2_2f",
@@ -2068,7 +2513,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes $50 app fee and $150 lease fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "110 International Dr, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.924104,
+        "lng": -83.345028
+      }
     },
     {
       "id": "river_club_apartments_4x4_classic",
@@ -2091,7 +2541,12 @@
         "last_checked": "2026-08-25",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Starting monthly installment. Water, sewer, trash, furniture, parking, and amenities are included. Contract may be paid in 12 equal monthly installments."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "1005 Macon Hwy, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.911507,
+        "lng": -83.396377
+      }
     },
     {
       "id": "riverbend_club_4x2",
@@ -2114,7 +2569,12 @@
         "last_checked": "2026-09-29",
         "notes": "Fees updated. Upfront includes $25 app/admin fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "355 Riverbend Pkwy, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.925373,
+        "lng": -83.368468
+      }
     },
     {
       "id": "the_connection_at_athens_3_bedroom_3_bath_upgraded",
@@ -2137,7 +2597,12 @@
         "last_checked": "2026-09-29",
         "notes": "Utilities (water, trash, pest, cable, internet) included in base rent. Upfront app/admin fees vary. Upfront costs estimated at $200."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "255 The Preserve Dr, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.946921,
+        "lng": -83.445412
+      }
     },
     {
       "id": "the_haven_of_athens_the_willow_4x4_5",
@@ -2160,7 +2625,12 @@
         "last_checked": "2026-08-25",
         "notes": "Monthly includes $12 valet trash, $13.50 damage waiver. Upfront includes $30 parking registration."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "135 Kentucky Cir, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.942234,
+        "lng": -83.34451
+      }
     },
     {
       "id": "the_lodge_of_athens_2x2_a_classic",
@@ -2183,7 +2653,12 @@
         "last_checked": "2026-09-29",
         "notes": "Upfront includes $150 admin, $50 app, $150 telecom, $35 restoration (excludes $150 refundable deposit). Monthly includes $8.95 credit reporting, $17 insurance."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "211 North Ave, Athens, GA 30601",
+      "coordinates": {
+        "lat": 33.971459,
+        "lng": -83.369666
+      }
     },
     {
       "id": "the_redland_4_bedroom_flat",
@@ -2206,7 +2681,12 @@
         "last_checked": "2026-09-29",
         "notes": "Monthly includes $10 Fetch package, $13.50 damage waiver, $6 valet trash, and $5.50 billing admin fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "505 Riverbend Pkwy, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.918592,
+        "lng": -83.3675
+      }
     },
     {
       "id": "the_redland_2_bedroom_flat",
@@ -2229,7 +2709,12 @@
         "last_checked": "2026-09-29",
         "notes": "Monthly includes $10 Fetch package, $13.50 damage waiver, $6 valet trash, and $5.50 billing admin fee."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "505 Riverbend Pkwy, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.918592,
+        "lng": -83.3675
+      }
     },
     {
       "id": "towne_club_3x3",
@@ -2252,7 +2737,12 @@
         "last_checked": "2026-09-29",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Price per person."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "260 Springdale St, Athens, GA 30606",
+      "coordinates": {
+        "lat": 33.947441,
+        "lng": -83.389602
+      }
     },
     {
       "id": "woodsong_village_4br_cypress",
@@ -2275,7 +2765,12 @@
         "last_checked": "2026-08-25",
         "notes": "Purpose-built student community typically requiring a shuttle or drive to campus. Starting inclusive monthly installment per person/per bed. Base price is $650.00/month. Published starting price includes all mandatory monthly fees, optional and one-time charges are not included."
       },
-      "property_style": "Student Community"
+      "property_style": "Student Community",
+      "address": "100 Woodsong Ave, Athens, GA 30605",
+      "coordinates": {
+        "lat": 33.932652,
+        "lng": -83.339776
+      }
     }
   ]
 }

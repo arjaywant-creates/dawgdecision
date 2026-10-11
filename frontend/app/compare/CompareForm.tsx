@@ -323,6 +323,11 @@ export default function CompareForm({
   const scenarioA = watch("scenario_a");
   const scenarioB = watch("scenario_b");
 
+  const selectedOptionA =
+    sourcedOptions.find((o) => o.id === selectedHousingIdA) || null;
+  const selectedOptionB =
+    sourcedOptions.find((o) => o.id === selectedHousingIdB) || null;
+
   const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
     setServerError(null);
     setResults(null);
@@ -737,7 +742,15 @@ export default function CompareForm({
         </div>
       </div>
 
-      <HousingLocationMap />
+      {/* Interactive Map */}
+      <div className="mt-8 w-full">
+        <HousingLocationMap
+          optionA={selectedOptionA}
+          optionB={selectedOptionB}
+          scenarioAName={scenarioA?.name}
+          scenarioBName={scenarioB?.name}
+        />
+      </div>
     </div>
   );
 }
