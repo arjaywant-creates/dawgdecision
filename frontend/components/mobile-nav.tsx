@@ -31,7 +31,7 @@ export function MobileBottomNav() {
             <li key={item.href} className="flex-1">
               <NextLink
                 className={clsx(
-                  "flex flex-col items-center gap-1 p-2 text-xs transition-colors",
+                  "flex flex-col items-center justify-center w-full gap-1 p-2 text-xs transition-colors",
                   isActive
                     ? "text-accent font-medium"
                     : "text-muted-foreground hover:text-foreground",
