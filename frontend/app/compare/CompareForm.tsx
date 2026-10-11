@@ -43,6 +43,7 @@ import {
 } from "./actions";
 import ScenarioForm from "./ScenarioForm";
 import ComparisonResults from "./ComparisonResults";
+import HousingLocationMap from "./HousingLocationMap";
 
 import { SourcedHousingOption } from "@/types/sourced-housing";
 import SourcedHousingSelector from "@/components/SourcedHousingSelector";
@@ -706,6 +707,8 @@ export default function CompareForm({
           </Surface>
         </div>
       </div>
+
+      <HousingLocationMap />
     </div>
   );
 }
