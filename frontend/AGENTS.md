@@ -42,3 +42,13 @@ This file provides instructions and context for AI coding agents working on the 
    - **Start Local Database**: Run `npx prisma dev` in a dedicated terminal to spin up the persistent Prisma Postgres development server.
    - **Sync Database Schema**: Run `npx prisma db push` to initialize the database tables.
    - **Run Dev Server**: In a new terminal, run `npm run dev`.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
