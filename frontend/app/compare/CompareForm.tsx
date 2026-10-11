@@ -518,8 +518,14 @@ export default function CompareForm({
             </div>
 
             {/* Scenario Forms Container */}
-            <div className="grid gap-6 md:grid-cols-2 w-full">
-              <div className={activeTab === "A" ? "block" : "hidden md:block"}>
+            <div className="grid gap-6 md:grid-cols-2 w-full min-w-0">
+              <div
+                className={
+                  activeTab === "A"
+                    ? "block min-w-0"
+                    : "hidden md:block min-w-0"
+                }
+              >
                 <ScenarioForm
                   control={control}
                   prefix="scenario_a"
@@ -546,7 +552,13 @@ export default function CompareForm({
                 />
               </div>
 
-              <div className={activeTab === "B" ? "block" : "hidden md:block"}>
+              <div
+                className={
+                  activeTab === "B"
+                    ? "block min-w-0"
+                    : "hidden md:block min-w-0"
+                }
+              >
                 <ScenarioForm
                   control={control}
                   prefix="scenario_b"
