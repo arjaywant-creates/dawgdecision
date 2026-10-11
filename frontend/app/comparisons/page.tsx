@@ -1,7 +1,12 @@
 /** React & Next.js */
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import NextLink from "next/link";
+
+export const metadata: Metadata = {
+  title: "My Comparisons",
+};
 
 /** UI Components (HeroUI) */
 import { Card, ToastProvider, Breadcrumbs } from "@heroui/react";
