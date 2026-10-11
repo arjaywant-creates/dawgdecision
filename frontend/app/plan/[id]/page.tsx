@@ -1,5 +1,10 @@
+import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect, notFound } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Plan Details",
+};
 
 import { FinancialPlanDetailClient } from "../FinancialPlanDetailClient";
 

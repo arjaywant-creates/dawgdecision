@@ -25,17 +25,11 @@ The easiest way to start the project (which automatically copies your `.env` fil
 
 Ensure you have Node.js and Python installed, then run:
 
-**Windows:**
 ```bash
 npm start
 ```
-*(This runs everything in the background of your current terminal).*
 
-**Mac/Linux:**
-```bash
-npm run start:unix
-```
-*(This runs everything in the background of your current terminal and cleanly closes them all when you press `Ctrl+C`).*
+*(This cleanly boots up all services, streams the logs, and closes them all gracefully when you press `Ctrl+C`).*
 
 ---
 

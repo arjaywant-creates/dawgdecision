@@ -216,7 +216,10 @@ export default memo(function ScenarioForm({
   ];
 
   return (
-    <Surface className="w-full rounded-2xl shadow-sm p-6" variant="default">
+    <Surface
+      className="w-full rounded-2xl shadow-sm p-6 min-w-0"
+      variant="default"
+    >
       <Fieldset className="w-full">
         <Fieldset.Legend className="text-2xl font-bold">
           {title}

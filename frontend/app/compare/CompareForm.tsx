@@ -163,19 +163,27 @@ export default function CompareForm({
   const setFormData = useCompareStore((state) => state.setFormData);
   const setStoreResults = useCompareStore((state) => state.setResults);
 
-  // Selected housing IDs and functions to save state
-  const selectedHousingIdA = useCompareStore(
-    (state) => state.selectedHousingIdA,
-  );
-  const selectedHousingIdB = useCompareStore(
-    (state) => state.selectedHousingIdB,
-  );
-  const setSelectedHousingIdA = useCompareStore(
+  // Selected housing IDs, isolate edit mode from Zustand
+  const storeHousingIdA = useCompareStore((state) => state.selectedHousingIdA);
+  const storeHousingIdB = useCompareStore((state) => state.selectedHousingIdB);
+  const storeSetSelectedHousingIdA = useCompareStore(
     (state) => state.setSelectedHousingIdA,
   );
-  const setSelectedHousingIdB = useCompareStore(
+  const storeSetSelectedHousingIdB = useCompareStore(
     (state) => state.setSelectedHousingIdB,
   );
+
+  const [editHousingIdA, setEditHousingIdA] = useState("");
+  const [editHousingIdB, setEditHousingIdB] = useState("");
+
+  const selectedHousingIdA = isEditing ? editHousingIdA : storeHousingIdA;
+  const selectedHousingIdB = isEditing ? editHousingIdB : storeHousingIdB;
+  const setSelectedHousingIdA = isEditing
+    ? setEditHousingIdA
+    : storeSetSelectedHousingIdA;
+  const setSelectedHousingIdB = isEditing
+    ? setEditHousingIdB
+    : storeSetSelectedHousingIdB;
 
   const clearStore = useCompareStore((state) => state.clearStore);
 
@@ -315,6 +323,11 @@ export default function CompareForm({
   const scenarioA = watch("scenario_a");
   const scenarioB = watch("scenario_b");
 
+  const selectedOptionA =
+    sourcedOptions.find((o) => o.id === selectedHousingIdA) || null;
+  const selectedOptionB =
+    sourcedOptions.find((o) => o.id === selectedHousingIdB) || null;
+
   const onSubmit: SubmitHandler<CompareRequest> = async (data) => {
     setServerError(null);
     setResults(null);
@@ -376,11 +389,20 @@ export default function CompareForm({
     setServerError(null);
     setSaveSuccess(false);
     clearStore();
+    setSelectedHousingIdA("");
+    setSelectedHousingIdB("");
 
     if (comparisonId) {
       router.push("/compare");
     }
-  }, [reset, setFormData, setStoreResults, comparisonId, router]);
+  }, [
+    reset,
+    clearStore,
+    comparisonId,
+    router,
+    setSelectedHousingIdA,
+    setSelectedHousingIdB,
+  ]);
 
   const handleSave = useCallback(async () => {
     if (!session || !results) return;
@@ -501,8 +523,14 @@ export default function CompareForm({
             </div>
 
             {/* Scenario Forms Container */}
-            <div className="grid gap-6 md:grid-cols-2 w-full">
-              <div className={activeTab === "A" ? "block" : "hidden md:block"}>
+            <div className="grid gap-6 md:grid-cols-2 w-full min-w-0">
+              <div
+                className={
+                  activeTab === "A"
+                    ? "block min-w-0"
+                    : "hidden md:block min-w-0"
+                }
+              >
                 <ScenarioForm
                   control={control}
                   prefix="scenario_a"
@@ -529,7 +557,13 @@ export default function CompareForm({
                 />
               </div>
 
-              <div className={activeTab === "B" ? "block" : "hidden md:block"}>
+              <div
+                className={
+                  activeTab === "B"
+                    ? "block min-w-0"
+                    : "hidden md:block min-w-0"
+                }
+              >
                 <ScenarioForm
                   control={control}
                   prefix="scenario_b"
@@ -708,7 +742,15 @@ export default function CompareForm({
         </div>
       </div>
 
-      <HousingLocationMap />
+      {/* Interactive Map */}
+      <div className="mt-8 w-full">
+        <HousingLocationMap
+          optionA={selectedOptionA}
+          optionB={selectedOptionB}
+          scenarioAName={scenarioA?.name}
+          scenarioBName={scenarioB?.name}
+        />
+      </div>
     </div>
   );
 }

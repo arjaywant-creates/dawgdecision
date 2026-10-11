@@ -1,5 +1,10 @@
 /** React & Next.js */
+import { Metadata } from "next";
 import { headers } from "next/headers";
+
+export const metadata: Metadata = {
+  title: "Compare Housing",
+};
 
 /** Local Components */
 import CompareForm from "./CompareForm";

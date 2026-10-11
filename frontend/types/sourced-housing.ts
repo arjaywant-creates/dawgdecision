@@ -24,6 +24,14 @@ export const SourcedHousingOptionSchema = z.object({
   upfront_costs: z.number().nullable(),
   commute_minutes: z.number().nullable(),
   source: SourceMetadataSchema,
+  address: z.string().nullable().optional(),
+  coordinates: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export type SourcedHousingOption = z.infer<typeof SourcedHousingOptionSchema>;

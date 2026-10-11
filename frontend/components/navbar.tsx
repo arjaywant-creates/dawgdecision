@@ -55,7 +55,7 @@ export const Navbar = () => {
                   >
                     <NextLink
                       className={clsx(
-                        "text-sm font-medium transition-colors",
+                        "flex items-center h-full text-sm font-medium transition-colors",
                         isActive
                           ? "text-foreground"
                           : "text-default-500 hover:text-foreground",

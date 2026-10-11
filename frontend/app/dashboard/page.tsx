@@ -1,6 +1,11 @@
 /** React & Next.js */
+import { Metadata } from "next";
 import NextLink from "next/link";
 import { headers } from "next/headers";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 /** UI Components (HeroUI) */
 import { Card } from "@heroui/react";

@@ -1,7 +1,12 @@
 /** React & Next.js */
+import { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import NextLink from "next/link";
+
+export const metadata: Metadata = {
+  title: "Financial Plans",
+};
 
 /** UI Components */
 import { Card, Breadcrumbs } from "@heroui/react";
