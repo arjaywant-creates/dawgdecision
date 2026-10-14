@@ -111,14 +111,32 @@ export default async function Home() {
             </div>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {comparisons.map((comp) => (
-              <ComparisonCard
-                key={comp.id}
-                comp={comp}
-                onDelete={deleteComparisonAction}
-              />
-            ))}
+          <div className="flex flex-col gap-4">
+            <div className="grid gap-6 md:grid-cols-2">
+              {comparisons.map((comp) => (
+                <ComparisonCard
+                  key={comp.id}
+                  comp={comp}
+                  onDelete={deleteComparisonAction}
+                />
+              ))}
+            </div>
+
+            {comparisonCount > comparisons.length && (
+              <div className="flex items-center justify-center pt-2">
+                <NextLink
+                  className="button button--tertiary"
+                  href="/comparisons"
+                >
+                  <span>
+                    +{comparisonCount - comparisons.length} more saved
+                    comparison
+                    {comparisonCount - comparisons.length === 1 ? "" : "s"}
+                  </span>
+                  <ArrowRight className="size-4" />
+                </NextLink>
+              </div>
+            )}
           </div>
         )}
       </div>

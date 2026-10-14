@@ -12,9 +12,7 @@ import {
   Form,
   Alert,
   CloseButton,
-  Toast,
   Breadcrumbs,
-  toast,
   Surface,
   Tabs,
 } from "@heroui/react";
@@ -59,6 +57,8 @@ import {
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
+
+import { toast } from "@/lib/toast";
 
 import posthog from "posthog-js";
 
@@ -157,8 +157,16 @@ export default function CompareForm({
   sourcedOptions,
   apiError,
 }: Props) {
-  /** Convert to boolean using !! to ensure strict boolean type for edit mode */
-  const isEditing = !!comparisonId && !!initialComparison;
+  const [activeComparisonId, setActiveComparisonId] = useState<string | null>(
+    comparisonId ?? null,
+  );
+
+  useEffect(() => {
+    setActiveComparisonId(comparisonId ?? null);
+  }, [comparisonId]);
+
+  /** True if we have an active comparison ID being edited or newly saved */
+  const isEditing = Boolean(activeComparisonId);
 
   const setFormData = useCompareStore((state) => state.setFormData);
   const setStoreResults = useCompareStore((state) => state.setResults);
@@ -366,13 +374,7 @@ export default function CompareForm({
         errorMessage = error.message;
       }
       setServerError(errorMessage);
-      toast.danger(errorMessage, {
-        actionProps: {
-          children: "Dismiss",
-          onPress: () => toast.clear(),
-          variant: "danger-soft",
-        },
-      });
+      toast.danger(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -391,14 +393,17 @@ export default function CompareForm({
     clearStore();
     setSelectedHousingIdA("");
     setSelectedHousingIdB("");
+    const hadId = Boolean(activeComparisonId);
 
-    if (comparisonId) {
+    setActiveComparisonId(null);
+
+    if (hadId) {
       router.push("/compare");
     }
   }, [
     reset,
     clearStore,
-    comparisonId,
+    activeComparisonId,
     router,
     setSelectedHousingIdA,
     setSelectedHousingIdB,
@@ -414,9 +419,9 @@ export default function CompareForm({
 
     try {
       const response =
-        isEditing && comparisonId
+        isEditing && activeComparisonId
           ? await updateComparisonAction(
-              comparisonId,
+              activeComparisonId,
               formData.scenario_a,
               formData.scenario_b,
               results,
@@ -428,6 +433,10 @@ export default function CompareForm({
             );
 
       if (response.success) {
+        if (!isEditing && response.data?.id) {
+          setActiveComparisonId(response.data.id);
+          router.replace(`/compare?id=${response.data.id}`, { scroll: false });
+        }
         // Track comparison saved event with PostHog
         posthog.capture("comparison_saved", {
           scenario_a_name: formData.scenario_a.name,
@@ -448,12 +457,10 @@ export default function CompareForm({
     } finally {
       setIsSaving(false);
     }
-  }, [session, results, isEditing, comparisonId, getValues]);
+  }, [session, results, isEditing, activeComparisonId, getValues]);
 
   return (
     <div className="pb-12">
-      <Toast.Provider />
-
       <Breadcrumbs className="mb-4">
         <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
         <Breadcrumbs.Item>

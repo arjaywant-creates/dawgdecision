@@ -6,12 +6,14 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 
 /** UI Components */
-import { Button, Dropdown, Toast, toast, AlertDialog } from "@heroui/react";
+import { Button, Dropdown, AlertDialog } from "@heroui/react";
 
 import { ExternalLink, RefreshCw, Trash } from "lucide-react";
 
 /** Local Actions */
 import { deleteFinancialPlanAction } from "./actions";
+
+import { toast } from "@/lib/toast";
 
 interface Props {
   planId: string;
@@ -69,90 +71,113 @@ export function FinancialPlanActions({
   };
 
   return (
-    <>
-      <Toast.Provider />
+    <div className="flex items-center gap-2 flex-wrap">
+      <NextLink
+        aria-label="View comparison"
+        className="button button--tertiary"
+        href={`/compare?id=${comparisonId}`}
+      >
+        <ExternalLink className="size-4" />
+        View Comparison
+      </NextLink>
 
-      <div className="flex gap-2 items-center flex-wrap mt-4">
-        <NextLink
-          className="button button--secondary button--sm"
-          href={`/compare?id=${comparisonId}`}
+      <Dropdown>
+        <Button variant="tertiary">
+          <RefreshCw className="size-4" />
+          Switch Option
+        </Button>
+
+        <Dropdown.Popover className="min-w-[280px] sm:min-w-[320px] p-1">
+          <div className="px-3 pt-2 pb-1.5 text-xs font-semibold text-default-500">
+            Switch Displayed Option
+          </div>
+          <Dropdown.Menu onAction={(key) => handleSwitch(key as "A" | "B")}>
+            <Dropdown.Item
+              id="A"
+              isDisabled={viewingScenario === "A"}
+              textValue={scenarioAName}
+            >
+              <div className="flex flex-col gap-0.5 py-1 w-full text-left">
+                <span className="text-sm font-medium text-foreground leading-snug">
+                  {scenarioAName}
+                </span>
+                <span className="text-xs text-default-500">
+                  {viewingScenario === "A"
+                    ? "Currently viewing"
+                    : "Switch to this option"}
+                </span>
+              </div>
+            </Dropdown.Item>
+
+            <Dropdown.Item
+              id="B"
+              isDisabled={viewingScenario === "B"}
+              textValue={scenarioBName}
+            >
+              <div className="flex flex-col gap-0.5 py-1 w-full text-left">
+                <span className="text-sm font-medium text-foreground leading-snug">
+                  {scenarioBName}
+                </span>
+                <span className="text-xs text-default-500">
+                  {viewingScenario === "B"
+                    ? "Currently viewing"
+                    : "Switch to this option"}
+                </span>
+              </div>
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown.Popover>
+      </Dropdown>
+
+      <AlertDialog>
+        <Button
+          aria-label="Remove from financial plan"
+          className="min-w-0 px-2.5 text-xs gap-1.5"
+          size="sm"
+          variant="danger"
         >
-          <ExternalLink className="size-4" />
-          View Comparison
-        </NextLink>
+          <Trash className="size-3.5" />
+          Remove
+        </Button>
 
-        <Dropdown>
-          <Button size="sm" variant="secondary">
-            <RefreshCw className="size-4" />
-            Switch Option
-          </Button>
+        <AlertDialog.Backdrop>
+          <AlertDialog.Container>
+            <AlertDialog.Dialog>
+              <AlertDialog.CloseTrigger />
 
-          <Dropdown.Popover>
-            <Dropdown.Menu onAction={(key) => handleSwitch(key as "A" | "B")}>
-              <Dropdown.Item
-                id="A"
-                isDisabled={viewingScenario === "A"}
-                textValue={scenarioAName}
-              >
-                {scenarioAName}
-              </Dropdown.Item>
+              <AlertDialog.Header>
+                <AlertDialog.Icon status="danger" />
 
-              <Dropdown.Item
-                id="B"
-                isDisabled={viewingScenario === "B"}
-                textValue={scenarioBName}
-              >
-                {scenarioBName}
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown.Popover>
-        </Dropdown>
+                <AlertDialog.Heading>
+                  Remove from Financial Plan?
+                </AlertDialog.Heading>
+              </AlertDialog.Header>
 
-        <AlertDialog>
-          <Button aria-label="Remove" size="sm" variant="danger">
-            <Trash className="size-4" />
-            Remove
-          </Button>
+              <AlertDialog.Body>
+                <p>
+                  This will remove this housing selection from your Financial
+                  Plan. Your saved comparison will not be deleted.
+                </p>
+              </AlertDialog.Body>
 
-          <AlertDialog.Backdrop>
-            <AlertDialog.Container>
-              <AlertDialog.Dialog className="sm:max-w-[400px]">
-                <AlertDialog.CloseTrigger />
+              <AlertDialog.Footer>
+                <Button slot="close" variant="tertiary">
+                  Cancel
+                </Button>
 
-                <AlertDialog.Header>
-                  <AlertDialog.Icon status="danger" />
-
-                  <AlertDialog.Heading>
-                    Remove from Financial Plan?
-                  </AlertDialog.Heading>
-                </AlertDialog.Header>
-
-                <AlertDialog.Body>
-                  <p>
-                    This will remove this housing selection from your Financial
-                    Plan. Your saved comparison will not be deleted.
-                  </p>
-                </AlertDialog.Body>
-
-                <AlertDialog.Footer>
-                  <Button slot="close" variant="tertiary">
-                    Cancel
-                  </Button>
-
-                  <Button
-                    isPending={isRemoving}
-                    slot="close"
-                    variant="danger"
-                    onPress={handleRemove}
-                  >
-                    Remove
-                  </Button>
-                </AlertDialog.Footer>
-              </AlertDialog.Dialog>
-            </AlertDialog.Container>
-          </AlertDialog.Backdrop>
-        </AlertDialog>
-      </div>
-    </>
+                <Button
+                  isPending={isRemoving}
+                  slot="close"
+                  variant="danger"
+                  onPress={handleRemove}
+                >
+                  Remove
+                </Button>
+              </AlertDialog.Footer>
+            </AlertDialog.Dialog>
+          </AlertDialog.Container>
+        </AlertDialog.Backdrop>
+      </AlertDialog>
+    </div>
   );
 }
