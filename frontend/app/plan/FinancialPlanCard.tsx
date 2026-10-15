@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import NextLink from "next/link";
+import clsx from "clsx";
 
-import { Card, Button, AlertDialog, Tooltip } from "@heroui/react";
+import { Card, Button, AlertDialog, Tooltip, Spinner } from "@heroui/react";
 
 import { Trash, ExternalLink, Eye } from "lucide-react";
 
@@ -30,6 +31,7 @@ interface FinancialPlanCardProps {
 
 export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -38,6 +40,7 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
 
       if (result.success) {
         toast.success("Financial plan deleted successfully!");
+        setIsAlertOpen(false);
       } else {
         toast.danger(result.error || "Failed to delete plan.");
       }
@@ -105,7 +108,10 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
       <Card.Footer className="flex items-center justify-end gap-2 pt-2 mt-auto">
         <NextLink
           aria-label="View plan"
-          className="button button--outline button--sm border-default-200 font-medium text-sm gap-1.5"
+          className={clsx(
+            "button button--outline button--sm border-default-200 font-medium text-sm gap-1.5",
+            isDeleting && "pointer-events-none opacity-50",
+          )}
           href={`/plan/${plan.id}`}
         >
           <Eye className="size-3.5" />
@@ -114,21 +120,26 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
 
         <NextLink
           aria-label="Open comparison"
-          className="button button--outline button--sm border-default-200 font-medium text-sm gap-1.5"
+          className={clsx(
+            "button button--outline button--sm border-default-200 font-medium text-sm gap-1.5",
+            isDeleting && "pointer-events-none opacity-50",
+          )}
           href={`/compare?id=${plan.comparisonId}`}
         >
           <ExternalLink className="size-3.5" />
           Comparison
         </NextLink>
 
-        <AlertDialog>
+        <AlertDialog isOpen={isAlertOpen} onOpenChange={setIsAlertOpen}>
           <Tooltip delay={0}>
             <Tooltip.Trigger>
               <Button
                 isIconOnly
                 aria-label="Delete plan"
+                isDisabled={isDeleting}
                 size="sm"
                 variant="danger"
+                onPress={() => setIsAlertOpen(true)}
               >
                 <Trash className="size-4" />
               </Button>
@@ -139,10 +150,11 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
           <AlertDialog.Backdrop>
             <AlertDialog.Container>
               <AlertDialog.Dialog>
-                <AlertDialog.CloseTrigger />
+                <AlertDialog.CloseTrigger isDisabled={isDeleting} />
 
                 <AlertDialog.Header>
                   <AlertDialog.Icon status="danger" />
+
                   <AlertDialog.Heading>
                     Delete Financial Plan?
                   </AlertDialog.Heading>
@@ -157,17 +169,26 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
                 </AlertDialog.Body>
 
                 <AlertDialog.Footer>
-                  <Button slot="close" variant="tertiary">
+                  <Button
+                    isDisabled={isDeleting}
+                    slot="close"
+                    variant="tertiary"
+                  >
                     Cancel
                   </Button>
 
                   <Button
+                    isDisabled={isDeleting}
                     isPending={isDeleting}
-                    slot="close"
                     variant="danger"
                     onPress={handleDelete}
                   >
-                    Delete
+                    {({ isPending }) => (
+                      <>
+                        {isPending && <Spinner color="current" size="sm" />}
+                        {isPending ? "Deleting..." : "Delete"}
+                      </>
+                    )}
                   </Button>
                 </AlertDialog.Footer>
               </AlertDialog.Dialog>

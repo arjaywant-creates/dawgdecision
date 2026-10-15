@@ -4,8 +4,16 @@ import { useState } from "react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
+import clsx from "clsx";
 
-import { Card, Button, AlertDialog, Dropdown, Tooltip } from "@heroui/react";
+import {
+  Card,
+  Button,
+  AlertDialog,
+  Dropdown,
+  Tooltip,
+  Spinner,
+} from "@heroui/react";
 
 import { Trash, ExternalLink, Plus } from "lucide-react";
 
@@ -28,6 +36,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -36,6 +45,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
 
       if (result.success) {
         toast.success("Comparison deleted successfully!");
+        setIsAlertOpen(false);
       } else {
         toast.danger(result.error || "Failed to delete comparison.");
       }
@@ -82,6 +92,8 @@ export function ComparisonCard({ comp, onDelete }: Props) {
     comp.secondScenario?.housingCost !== null
       ? comp.secondScenario.housingCost / periodB
       : null;
+
+  const isBusy = isDeleting || isAdding;
 
   return (
     <Card className="transition-colors h-full min-w-0 flex flex-col">
@@ -137,7 +149,10 @@ export function ComparisonCard({ comp, onDelete }: Props) {
       <Card.Footer className="flex items-center justify-end gap-2 pt-2 mt-auto">
         <NextLink
           aria-label="Open comparison"
-          className="button button--outline button--sm border-default-200 font-medium text-sm gap-1.5"
+          className={clsx(
+            "button button--outline button--sm border-default-200 font-medium text-sm gap-1.5",
+            isBusy && "pointer-events-none opacity-50",
+          )}
           href={`/compare?id=${comp.id}`}
         >
           <ExternalLink className="size-3.5" />
@@ -147,12 +162,21 @@ export function ComparisonCard({ comp, onDelete }: Props) {
         <Dropdown>
           <Button
             className="border-default-200 font-medium text-sm gap-1.5"
+            isDisabled={isBusy}
             isPending={isAdding}
             size="sm"
             variant="outline"
           >
-            <Plus className="size-3.5" />
-            Add to Plan
+            {({ isPending }) => (
+              <>
+                {isPending ? (
+                  <Spinner color="current" size="sm" />
+                ) : (
+                  <Plus className="size-3.5" />
+                )}
+                {isPending ? "Adding..." : "Add to Plan"}
+              </>
+            )}
           </Button>
           <Dropdown.Popover className="min-w-[280px] sm:min-w-[320px] p-1">
             <div className="px-3 pt-2 pb-1.5 text-xs font-semibold text-default-500">
@@ -163,6 +187,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
             >
               <Dropdown.Item
                 id="A"
+                isDisabled={isBusy}
                 textValue={comp.firstScenario?.name || "Option A"}
               >
                 <div className="flex flex-col gap-0.5 py-1 w-full text-left">
@@ -181,6 +206,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
               </Dropdown.Item>
               <Dropdown.Item
                 id="B"
+                isDisabled={isBusy}
                 textValue={comp.secondScenario?.name || "Option B"}
               >
                 <div className="flex flex-col gap-0.5 py-1 w-full text-left">
@@ -201,14 +227,16 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           </Dropdown.Popover>
         </Dropdown>
 
-        <AlertDialog>
+        <AlertDialog isOpen={isAlertOpen} onOpenChange={setIsAlertOpen}>
           <Tooltip delay={0}>
             <Tooltip.Trigger>
               <Button
                 isIconOnly
                 aria-label="Delete comparison"
+                isDisabled={isBusy}
                 size="sm"
                 variant="danger"
+                onPress={() => setIsAlertOpen(true)}
               >
                 <Trash className="size-4" />
               </Button>
@@ -218,7 +246,7 @@ export function ComparisonCard({ comp, onDelete }: Props) {
           <AlertDialog.Backdrop>
             <AlertDialog.Container>
               <AlertDialog.Dialog>
-                <AlertDialog.CloseTrigger />
+                <AlertDialog.CloseTrigger isDisabled={isDeleting} />
                 <AlertDialog.Header>
                   <AlertDialog.Icon status="danger" />
                   <AlertDialog.Heading>
@@ -235,16 +263,25 @@ export function ComparisonCard({ comp, onDelete }: Props) {
                   </p>
                 </AlertDialog.Body>
                 <AlertDialog.Footer>
-                  <Button slot="close" variant="tertiary">
+                  <Button
+                    isDisabled={isDeleting}
+                    slot="close"
+                    variant="tertiary"
+                  >
                     Cancel
                   </Button>
                   <Button
+                    isDisabled={isDeleting}
                     isPending={isDeleting}
-                    slot="close"
                     variant="danger"
                     onPress={handleDelete}
                   >
-                    Delete
+                    {({ isPending }) => (
+                      <>
+                        {isPending && <Spinner color="current" size="sm" />}
+                        {isPending ? "Deleting..." : "Delete"}
+                      </>
+                    )}
                   </Button>
                 </AlertDialog.Footer>
               </AlertDialog.Dialog>

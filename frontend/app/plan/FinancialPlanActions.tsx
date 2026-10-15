@@ -6,7 +6,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 
 /** UI Components */
-import { Button, Dropdown, AlertDialog } from "@heroui/react";
+import { Button, Dropdown, AlertDialog, Spinner } from "@heroui/react";
 
 import { ExternalLink, RefreshCw, Trash } from "lucide-react";
 
@@ -42,6 +42,7 @@ export function FinancialPlanActions({
   const router = useRouter();
 
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   const handleSwitch = (key: "A" | "B") => {
     onSwitch(key);
@@ -60,7 +61,7 @@ export function FinancialPlanActions({
       }
 
       toast.success("Removed from Financial Plan");
-
+      setIsAlertOpen(false);
       router.push("/plan");
       router.refresh();
     } catch (e: any) {
@@ -129,12 +130,14 @@ export function FinancialPlanActions({
         </Dropdown.Popover>
       </Dropdown>
 
-      <AlertDialog>
+      <AlertDialog isOpen={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <Button
           aria-label="Remove from financial plan"
           className="min-w-0 px-2.5 text-xs gap-1.5"
+          isDisabled={isRemoving}
           size="sm"
           variant="danger"
+          onPress={() => setIsAlertOpen(true)}
         >
           <Trash className="size-3.5" />
           Remove
@@ -143,7 +146,7 @@ export function FinancialPlanActions({
         <AlertDialog.Backdrop>
           <AlertDialog.Container>
             <AlertDialog.Dialog>
-              <AlertDialog.CloseTrigger />
+              <AlertDialog.CloseTrigger isDisabled={isRemoving} />
 
               <AlertDialog.Header>
                 <AlertDialog.Icon status="danger" />
@@ -161,17 +164,22 @@ export function FinancialPlanActions({
               </AlertDialog.Body>
 
               <AlertDialog.Footer>
-                <Button slot="close" variant="tertiary">
+                <Button isDisabled={isRemoving} slot="close" variant="tertiary">
                   Cancel
                 </Button>
 
                 <Button
+                  isDisabled={isRemoving}
                   isPending={isRemoving}
-                  slot="close"
                   variant="danger"
                   onPress={handleRemove}
                 >
-                  Remove
+                  {({ isPending }) => (
+                    <>
+                      {isPending && <Spinner color="current" size="sm" />}
+                      {isPending ? "Removing..." : "Remove"}
+                    </>
+                  )}
                 </Button>
               </AlertDialog.Footer>
             </AlertDialog.Dialog>

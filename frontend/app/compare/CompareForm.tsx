@@ -9,6 +9,7 @@ import NextLink from "next/link";
 import {
   Button,
   Spinner,
+  Skeleton,
   Form,
   Alert,
   CloseButton,
@@ -625,6 +626,7 @@ export default function CompareForm({
 
               <Button
                 className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
+                isDisabled={loading}
                 size="lg"
                 type="button"
                 variant="secondary"
@@ -641,7 +643,7 @@ export default function CompareForm({
         <div
           className={clsx(
             "lg:col-span-4 min-w-0",
-            !results && "hidden lg:block",
+            !results && !loading && "hidden lg:block",
           )}
         >
           <Surface
@@ -650,7 +652,88 @@ export default function CompareForm({
           >
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
-              {results ? (
+              {loading ? (
+                <div
+                  aria-busy="true"
+                  aria-live="polite"
+                  className="flex flex-col flex-1 gap-5 py-4 animate-in fade-in duration-200"
+                >
+                  <div className="flex flex-col items-center text-center pb-4 border-b border-separator/30">
+                    <h3 className="inline-flex items-center gap-2 px-3 py-1.5 text-lg font-bold text-foreground">
+                      <Spinner color="current" size="sm" />
+                      Analyzing Scenarios...
+                    </h3>
+                    <p className="text-xs text-default-500 mt-1 max-w-[280px]">
+                      Calculating true monthly costs, fee schedules, and
+                      financial tradeoffs between options.
+                    </p>
+                  </div>
+
+                  {/* Shimmering cards */}
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-xl border border-separator/30 bg-default-50/50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-32 rounded"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-16 rounded"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl border border-separator/30 bg-default-50/50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-36 rounded"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-20 rounded"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl border border-separator/20 bg-default-50/30 space-y-2">
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3.5 w-28 rounded"
+                      />
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3 w-full rounded"
+                      />
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3 w-4/5 rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : results ? (
                 <>
                   <ComparisonResults
                     results={results}
@@ -670,7 +753,7 @@ export default function CompareForm({
                         )}
                         <Button
                           className="w-full font-semibold shadow-sm"
-                          isDisabled={saveSuccess || isDirty}
+                          isDisabled={saveSuccess || isDirty || isSaving}
                           isPending={isSaving}
                           size="lg"
                           variant={isDirty ? "secondary" : "primary"}
