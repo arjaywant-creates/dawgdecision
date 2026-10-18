@@ -413,7 +413,7 @@ export function FinancialPlanDetailClient({
                         </strong>
                         <span>
                           {selected.name} covers {selected.contractMonths}{" "}
-                          months vs. {alternative.name}'s{" "}
+                          months vs. {alternative.name}&apos;s{" "}
                           {alternative.contractMonths} months (
                           {Math.abs(contractLengthDifference)} month
                           {Math.abs(contractLengthDifference) !== 1
