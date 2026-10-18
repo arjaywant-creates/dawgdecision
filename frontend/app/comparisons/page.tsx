@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 /** UI Components (HeroUI) */
-import { Card, ToastProvider, Breadcrumbs } from "@heroui/react";
+import { Card, Breadcrumbs } from "@heroui/react";
 import { Plus } from "lucide-react";
 
 /** Auth & Database */
@@ -44,7 +44,6 @@ export default async function SavedComparisonsPage() {
 
   return (
     <div className="pb-12">
-      <ToastProvider />
       <Breadcrumbs className="mb-4">
         <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
         <Breadcrumbs.Item>Saved Comparisons</Breadcrumbs.Item>

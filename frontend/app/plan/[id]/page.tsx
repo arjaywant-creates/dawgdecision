@@ -100,6 +100,15 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
         monthlyDelta: impactA.monthly_commitment_delta,
         upfrontDelta: impactA.upfront_commitment_delta,
         termDelta: impactA.term_commitment_delta,
+        breakEvenMonths: impactA.break_even_months,
+        approximateDailyDelta: impactA.approximate_daily_delta,
+        commuteDelta: impactA.commute_delta,
+        commuteMinutesSaved: impactA.commute_minutes_saved,
+        extraMonthlyCostForShorterCommute:
+          impactA.extra_monthly_cost_for_shorter_commute,
+        largestCostIncrease: impactA.largest_cost_increase,
+        largestCostOffset: impactA.largest_cost_offset,
+        missingRecurringCosts: resultA.missing_recurring_costs,
       }}
       scenarioB={{
         name: scenarioB.name,
@@ -111,6 +120,15 @@ export default async function FinancialPlanDetailPage({ params }: Props) {
         monthlyDelta: impactB.monthly_commitment_delta,
         upfrontDelta: impactB.upfront_commitment_delta,
         termDelta: impactB.term_commitment_delta,
+        breakEvenMonths: impactB.break_even_months,
+        approximateDailyDelta: impactB.approximate_daily_delta,
+        commuteDelta: impactB.commute_delta,
+        commuteMinutesSaved: impactB.commute_minutes_saved,
+        extraMonthlyCostForShorterCommute:
+          impactB.extra_monthly_cost_for_shorter_commute,
+        largestCostIncrease: impactB.largest_cost_increase,
+        largestCostOffset: impactB.largest_cost_offset,
+        missingRecurringCosts: resultB.missing_recurring_costs,
       }}
     />
   );

@@ -9,12 +9,11 @@ import NextLink from "next/link";
 import {
   Button,
   Spinner,
+  Skeleton,
   Form,
   Alert,
   CloseButton,
-  Toast,
   Breadcrumbs,
-  toast,
   Surface,
   Tabs,
 } from "@heroui/react";
@@ -59,6 +58,8 @@ import {
 } from "@/types/comparison";
 import { useSession } from "@/lib/auth-client";
 import { useCompareStore } from "@/lib/store/useCompareStore";
+
+import { toast } from "@/lib/toast";
 
 import posthog from "posthog-js";
 
@@ -157,8 +158,16 @@ export default function CompareForm({
   sourcedOptions,
   apiError,
 }: Props) {
-  /** Convert to boolean using !! to ensure strict boolean type for edit mode */
-  const isEditing = !!comparisonId && !!initialComparison;
+  const [activeComparisonId, setActiveComparisonId] = useState<string | null>(
+    comparisonId ?? null,
+  );
+
+  useEffect(() => {
+    setActiveComparisonId(comparisonId ?? null);
+  }, [comparisonId]);
+
+  /** True if we have an active comparison ID being edited or newly saved */
+  const isEditing = Boolean(activeComparisonId);
 
   const setFormData = useCompareStore((state) => state.setFormData);
   const setStoreResults = useCompareStore((state) => state.setResults);
@@ -224,7 +233,8 @@ export default function CompareForm({
     name: `${housing.property_name} - ${housing.configuration}`,
     housing_cost: housing.housing_cost ?? ("" as any),
     cost_period_months: housing.cost_period_months ?? ("" as any),
-    contract_months: housing.contract_months ?? ("" as any),
+    contract_months:
+      housing.contract_months ?? (housing.category === "on_campus" ? 8 : 12),
     utilities: housing.utilities ?? ("" as any),
     mandatory_fees: housing.mandatory_fees ?? ("" as any),
     parking: housing.parking ?? ("" as any),
@@ -366,13 +376,7 @@ export default function CompareForm({
         errorMessage = error.message;
       }
       setServerError(errorMessage);
-      toast.danger(errorMessage, {
-        actionProps: {
-          children: "Dismiss",
-          onPress: () => toast.clear(),
-          variant: "danger-soft",
-        },
-      });
+      toast.danger(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -391,14 +395,17 @@ export default function CompareForm({
     clearStore();
     setSelectedHousingIdA("");
     setSelectedHousingIdB("");
+    const hadId = Boolean(activeComparisonId);
 
-    if (comparisonId) {
+    setActiveComparisonId(null);
+
+    if (hadId) {
       router.push("/compare");
     }
   }, [
     reset,
     clearStore,
-    comparisonId,
+    activeComparisonId,
     router,
     setSelectedHousingIdA,
     setSelectedHousingIdB,
@@ -414,9 +421,9 @@ export default function CompareForm({
 
     try {
       const response =
-        isEditing && comparisonId
+        isEditing && activeComparisonId
           ? await updateComparisonAction(
-              comparisonId,
+              activeComparisonId,
               formData.scenario_a,
               formData.scenario_b,
               results,
@@ -428,6 +435,10 @@ export default function CompareForm({
             );
 
       if (response.success) {
+        if (!isEditing && response.data?.id) {
+          setActiveComparisonId(response.data.id);
+          router.replace(`/compare?id=${response.data.id}`, { scroll: false });
+        }
         // Track comparison saved event with PostHog
         posthog.capture("comparison_saved", {
           scenario_a_name: formData.scenario_a.name,
@@ -448,12 +459,10 @@ export default function CompareForm({
     } finally {
       setIsSaving(false);
     }
-  }, [session, results, isEditing, comparisonId, getValues]);
+  }, [session, results, isEditing, activeComparisonId, getValues]);
 
   return (
     <div className="pb-12">
-      <Toast.Provider />
-
       <Breadcrumbs className="mb-4">
         <Breadcrumbs.Item href="/dashboard">Dashboard</Breadcrumbs.Item>
         <Breadcrumbs.Item>
@@ -618,6 +627,7 @@ export default function CompareForm({
 
               <Button
                 className="font-semibold w-full sm:w-auto md:w-max shadow-sm px-8"
+                isDisabled={loading}
                 size="lg"
                 type="button"
                 variant="secondary"
@@ -634,7 +644,7 @@ export default function CompareForm({
         <div
           className={clsx(
             "lg:col-span-4 min-w-0",
-            !results && "hidden lg:block",
+            !results && !loading && "hidden lg:block",
           )}
         >
           <Surface
@@ -643,9 +653,91 @@ export default function CompareForm({
           >
             {/* Results Content Body */}
             <div className="p-5 flex flex-col flex-1">
-              {results ? (
+              {loading ? (
+                <div
+                  aria-busy="true"
+                  aria-live="polite"
+                  className="flex flex-col flex-1 gap-5 py-4 animate-in fade-in duration-200"
+                >
+                  <div className="flex flex-col items-center text-center pb-4 border-b border-separator/30">
+                    <h3 className="inline-flex items-center gap-2 px-3 py-1.5 text-lg font-bold text-foreground">
+                      <Spinner color="current" size="sm" />
+                      Analyzing Scenarios...
+                    </h3>
+                    <p className="text-xs text-default-500 mt-1 max-w-[280px]">
+                      Calculating true monthly costs, fee schedules, and
+                      financial tradeoffs between options.
+                    </p>
+                  </div>
+
+                  {/* Shimmering cards */}
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-xl border border-separator/30 bg-default-50/50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-32 rounded"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-16 rounded"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl border border-separator/30 bg-default-50/50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-36 rounded"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-4 w-20 rounded"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                        <Skeleton
+                          animationType="shimmer"
+                          className="h-7 w-full rounded-lg"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-xl border border-separator/20 bg-default-50/30 space-y-2">
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3.5 w-28 rounded"
+                      />
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3 w-full rounded"
+                      />
+                      <Skeleton
+                        animationType="shimmer"
+                        className="h-3 w-4/5 rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : results ? (
                 <>
                   <ComparisonResults
+                    isDirty={isDirty}
                     results={results}
                     scenarioA={scenarioA}
                     scenarioB={scenarioB}
@@ -663,7 +755,7 @@ export default function CompareForm({
                         )}
                         <Button
                           className="w-full font-semibold shadow-sm"
-                          isDisabled={saveSuccess || isDirty}
+                          isDisabled={saveSuccess || isDirty || isSaving}
                           isPending={isSaving}
                           size="lg"
                           variant={isDirty ? "secondary" : "primary"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Dropdown, Avatar, Label } from "@heroui/react";
+import { Button, Dropdown, Avatar, Label, Skeleton } from "@heroui/react";
 import { LogOut, LayoutDashboard } from "lucide-react";
 
 import clsx from "clsx";
@@ -78,7 +78,10 @@ export const Navbar = () => {
 
             {isPending ? (
               <div className="flex gap-2 items-center ml-2">
-                <div className="w-8 h-8 rounded-full bg-default-200 animate-pulse" />
+                <Skeleton
+                  animationType="shimmer"
+                  className="w-8 h-8 rounded-full"
+                />
               </div>
             ) : !session ? (
               <div className="flex gap-2 items-center ml-2">

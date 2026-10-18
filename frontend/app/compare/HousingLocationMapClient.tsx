@@ -5,6 +5,17 @@ import { useEffect, useRef, useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Prevent Leaflet from crashing if an animation frame or teardown runs on a detached element
+if (typeof window !== "undefined" && L && L.DomUtil) {
+  const origGetPos = L.DomUtil.getPosition;
+
+  L.DomUtil.getPosition = function (el: HTMLElement) {
+    if (!el) return new L.Point(0, 0);
+
+    return origGetPos.call(this, el);
+  };
+}
+
 import {
   MapPin,
   Maximize2,
@@ -111,6 +122,7 @@ function createPopupHtml(
 
 // Frames the given points: both, one, or the campus overview when empty.
 function frameLocations(map: L.Map, points: L.LatLngTuple[]) {
+  map.stop();
   if (points.length >= 2) {
     map.fitBounds(L.latLngBounds(points), {
       padding: FIT_PADDING,
@@ -123,7 +135,7 @@ function frameLocations(map: L.Map, points: L.LatLngTuple[]) {
     map.setView(
       [UGA_CAMPUS_CENTER.lat, UGA_CAMPUS_CENTER.lng],
       UGA_CAMPUS_CENTER.defaultZoom,
-      { animate: true },
+      { animate: false },
     );
   }
 }
@@ -182,13 +194,24 @@ export default function HousingLocationMapClient({
     mapInstanceRef.current = map;
 
     // Keep the map sized correctly when layout, tabs or breakpoints change
-    const resizeObserver = new ResizeObserver(() => map.invalidateSize());
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
 
     resizeObserver.observe(container);
 
     return () => {
       resizeObserver.disconnect();
-      map.remove();
+      try {
+        map.stop();
+        map.closePopup();
+        markersGroupRef.current?.clearLayers();
+        map.remove();
+      } catch {
+        // Prevent unmount exceptions if map was already cleared
+      }
       mapInstanceRef.current = null;
       markersGroupRef.current = null;
     };
@@ -201,7 +224,13 @@ export default function HousingLocationMapClient({
 
     if (!map || !markersGroup) return;
 
-    markersGroup.clearLayers();
+    try {
+      map.closePopup();
+      map.stop();
+      markersGroup.clearLayers();
+    } catch {
+      // Ignore if layers were already cleared
+    }
 
     (
       [

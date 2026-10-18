@@ -114,6 +114,53 @@ def compare_scenarios(
                 )
             )
 
+    # Base housing cost tradeoff:
+    # Valid whenever monthly base rent/rate differs between scenarios.
+    if first_result.monthly_housing_cost != second_result.monthly_housing_cost:
+        favored = _favored_scenario(
+            first_result.scenario_name,
+            first_result.monthly_housing_cost,
+            second_result.scenario_name,
+            second_result.monthly_housing_cost,
+        )
+
+        if favored is not None:
+            tradeoffs.append(
+                Tradeoff(
+                    type="lower_housing_cost",
+                    favored_scenario=favored,
+                    difference=abs(
+                        first_result.monthly_housing_cost
+                        - second_result.monthly_housing_cost
+                    ),
+                )
+            )
+
+    # Full-term cost tradeoff:
+    # Valid when both term costs are complete and contract lengths match.
+    if (
+            term_difference is not None
+            and term_difference > 0
+            and first_result.term_cost_complete
+            and second_result.term_cost_complete
+            and first_scenario.contract_months == second_scenario.contract_months
+    ):
+        favored = _favored_scenario(
+            first_result.scenario_name,
+            first_result.term_cost,
+            second_result.scenario_name,
+            second_result.term_cost,
+        )
+
+        if favored is not None:
+            tradeoffs.append(
+                Tradeoff(
+                    type="lower_full_term_cost",
+                    favored_scenario=favored,
+                    difference=term_difference,
+                )
+            )
+
     # Upfront-cost tradeoff:
     # only valid when both values are known.
     if (
