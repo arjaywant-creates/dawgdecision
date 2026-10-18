@@ -283,12 +283,21 @@ export default function ComparisonResults({
                       {diffStr(results.monthly_difference, "/month")}
                     </Table.Cell>
                   </Table.Row>
+                {results.monthly_difference !== null ? (
                   <Table.Row>
                     <Table.Cell>Daily Equivalent</Table.Cell>
                     <Table.Cell className="font-semibold text-right">
                       {`~$${formatCurrency(results.monthly_difference / 30)}/day`}
                     </Table.Cell>
                   </Table.Row>
+                ) : (
+                  <Table.Row>
+                    <Table.Cell>Daily Equivalent</Table.Cell>
+                    <Table.Cell className="text-xs text-default-500 text-right">
+                      Incomplete comparison data
+                    </Table.Cell>
+                  </Table.Row>
+                )}
                   {results.term_difference !== null ? (
                     <Table.Row>
                       <Table.Cell>Full-Term Cost</Table.Cell>
@@ -356,49 +365,6 @@ export default function ComparisonResults({
                         : "Unknown"}
                     </Table.Cell>
                   </Table.Row>
-                  {(() => {
-                    const upfrontA = results.first_result.upfront_costs;
-                    const upfrontB = results.second_result.upfront_costs;
-                    const monthlyA =
-                      results.first_result.monthly_recurring_cost;
-                    const monthlyB =
-                      results.second_result.monthly_recurring_cost;
-
-                    if (
-                      upfrontA !== null &&
-                      upfrontB !== null &&
-                      monthlyA !== monthlyB
-                    ) {
-                      if (upfrontA > upfrontB && monthlyA < monthlyB) {
-                        const months =
-                          (upfrontA - upfrontB) / (monthlyB - monthlyA);
-
-                        return (
-                          <Table.Row>
-                            <Table.Cell>Break-Even</Table.Cell>
-                            <Table.Cell className="font-semibold text-right text-xs">
-                              {`${nameA} recovers upfront in ~${months.toFixed(1)} mo`}
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      }
-                      if (upfrontB > upfrontA && monthlyB < monthlyA) {
-                        const months =
-                          (upfrontB - upfrontA) / (monthlyA - monthlyB);
-
-                        return (
-                          <Table.Row>
-                            <Table.Cell>Break-Even</Table.Cell>
-                            <Table.Cell className="font-semibold text-right text-xs">
-                              {`${nameB} recovers upfront in ~${months.toFixed(1)} mo`}
-                            </Table.Cell>
-                          </Table.Row>
-                        );
-                      }
-                    }
-
-                    return null;
-                  })()}
                 </Table.Body>
               </Table.Content>
             </Table.ScrollContainer>
@@ -437,7 +403,7 @@ export default function ComparisonResults({
                           {t.favored_scenario}
                         </span>
                         <span className="text-sm text-default-600">
-                          Wins by{" "}
+                          Lower by{" "}
                           {isCommuteTradeoff(t.type)
                             ? `${t.difference} min`
                             : `$${formatCurrency(t.difference)}`}

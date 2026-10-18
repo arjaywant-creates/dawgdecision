@@ -67,7 +67,7 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline justify-between">
             <span className="text-sm font-medium text-default-600">
-              True Monthly Cost
+              Estimated Monthly Cost
             </span>
             <span className="text-lg sm:text-xl font-semibold text-foreground">
               {plan.monthlyCost !== null

@@ -105,13 +105,7 @@ export function FinancialPlanDetailClient({
     selected.approximateDailyDelta ??
     (knownMonthlyDelta !== 0 ? knownMonthlyDelta / 30 : null);
 
-  const breakEvenMonths =
-    selected.breakEvenMonths ??
-    (selected.upfrontDelta !== null &&
-    selected.upfrontDelta > 0 &&
-    knownMonthlyDelta < 0
-      ? selected.upfrontDelta / -knownMonthlyDelta
-      : null);
+  const breakEvenMonths = selected.breakEvenMonths ?? null;
 
   const hasAdditionalInsights = Boolean(
     hasUnequalContractLengths ||
@@ -371,15 +365,15 @@ export function FinancialPlanDetailClient({
               >
                 <p className="text-sm font-medium leading-relaxed">
                   {isSavingMonthly
-                    ? `Choosing this option saves ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
+                    ? `Based on available recurring cost data, this option appears to cost about ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
                         Math.abs(effectiveMonthlyDelta),
-                      )} per month in recurring costs compared to ${
+                      )} less per month than ${
                         alternative.name
                       }.`
                     : isMoreMonthly
-                      ? `Choosing this option costs ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
+                      ? `Based on available recurring cost data, this option appears to cost about ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
                           effectiveMonthlyDelta,
-                        )} more per month in recurring costs compared to ${
+                        )} more per month than ${
                           alternative.name
                         }.`
                       : `Both options have an identical monthly recurring cost.`}
@@ -436,9 +430,9 @@ export function FinancialPlanDetailClient({
                         </strong>
                         <span>
                           {dailyDelta < 0
-                            ? `Saves ~$${formatCurrency(Math.abs(dailyDelta))}/day compared to ${alternative.name}`
+                            ? `Approximately ~$${formatCurrency(Math.abs(dailyDelta))}/day lower than ${alternative.name}`
                             : dailyDelta > 0
-                              ? `Costs ~$${formatCurrency(dailyDelta)}/day more than ${alternative.name}`
+                              ? `Approximately ~$${formatCurrency(dailyDelta)}/day higher than ${alternative.name}`
                               : `Same daily equivalent as ${alternative.name}`}
                         </span>
                       </div>

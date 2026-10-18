@@ -109,23 +109,25 @@ export default async function PlanPage() {
         alternativeResult.monthly_recurring_cost;
 
       if (diff === 0) {
-        impactSummary = "Same estimated monthly cost as the alternative.";
+        impactSummary = recurringCostsComplete
+        ? "Same monthly cost as the alternative option."
+          : "Based on available recurring cost data, both options appear to have a similar monthly cost.";
       } else if (diff < 0) {
         impactSummary = recurringCostsComplete
           ? `Saves $${Math.abs(diff).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}/mo compared to the alternative.`
-          : `Saves ~$${Math.abs(diff).toLocaleString(undefined, {
+          : `Based on available recurring cost data, this option appears to cost about $${Math.abs(diff).toLocaleString(undefined, {
               maximumFractionDigits: 0,
-            })}/mo in estimated recurring costs.`;
+            })}/mo less than the alternative.`;
       } else {
         impactSummary = recurringCostsComplete
           ? `Costs $${diff.toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })}/mo more than the alternative.`
-          : `Costs ~$${diff.toLocaleString(undefined, {
+          : `Based on available recurring cost data, this option appears to cost about $${diff.toLocaleString(undefined, {
               maximumFractionDigits: 0,
-            })}/mo more in estimated recurring costs.`;
+            })}/mo more than the alternative.`;
       }
     }
 
