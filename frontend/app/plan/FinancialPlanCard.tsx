@@ -24,6 +24,7 @@ interface FinancialPlanCardProps {
     monthlyCost: number | null;
     upfrontCost: number | null;
     fullTermCost: number | null;
+    termCostComplete?: boolean;
 
     impactSummary: string;
   };
@@ -82,13 +83,19 @@ export default function FinancialPlanCard({ plan }: FinancialPlanCardProps) {
             <span>Upfront Costs</span>
             <span className="font-medium text-foreground">
               {plan.upfrontCost !== null
-                ? `$${plan.upfrontCost.toLocaleString()}`
-                : "None"}
+                ? plan.upfrontCost === 0
+                  ? "None"
+                  : `$${plan.upfrontCost.toLocaleString()}`
+                : "Unknown"}
             </span>
           </div>
 
           <div className="flex items-baseline justify-between text-sm text-default-600">
-            <span>Full-Term Commitment</span>
+            <span>
+              {plan.termCostComplete === false
+                ? "Est. Full-Term Commitment"
+                : "Full-Term Commitment"}
+            </span>
             <span className="font-medium text-foreground">
               {plan.fullTermCost !== null
                 ? `$${Math.round(plan.fullTermCost).toLocaleString()}`

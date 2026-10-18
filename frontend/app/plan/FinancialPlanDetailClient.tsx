@@ -2,12 +2,23 @@
 
 import { useState } from "react";
 
-import { Home, TrendingUp } from "lucide-react";
+import {
+  Home,
+  TrendingUp,
+  Calendar,
+  CalendarRange,
+  Clock,
+  Car,
+  ArrowUpRight,
+  ArrowDownRight,
+  AlertCircle,
+} from "lucide-react";
 import { Breadcrumbs, Card } from "@heroui/react";
 
 import { FinancialPlanActions } from "./FinancialPlanActions";
 
 import { diffStr, formatCurrency } from "@/lib/formatters";
+import { CostDriver } from "@/types/comparison";
 
 interface ScenarioView {
   name: string;
@@ -20,6 +31,14 @@ interface ScenarioView {
   monthlyDelta: number | null;
   upfrontDelta: number | null;
   termDelta: number | null;
+  breakEvenMonths?: number | null;
+  approximateDailyDelta?: number | null;
+  commuteDelta?: number | null;
+  commuteMinutesSaved?: number | null;
+  extraMonthlyCostForShorterCommute?: number | null;
+  largestCostIncrease?: CostDriver | null;
+  largestCostOffset?: CostDriver | null;
+  missingRecurringCosts?: string[];
 }
 
 interface Props {
@@ -49,15 +68,61 @@ export function FinancialPlanDetailClient({
   const selected = viewingScenario === "A" ? scenarioA : scenarioB;
   const alternative = viewingScenario === "A" ? scenarioB : scenarioA;
 
-  const hasNoImpactData =
-    selected.monthlyDelta === null &&
-    selected.upfrontDelta === null &&
-    selected.termDelta === null;
+  const knownMonthlyDelta = selected.monthlyCost - alternative.monthlyCost;
+  const hasVerifiedMonthlyDelta = selected.monthlyDelta !== null;
+  const effectiveMonthlyDelta = hasVerifiedMonthlyDelta
+    ? selected.monthlyDelta
+    : knownMonthlyDelta;
 
   const isSavingMonthly =
-    selected.monthlyDelta !== null && selected.monthlyDelta < 0;
+    effectiveMonthlyDelta !== null && effectiveMonthlyDelta < 0;
   const isMoreMonthly =
-    selected.monthlyDelta !== null && selected.monthlyDelta > 0;
+    effectiveMonthlyDelta !== null && effectiveMonthlyDelta > 0;
+
+  const rawTermDelta =
+    selected.termCost !== null &&
+    selected.termCost !== undefined &&
+    alternative.termCost !== null &&
+    alternative.termCost !== undefined
+      ? selected.termCost - alternative.termCost
+      : null;
+
+  const effectiveTermDelta = selected.termDelta ?? rawTermDelta;
+  const hasUnequalContractLengths =
+    selected.contractMonths !== alternative.contractMonths;
+  const contractLengthDifference =
+    selected.contractMonths - alternative.contractMonths;
+  const termComparisonComplete =
+    selected.termCostComplete && alternative.termCostComplete;
+
+  const hasNoImpactData =
+    effectiveMonthlyDelta === null &&
+    selected.upfrontDelta === null &&
+    effectiveTermDelta === null &&
+    knownMonthlyDelta === 0;
+
+  const dailyDelta =
+    selected.approximateDailyDelta ??
+    (knownMonthlyDelta !== 0 ? knownMonthlyDelta / 30 : null);
+
+  const breakEvenMonths =
+    selected.breakEvenMonths ??
+    (selected.upfrontDelta !== null &&
+    selected.upfrontDelta > 0 &&
+    knownMonthlyDelta < 0
+      ? selected.upfrontDelta / -knownMonthlyDelta
+      : null);
+
+  const hasAdditionalInsights = Boolean(
+    hasUnequalContractLengths ||
+    dailyDelta !== null ||
+    breakEvenMonths !== null ||
+    (selected.commuteDelta !== null && selected.commuteDelta !== undefined) ||
+    selected.largestCostIncrease ||
+    selected.largestCostOffset ||
+    (selected.missingRecurringCosts &&
+      selected.missingRecurringCosts.length > 0),
+  );
 
   return (
     <div className="pb-12 space-y-6">
@@ -127,12 +192,18 @@ export function FinancialPlanDetailClient({
             <div className="my-2">
               <span className="text-2xl sm:text-3xl font-bold text-foreground">
                 {selected.upfrontCost !== null
-                  ? `$${formatCurrency(selected.upfrontCost)}`
-                  : "None"}
+                  ? selected.upfrontCost === 0
+                    ? "None"
+                    : `$${formatCurrency(selected.upfrontCost)}`
+                  : "Unknown"}
               </span>
             </div>
             <span className="text-xs text-default-400">
-              Deposits &amp; one-time fees
+              {selected.upfrontCost === 0
+                ? "No move-in fees"
+                : selected.upfrontCost === null
+                  ? "Move-in fees unverified"
+                  : "One-time fees (excl. deposits)"}
             </span>
           </Card>
 
@@ -142,13 +213,15 @@ export function FinancialPlanDetailClient({
             </span>
             <div className="my-2">
               <span className="text-2xl sm:text-3xl font-bold text-foreground">
-                {selected.termCostComplete
+                {selected.termCost !== null && selected.termCost !== undefined
                   ? `$${formatCurrency(selected.termCost)}`
                   : "Unknown"}
               </span>
             </div>
             <span className="text-xs text-default-400">
-              Total across {selected.contractMonths} months
+              {selected.termCostComplete
+                ? `Total across ${selected.contractMonths} months`
+                : `Est. total across ${selected.contractMonths} months (unverified fees)`}
             </span>
           </Card>
 
@@ -197,7 +270,9 @@ export function FinancialPlanDetailClient({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Card className="p-4 flex flex-col justify-between">
                 <span className="text-xs font-medium text-default-500">
-                  Monthly Difference
+                  {hasVerifiedMonthlyDelta
+                    ? "Monthly Difference"
+                    : "Est. Monthly Difference"}
                 </span>
                 <div className="my-2">
                   <span
@@ -209,15 +284,21 @@ export function FinancialPlanDetailClient({
                           : "text-foreground"
                     }`}
                   >
-                    {diffStr(selected.monthlyDelta, "/mo")}
+                    {hasVerifiedMonthlyDelta
+                      ? diffStr(selected.monthlyDelta, "/mo")
+                      : effectiveMonthlyDelta !== 0
+                        ? `~${diffStr(effectiveMonthlyDelta, "/mo")}`
+                        : "Equal (known fees)"}
                   </span>
                 </div>
                 <span className="text-xs text-default-500">
-                  {isSavingMonthly
-                    ? "Savings vs alternative"
-                    : isMoreMonthly
-                      ? "Higher recurring cost"
-                      : "Identical monthly cost"}
+                  {hasVerifiedMonthlyDelta
+                    ? isSavingMonthly
+                      ? "Savings vs alternative"
+                      : isMoreMonthly
+                        ? "Higher recurring cost"
+                        : "Identical monthly cost"
+                    : "Based on known expenses"}
                 </span>
               </Card>
 
@@ -231,7 +312,22 @@ export function FinancialPlanDetailClient({
                   </span>
                 </div>
                 <span className="text-xs text-default-500">
-                  Initial move-in cost delta
+                  {selected.upfrontDelta === null
+                    ? selected.upfrontCost !== null &&
+                      alternative.upfrontCost === null
+                      ? "Fees unverified for alternative"
+                      : selected.upfrontCost === null &&
+                          alternative.upfrontCost !== null
+                        ? "Fees unverified for this option"
+                        : "Fees unverified for both options"
+                    : selected.upfrontDelta < 0
+                      ? "Initial move-in savings"
+                      : selected.upfrontDelta > 0
+                        ? "Higher move-in cost"
+                        : selected.upfrontCost === 0 &&
+                            alternative.upfrontCost === 0
+                          ? "No upfront fees for either option"
+                          : "Identical upfront cost"}
                 </span>
               </Card>
 
@@ -241,39 +337,225 @@ export function FinancialPlanDetailClient({
                 </span>
                 <div className="my-2">
                   <span className="text-2xl sm:text-3xl font-bold text-foreground">
-                    {diffStr(selected.termDelta)}
+                    {effectiveTermDelta !== null
+                      ? !termComparisonComplete && effectiveTermDelta !== 0
+                        ? `~${diffStr(effectiveTermDelta)}`
+                        : diffStr(effectiveTermDelta)
+                      : "Unknown"}
                   </span>
                 </div>
                 <span className="text-xs text-default-500">
-                  Total lease cost delta
+                  {effectiveTermDelta !== null
+                    ? hasUnequalContractLengths
+                      ? `Total contract delta (${selected.contractMonths} mo vs ${alternative.contractMonths} mo)`
+                      : effectiveTermDelta < 0
+                        ? "Total lease term savings"
+                        : effectiveTermDelta > 0
+                          ? "Higher total stay cost"
+                          : "Identical full-term cost"
+                    : "Incomplete term cost data"}
                 </span>
               </Card>
             </div>
 
             {/* Concise insight summary callout */}
-            {selected.monthlyDelta !== null && (
+            {effectiveMonthlyDelta !== null && (
               <Card
                 className={`p-4 ${
                   isSavingMonthly
                     ? "bg-success-500/10 text-success-800 dark:text-success-200"
-                    : "bg-default-50 text-default-700"
+                    : isMoreMonthly
+                      ? "bg-warning-500/10 text-warning-800 dark:text-warning-200"
+                      : "bg-default-50 text-default-700"
                 }`}
               >
                 <p className="text-sm font-medium leading-relaxed">
                   {isSavingMonthly
-                    ? `Choosing this option saves $${formatCurrency(
-                        Math.abs(selected.monthlyDelta),
+                    ? `Choosing this option saves ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
+                        Math.abs(effectiveMonthlyDelta),
                       )} per month in recurring costs compared to ${
                         alternative.name
                       }.`
                     : isMoreMonthly
-                      ? `Choosing this option costs $${formatCurrency(
-                          selected.monthlyDelta,
+                      ? `Choosing this option costs ${hasVerifiedMonthlyDelta ? "" : "estimated "}$${formatCurrency(
+                          effectiveMonthlyDelta,
                         )} more per month in recurring costs compared to ${
                           alternative.name
                         }.`
                       : `Both options have an identical monthly recurring cost.`}
                 </p>
+
+                {!hasVerifiedMonthlyDelta && (
+                  <p className="text-xs text-warning-600 dark:text-warning-400 mt-1.5 font-normal flex items-center gap-1.5">
+                    <AlertCircle className="size-3.5 shrink-0" />
+                    <span>
+                      Utilities or optional recurring fees are unverified for
+                      one or both options.
+                    </span>
+                  </p>
+                )}
+              </Card>
+            )}
+
+            {/* Additional Decision Insights */}
+            {hasAdditionalInsights && (
+              <Card className="p-4 space-y-3 text-sm text-default-600">
+                <h3 className="font-semibold text-xs text-default-500">
+                  Additional Insights
+                </h3>
+                <div className="space-y-2.5">
+                  {hasUnequalContractLengths && (
+                    <div className="flex items-start gap-2.5">
+                      <CalendarRange className="size-4 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-foreground font-medium">
+                          Contract duration difference:{" "}
+                        </strong>
+                        <span>
+                          {selected.name} covers {selected.contractMonths}{" "}
+                          months vs. {alternative.name}'s{" "}
+                          {alternative.contractMonths} months (
+                          {Math.abs(contractLengthDifference)} month
+                          {Math.abs(contractLengthDifference) !== 1
+                            ? "s"
+                            : ""}{" "}
+                          difference). If you need summer housing during
+                          uncovered months, factor in separate sublease or
+                          short-term rent.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {dailyDelta !== null && (
+                    <div className="flex items-start gap-2.5">
+                      <Calendar className="size-4 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-foreground font-medium">
+                          Daily equivalent:{" "}
+                        </strong>
+                        <span>
+                          {dailyDelta < 0
+                            ? `Saves ~$${formatCurrency(Math.abs(dailyDelta))}/day compared to ${alternative.name}`
+                            : dailyDelta > 0
+                              ? `Costs ~$${formatCurrency(dailyDelta)}/day more than ${alternative.name}`
+                              : `Same daily equivalent as ${alternative.name}`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {breakEvenMonths !== null && (
+                    <div className="flex items-start gap-2.5">
+                      <Clock className="size-4 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-foreground font-medium">
+                          Break-even horizon:{" "}
+                        </strong>
+                        <span>
+                          Recovers higher upfront costs in ~
+                          {breakEvenMonths.toFixed(1)} months via monthly
+                          savings.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {selected.commuteDelta !== null &&
+                    selected.commuteDelta !== undefined && (
+                      <div className="flex items-start gap-2.5">
+                        <Car className="size-4 text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-foreground font-medium">
+                            Commute difference:{" "}
+                          </strong>
+                          <span>
+                            {selected.commuteDelta < 0
+                              ? `Saves ${Math.abs(selected.commuteDelta)} min/trip compared to ${alternative.name}`
+                              : selected.commuteDelta > 0
+                                ? `Adds ${selected.commuteDelta} min/trip compared to ${alternative.name}`
+                                : `Same commute time as ${alternative.name}`}
+                          </span>
+                          {selected.extraMonthlyCostForShorterCommute !==
+                            null &&
+                            selected.extraMonthlyCostForShorterCommute !==
+                              undefined &&
+                            selected.commuteMinutesSaved !== null &&
+                            selected.commuteMinutesSaved !== undefined && (
+                              <span className="text-xs text-default-500 block mt-0.5">
+                                Costs $
+                                {formatCurrency(
+                                  selected.extraMonthlyCostForShorterCommute,
+                                )}
+                                /mo more to save {selected.commuteMinutesSaved}{" "}
+                                min of commute.
+                              </span>
+                            )}
+                        </div>
+                      </div>
+                    )}
+
+                  {selected.largestCostIncrease && (
+                    <div className="flex items-start gap-2.5">
+                      <ArrowUpRight className="size-4 text-warning-500 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-foreground font-medium">
+                          Largest cost increase:{" "}
+                        </strong>
+                        <span className="capitalize">
+                          {selected.largestCostIncrease.category.replace(
+                            /_/g,
+                            " ",
+                          )}
+                        </span>{" "}
+                        costs +$
+                        {formatCurrency(
+                          selected.largestCostIncrease.difference,
+                        )}
+                        /mo more than {alternative.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {selected.largestCostOffset && (
+                    <div className="flex items-start gap-2.5">
+                      <ArrowDownRight className="size-4 text-success-500 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-foreground font-medium">
+                          Largest cost offset:{" "}
+                        </strong>
+                        <span className="capitalize">
+                          {selected.largestCostOffset.category.replace(
+                            /_/g,
+                            " ",
+                          )}
+                        </span>{" "}
+                        saves $
+                        {formatCurrency(
+                          Math.abs(selected.largestCostOffset.difference),
+                        )}
+                        /mo compared to {alternative.name}
+                      </div>
+                    </div>
+                  )}
+
+                  {selected.missingRecurringCosts &&
+                    selected.missingRecurringCosts.length > 0 && (
+                      <div className="flex items-start gap-2.5">
+                        <AlertCircle className="size-4 text-warning-500 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-foreground font-medium">
+                            Unverified recurring items:{" "}
+                          </strong>
+                          <span className="text-default-500">
+                            Costs for{" "}
+                            {selected.missingRecurringCosts.join(", ")} are
+                            unverified or omitted in this estimate.
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                </div>
               </Card>
             )}
           </div>

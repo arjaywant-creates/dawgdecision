@@ -22,6 +22,7 @@ interface Props {
   results: ComparisonResult;
   scenarioA: Scenario;
   scenarioB: Scenario;
+  isDirty?: boolean;
 }
 
 interface MetricRowProps {
@@ -94,9 +95,18 @@ export default function ComparisonResults({
   results,
   scenarioA,
   scenarioB,
+  isDirty,
 }: Props) {
-  const nameA = scenarioA?.name || "Option A";
-  const nameB = scenarioB?.name || "Option B";
+  // Always use the snapshot scenario name corresponding to the calculated numbers
+  const nameA =
+    results.first_result.scenario_name || scenarioA?.name || "Option A";
+  const nameB =
+    results.second_result.scenario_name || scenarioB?.name || "Option B";
+
+  const contractA = scenarioA?.contract_months;
+  const contractB = scenarioB?.contract_months;
+  const durationSuffixA = contractA ? ` (${contractA} mo)` : "";
+  const durationSuffixB = contractB ? ` (${contractB} mo)` : "";
 
   const tradeoffLabels: Record<string, string> = {
     lower_monthly_cost: "Lower Monthly Cost",
@@ -115,6 +125,16 @@ export default function ComparisonResults({
 
   return (
     <div className="flex flex-col gap-6">
+      {isDirty && (
+        <div className="p-3 rounded-xl bg-warning-50/80 border border-warning-200 text-warning-900 text-xs flex items-center gap-2">
+          <Info className="size-4 shrink-0 text-warning-600" />
+          <span>
+            Options modified. Click <strong>Recalculate Results</strong> to
+            update.
+          </span>
+        </div>
+      )}
+
       {/* Totals Section */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 border-b border-separator/50 pb-1.5 mb-1">
@@ -131,7 +151,7 @@ export default function ComparisonResults({
             nameA={nameA}
             nameB={nameB}
             suffix="/month"
-            tooltip="Combined cost of housing base rent and mandatory recurring fees."
+            tooltip="Combined monthly cost of base housing rent, mandatory fees, utilities, parking, and transportation."
           />
           {(!results.first_result.recurring_costs_complete ||
             !results.second_result.recurring_costs_complete) && (
@@ -190,8 +210,8 @@ export default function ComparisonResults({
             b={results.second_result.term_cost}
             bNull={false}
             label="Full-Term Cost"
-            nameA={nameA}
-            nameB={nameB}
+            nameA={`${nameA}${durationSuffixA}`}
+            nameB={`${nameB}${durationSuffixB}`}
             tooltip="Total estimated cost over the entire contract length, including all monthly and upfront costs."
           />
           {(!results.first_result.term_cost_complete ||
@@ -263,6 +283,12 @@ export default function ComparisonResults({
                       {diffStr(results.monthly_difference, "/month")}
                     </Table.Cell>
                   </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Daily Equivalent</Table.Cell>
+                    <Table.Cell className="font-semibold text-right">
+                      {`~$${formatCurrency(results.monthly_difference / 30)}/day`}
+                    </Table.Cell>
+                  </Table.Row>
                   {results.term_difference !== null ? (
                     <Table.Row>
                       <Table.Cell>Full-Term Cost</Table.Cell>
@@ -270,10 +296,20 @@ export default function ComparisonResults({
                         {diffStr(results.term_difference)}
                       </Table.Cell>
                     </Table.Row>
+                  ) : contractA && contractB && contractA !== contractB ? (
+                    <Table.Row>
+                      <Table.Cell>Full-Term Cost</Table.Cell>
+                      <Table.Cell className="font-normal text-xs text-default-500 text-right">
+                        Unequal contract lengths ({contractA} mo vs {contractB}{" "}
+                        mo)
+                      </Table.Cell>
+                    </Table.Row>
                   ) : (
-                    <Table.Row className="hidden">
-                      <Table.Cell />
-                      <Table.Cell />
+                    <Table.Row>
+                      <Table.Cell>Full-Term Cost</Table.Cell>
+                      <Table.Cell className="font-normal text-xs text-default-500 text-right">
+                        Incomplete cost data
+                      </Table.Cell>
                     </Table.Row>
                   )}
                   <Table.Row>
@@ -297,7 +333,7 @@ export default function ComparisonResults({
                   <Table.Row>
                     <Table.Cell>Parking Cost</Table.Cell>
                     <Table.Cell className="font-semibold text-right">
-                      {diffStr(results.parking_difference)}
+                      {diffStr(results.parking_difference, "/month")}
                     </Table.Cell>
                   </Table.Row>
                   <Table.Row>
@@ -320,6 +356,49 @@ export default function ComparisonResults({
                         : "Unknown"}
                     </Table.Cell>
                   </Table.Row>
+                  {(() => {
+                    const upfrontA = results.first_result.upfront_costs;
+                    const upfrontB = results.second_result.upfront_costs;
+                    const monthlyA =
+                      results.first_result.monthly_recurring_cost;
+                    const monthlyB =
+                      results.second_result.monthly_recurring_cost;
+
+                    if (
+                      upfrontA !== null &&
+                      upfrontB !== null &&
+                      monthlyA !== monthlyB
+                    ) {
+                      if (upfrontA > upfrontB && monthlyA < monthlyB) {
+                        const months =
+                          (upfrontA - upfrontB) / (monthlyB - monthlyA);
+
+                        return (
+                          <Table.Row>
+                            <Table.Cell>Break-Even</Table.Cell>
+                            <Table.Cell className="font-semibold text-right text-xs">
+                              {`${nameA} recovers upfront in ~${months.toFixed(1)} mo`}
+                            </Table.Cell>
+                          </Table.Row>
+                        );
+                      }
+                      if (upfrontB > upfrontA && monthlyB < monthlyA) {
+                        const months =
+                          (upfrontB - upfrontA) / (monthlyA - monthlyB);
+
+                        return (
+                          <Table.Row>
+                            <Table.Cell>Break-Even</Table.Cell>
+                            <Table.Cell className="font-semibold text-right text-xs">
+                              {`${nameB} recovers upfront in ~${months.toFixed(1)} mo`}
+                            </Table.Cell>
+                          </Table.Row>
+                        );
+                      }
+                    }
+
+                    return null;
+                  })()}
                 </Table.Body>
               </Table.Content>
             </Table.ScrollContainer>

@@ -433,3 +433,51 @@ def test_empty_name_is_rejected():
         make_complete_scenario(
             name="   ",
         )
+
+
+def test_lower_housing_cost_tradeoff():
+    first = make_complete_scenario(
+        name="Apartment A",
+        housing_cost=4000,
+        cost_period_months=4,  # $1000/mo
+    )
+
+    second = make_complete_scenario(
+        name="Apartment B",
+        housing_cost=1200,
+        cost_period_months=1,  # $1200/mo
+    )
+
+    result = compare_scenarios(first, second)
+
+    housing_tradeoffs = [
+        t for t in result.tradeoffs if t.type == "lower_housing_cost"
+    ]
+    assert len(housing_tradeoffs) == 1
+    assert housing_tradeoffs[0].favored_scenario == "Apartment A"
+    assert housing_tradeoffs[0].difference == 200
+
+
+def test_lower_full_term_cost_tradeoff():
+    first = make_complete_scenario(
+        name="Apartment A",
+        housing_cost=1000,
+        contract_months=12,
+        upfront_costs=100,
+    )
+
+    second = make_complete_scenario(
+        name="Apartment B",
+        housing_cost=1200,
+        contract_months=12,
+        upfront_costs=100,
+    )
+
+    result = compare_scenarios(first, second)
+
+    term_tradeoffs = [
+        t for t in result.tradeoffs if t.type == "lower_full_term_cost"
+    ]
+    assert len(term_tradeoffs) == 1
+    assert term_tradeoffs[0].favored_scenario == "Apartment A"
+    assert term_tradeoffs[0].difference == 2400

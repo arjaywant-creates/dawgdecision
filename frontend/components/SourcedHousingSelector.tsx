@@ -106,8 +106,10 @@ export default function SourcedHousingSelector({
 
   const sortedOptions = useMemo(() => {
     return [...filteredOptions].sort((a, b) => {
-      const costA = a.housing_cost || 0;
-      const costB = b.housing_cost || 0;
+      const getMonthlyRent = (item: SourcedHousingOption) =>
+        (item.housing_cost || 0) / (item.cost_period_months || 1);
+      const costA = getMonthlyRent(a);
+      const costB = getMonthlyRent(b);
 
       if (sortOption === "category_on_first") {
         if (a.category === "on_campus" && b.category !== "on_campus") return -1;
@@ -287,15 +289,15 @@ export default function SourcedHousingSelector({
                             </ListBox.Item>
                             <ListBox.Item
                               id="rent_asc"
-                              textValue="Rent (Low to High)"
+                              textValue="Monthly Cost (Low to High)"
                             >
-                              Rent (Low to High)
+                              Monthly Cost (Low to High)
                             </ListBox.Item>
                             <ListBox.Item
                               id="rent_desc"
-                              textValue="Rent (High to Low)"
+                              textValue="Monthly Cost (High to Low)"
                             >
-                              Rent (High to Low)
+                              Monthly Cost (High to Low)
                             </ListBox.Item>
                           </ListBox>
                         </Select.Popover>
@@ -398,6 +400,18 @@ export default function SourcedHousingSelector({
                                   </span>
                                 )}
                               </span>
+                              {item.housing_cost != null &&
+                                item.cost_period_months != null &&
+                                item.cost_period_months > 1 && (
+                                  <span className="text-[11px] text-muted whitespace-nowrap text-right">
+                                    ~$
+                                    {Math.round(
+                                      item.housing_cost /
+                                        item.cost_period_months,
+                                    )}
+                                    /mo
+                                  </span>
+                                )}
                               {(Boolean(
                                 item.mandatory_fees && item.mandatory_fees > 0,
                               ) ||

@@ -233,7 +233,8 @@ export default function CompareForm({
     name: `${housing.property_name} - ${housing.configuration}`,
     housing_cost: housing.housing_cost ?? ("" as any),
     cost_period_months: housing.cost_period_months ?? ("" as any),
-    contract_months: housing.contract_months ?? ("" as any),
+    contract_months:
+      housing.contract_months ?? (housing.category === "on_campus" ? 8 : 12),
     utilities: housing.utilities ?? ("" as any),
     mandatory_fees: housing.mandatory_fees ?? ("" as any),
     parking: housing.parking ?? ("" as any),
@@ -736,6 +737,7 @@ export default function CompareForm({
               ) : results ? (
                 <>
                   <ComparisonResults
+                    isDirty={isDirty}
                     results={results}
                     scenarioA={scenarioA}
                     scenarioB={scenarioB}

@@ -94,10 +94,12 @@ export default async function PlanPage() {
         : snapshot?.first_result;
 
     const monthlyCost = selectedResult?.monthly_recurring_cost ?? null;
-
     const upfrontCost = selectedResult?.upfront_costs ?? null;
-
     const fullTermCost = selectedResult?.term_cost ?? null;
+    const termCostComplete = selectedResult?.term_cost_complete ?? false;
+    const recurringCostsComplete =
+      Boolean(selectedResult?.recurring_costs_complete) &&
+      Boolean(alternativeResult?.recurring_costs_complete);
 
     let impactSummary = "Impact summary unavailable.";
 
@@ -107,15 +109,23 @@ export default async function PlanPage() {
         alternativeResult.monthly_recurring_cost;
 
       if (diff === 0) {
-        impactSummary = "Same true monthly cost as the alternative.";
+        impactSummary = "Same estimated monthly cost as the alternative.";
       } else if (diff < 0) {
-        impactSummary = `Saves $${Math.abs(diff).toLocaleString(undefined, {
-          maximumFractionDigits: 0,
-        })}/mo in true costs compared to the alternative.`;
+        impactSummary = recurringCostsComplete
+          ? `Saves $${Math.abs(diff).toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}/mo compared to the alternative.`
+          : `Saves ~$${Math.abs(diff).toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}/mo in estimated recurring costs.`;
       } else {
-        impactSummary = `Costs $${diff.toLocaleString(undefined, {
-          maximumFractionDigits: 0,
-        })}/mo more in true costs than the alternative.`;
+        impactSummary = recurringCostsComplete
+          ? `Costs $${diff.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}/mo more than the alternative.`
+          : `Costs ~$${diff.toLocaleString(undefined, {
+              maximumFractionDigits: 0,
+            })}/mo more in estimated recurring costs.`;
       }
     }
 
@@ -127,6 +137,7 @@ export default async function PlanPage() {
       monthlyCost,
       upfrontCost,
       fullTermCost,
+      termCostComplete,
       impactSummary,
     };
   });
